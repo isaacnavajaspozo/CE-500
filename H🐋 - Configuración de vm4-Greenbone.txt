@@ -1,0 +1,734 @@
+#===========================================================================================================================
+[🐋INSTALACIÓN GREENBONE]:
+# Documentación oficial : https://greenbone.github.io/docs/latest/22.4/source-build/index.html
+
+==================================================================================================================================================
+==========[ 20/02/2025 · GREENBONE ]==============================================================================================================
+	##.🧑‍🎓 Explicación de componentes OpenVass:
+		gvm-libs:		Biblioteca C utilizadas en openvas-scanner , gvmd , gsad y pg-gvm.
+		gvmd:			Servicio principal, utiliza PostgreSQL y realiza autenticación, gestión de escaneos, la información sobre vulnerabilidades y mucho más
+		pg-gvm:			Extensión de PostgreSQL que agrega varias funciones utilizadas por gvmd, (iCalendar y evaluación de rango de host)
+		GSA:			La aplicación web en JavaScript, React y NodeJS
+		gsad:			En C. Se comunica con gvmd mediante GMP. Servidor web con contenido estático y proporciona una API para la web
+		openvas-smb:		Módulo auxiliar para openvas-scanner, para interactuar con sistemas Microsoft Windows a través de la API
+		openvas-scanner:	Motor de escaneo con todas las funciones que ejecuta un flujo de pruebas de vulnerabilidad (VT) continuamente actualizado y ampliado
+		ospd-openvas:		Motor de escaneo con todas las funciones que ejecuta un flujo de pruebas de vulnerabilidad (VT) continuamente actualizado y ampliado
+		openvasd:		Utiliza para detectar productos vulnerables, actualmente solo notus está integrado en gvmd
+		greenbone-feed-sync:	script basado en Python para descargar todos los datos de la fuente de la comunidad Greenbone a su máquina local
+		gvm-tools:		Colección de herramientas que ayudan a controlar instalaciones 
+		servidor Redis:		Utilizado por el escáner (openvas-scanner y ospd-openvas) para manejar la información de VT 
+		Estándares relacionados:
+				[NVT]:		Es el conjunto de pruebas de vulnerabilidades de la comunidad Greenbone
+				[CERT]:	 	Incluye avisos de seguridad de organizaciones como CERT-Bund o DFN-CERT
+				[GVMD_DATA]: 	Contiene configuraciones necesarias para que OpenVAS funcione correctamente, como Policies, Port Lists, Report Formats, Scan Configs.
+				[SCAP]:		Están dividido en:
+							+ [[CVEs]]: (Common Vulnerabilities and Exposures): Base de datos de vulnerabilidades conocidas.
+							+ [[CPEs]]: (Common Platform Enumeration): Identificadores únicos para sistemas operativos y software.
+
+	##.🧑‍🎓 Índice de la instalación:
+		01.📌 Actualizar el sistema
+		02.📌 Creando un usuario y un grupo 
+		03.📌 Instalaciones
+		04.📌 Exporto las varables para la instalación
+		05.📌 Directorios de origen
+		06.📌 Importación de la clave de firma de Greenbone
+		07.📌 Instalación de los componentes
+		08.📌 Ajustes de permisos
+		09.📌 Validaciones de feeds
+		10.📌 Configuración de sudo para escanear 
+		11.📌 Configuración de PostgreSQL
+		12.📌 Configurar un usuario administrador
+		13.📌 Realizar una sincronización de feeds 
+		
+# =====================================================================
+# =====================================================================
+
+# 01.📌 Actualizar el sistema
+# *********************************************************************
+	apt update -y
+	apt upgrade -y
+# *********************************************************************
+
+# 02.📌 Creando un usuario y un grupo 
+# *********************************************************************
+	# Greenbone debe ejecutarse como un usuario y un grupo dedicado (no le doy acceso a terminal)
+	useradd -r -M -U -G sudo -s /usr/sbin/nologin gvm
+	
+	# permitir que el usuario actual ejecute gvmd
+	usermod -aG gvm "nombre de usuario Linux"
+	su "nombre de usuario Linux"
+# *********************************************************************
+
+# 03.📌 Instalaciones
+# *********************************************************************
+# 🔥 Instalar dependencias necesarias
+# *********************************************************************
+	apt install --no-install-recommends --assume-yes build-essential curl cmake pkg-config python3 python3-pip gnupg
+	apt install -y libcjson-dev libcurl4-gnutls-dev libgcrypt-dev libglib2.0-dev libgnutls28-dev libgpgme-dev libhiredis-dev libnet1-dev libpaho-mqtt-dev libpcap-dev libssh-dev libxml2-dev uuid-dev
+	apt install -y libldap2-dev libradcli-dev
+	apt install -y libbsd-dev libcjson-dev libglib2.0-dev libgnutls28-dev libgpgme-dev libical-dev libpq-dev postgresql-server-dev-all rsync xsltproc
+	apt install -y --no-install-recommends dpkg fakeroot gnupg gnutls-bin gpgsm nsis openssh-client python3 python3-lxml rpm smbclient snmp socat sshpass texlive-fonts-recommended texlive-latex-extra wget xmlstarlet zip
+	apt install -y libglib2.0-dev libical-dev postgresql-server-dev-all
+	apt install -y libbrotli-dev libglib2.0-dev libgnutls28-dev libmicrohttpd-dev libxml2-dev
+	apt install -y gcc-mingw-w64 libgnutls28-dev libglib2.0-dev libpopt-dev libunistring-dev heimdal-multidev perl-base
+	apt install -y bison libglib2.0-dev libgnutls28-dev libgcrypt20-dev libpcap-dev libgpgme-dev libksba-dev rsync nmap libjson-glib-dev libcurl4-gnutls-dev libbsd-dev krb5-multidev libkrb5-dev
+	apt install -y python3-impacket libsnmp-dev
+	apt install -y python3 python3-pip python3-setuptools python3-packaging python3-wrapt python3-cffi python3-psutil python3-lxml python3-defusedxml python3-paramiko python3-redis python3-gnupg python3-paho-mqtt
+	apt install -y pkg-config libssl-dev
+	apt install -y python3 python3-pip
+	apt install -y python3 python3-lxml python3-packaging python3-paramiko python3-pip python3-setuptools python3-venv
+	apt install -y redis-server
+	apt install -y postgresql
+#**********************************************************************
+
+# 🔥 Instalo el paquete cargo y rustup
+# *********************************************************************
+	# instalo cargo 
+	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+	1
+
+	source "$HOME/.cargo/env"
+	# which rustup
+	
+	cargo --version
+	## cargo 1.85.0 (d73d2caf9 2024-12-31)
+#**********************************************************************
+#**********************************************************************
+
+# 04.📌 Exporto las varables para la instalación
+# *********************************************************************
+	export INSTALL_PREFIX=/usr/local
+	export PATH=$PATH:$INSTALL_PREFIX/sbin
+	export SOURCE_DIR=$HOME/source
+	export BUILD_DIR=$HOME/build
+	export INSTALL_DIR=$HOME/install
+	export GVM_LIBS_VERSION=22.18.0
+	export GVMD_VERSION=25.1.1
+	export PG_GVM_VERSION=22.6.7
+	export GSA_VERSION=24.3.0
+	export GSAD_VERSION=24.2.2
+	export OPENVAS_SMB_VERSION=22.5.3
+	export OPENVAS_SCANNER_VERSION=23.15.3
+	export OSPD_OPENVAS_VERSION=22.7.1
+	export OPENVAS_DAEMON=23.15.3
+	export GNUPGHOME=/tmp/openvas-gnupg
+	export OPENVAS_GNUPG_HOME=/etc/openvas/gnupg
+# *********************************************************************
+
+# 05.📌 Directorios de origen
+# *********************************************************************
+	mkdir -p $SOURCE_DIR
+	mkdir -p $BUILD_DIR
+	mkdir -p $INSTALL_DIR
+# *********************************************************************
+
+# 06.📌 Importación de la clave de firma de Greenbone
+# *********************************************************************
+	# valido la integridad de los archivos fuente descargados
+	curl -f -L https://www.greenbone.net/GBCommunitySigningKey.asc -o /tmp/GBCommunitySigningKey.asc
+	mkdir -p $GNUPGHOME
+	chmod 700 $GNUPGHOME
+	gpg --import /tmp/GBCommunitySigningKey.asc
+	
+	# marcar la clave de firma de la comunidad Greenbone como totalmente confiable
+	echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" | gpg --import-ownertrust
+	# el 6 indica "confianza total"
+# *********************************************************************
+
+# 07.📌 Instalación de los componentes
+# *********************************************************************
+# 🔥 gvm-libs
+# 🧑‍🎓 Biblioteca C utilizadas en openvas-scanner , gvmd , gsad y pg-gvm.
+# *********************************************************************
+	# Descarga las fuentes
+	curl -f -L https://github.com/greenbone/gvm-libs/archive/refs/tags/v$GVM_LIBS_VERSION.tar.gz -o $SOURCE_DIR/gvm-libs-$GVM_LIBS_VERSION.tar.gz
+	curl -f -L https://github.com/greenbone/gvm-libs/releases/download/v$GVM_LIBS_VERSION/gvm-libs-v$GVM_LIBS_VERSION.tar.gz.asc -o $SOURCE_DIR/gvm-libs-$GVM_LIBS_VERSION.tar.gz.asc
+	
+	# Extraigo el archivo tar
+	tar -C $SOURCE_DIR -xvzf $SOURCE_DIR/gvm-libs-$GVM_LIBS_VERSION.tar.gz
+	
+	# Compilar e instalar 
+	mkdir -p $BUILD_DIR/gvm-libs
+	
+	cd $BUILD_DIR/gvm-libs
+	
+	cmake \
+	  -S $SOURCE_DIR/gvm-libs-$GVM_LIBS_VERSION \
+	  -B $BUILD_DIR/gvm-libs \
+	  -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
+	  -DCMAKE_BUILD_TYPE=Release \
+	  -DSYSCONFDIR=/etc \
+	  -DLOCALSTATEDIR=/var
+
+	cmake --build $BUILD_DIR/gvm-libs -j$(nproc)
+	
+	# Instalación de gvm-libs
+	mkdir -p $INSTALL_DIR/gvm-libs && cd $BUILD_DIR/gvm-libs
+
+	make DESTDIR=$INSTALL_DIR/gvm-libs install
+
+	sudo cp -rv $INSTALL_DIR/gvm-libs/* /
+
+# *********************************************************************
+
+# 🔥 gvmd
+# 🧑‍🎓 Servicio principal, utiliza PostgreSQL y realiza autenticación, gestión de escaneos, la información sobre vulnerabilidades y mucho más
+# *********************************************************************
+	# Descarga las fuentes
+	curl -f -L https://github.com/greenbone/gvmd/archive/refs/tags/v$GVMD_VERSION.tar.gz -o $SOURCE_DIR/gvmd-$GVMD_VERSION.tar.gz
+	curl -f -L https://github.com/greenbone/gvmd/releases/download/v$GVMD_VERSION/gvmd-$GVMD_VERSION.tar.gz.asc -o $SOURCE_DIR/gvmd-$GVMD_VERSION.tar.gz.asc
+
+	# Extraigo el archivo tar
+	tar -C $SOURCE_DIR -xvzf $SOURCE_DIR/gvmd-$GVMD_VERSION.tar.gz
+
+	# Compilar e instalar 
+	mkdir -p $BUILD_DIR/gvmd
+
+	cmake \
+	  -S $SOURCE_DIR/gvmd-$GVMD_VERSION \
+	  -B $BUILD_DIR/gvmd \
+	  -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
+	  -DCMAKE_BUILD_TYPE=Release \
+	  -DLOCALSTATEDIR=/var \
+	  -DSYSCONFDIR=/etc \
+	  -DGVM_DATA_DIR=/var \
+	  -DGVM_LOG_DIR=/var/log/gvm \
+	  -DGVMD_RUN_DIR=/run/gvmd \
+	  -DOPENVAS_DEFAULT_SOCKET=/run/ospd/ospd-openvas.sock \
+	  -DGVM_FEED_LOCK_PATH=/var/lib/gvm/feed-update.lock \
+	  -DLOGROTATE_DIR=/etc/logrotate.d
+
+	cmake --build $BUILD_DIR/gvmd -j$(nproc)
+
+	# Instalación de gvmd
+	mkdir -p $INSTALL_DIR/gvmd && cd $BUILD_DIR/gvmd
+
+	make DESTDIR=$INSTALL_DIR/gvmd install
+
+	sudo cp -rv $INSTALL_DIR/gvmd/* /
+
+# *********************************************************************
+
+# 🔥 pg-gvm
+# 🧑‍🎓 Extensión de PostgreSQL que agrega varias funciones utilizadas por gvmd, (iCalendar y evaluación de rango de host)
+# *********************************************************************
+	# Descarga las fuentes
+	curl -f -L https://github.com/greenbone/pg-gvm/archive/refs/tags/v$PG_GVM_VERSION.tar.gz -o $SOURCE_DIR/pg-gvm-$PG_GVM_VERSION.tar.gz
+	curl -f -L https://github.com/greenbone/pg-gvm/releases/download/v$PG_GVM_VERSION/pg-gvm-$PG_GVM_VERSION.tar.gz.asc -o $SOURCE_DIR/pg-gvm-$PG_GVM_VERSION.tar.gz.asc
+
+	# Extraigo el archivo tar
+	tar -C $SOURCE_DIR -xvzf $SOURCE_DIR/pg-gvm-$PG_GVM_VERSION.tar.gz
+
+	# Compilar e instalar 
+	mkdir -p $BUILD_DIR/pg-gvm
+
+	cmake \
+	  -S $SOURCE_DIR/pg-gvm-$PG_GVM_VERSION \
+	  -B $BUILD_DIR/pg-gvm \
+	  -DCMAKE_BUILD_TYPE=Release
+
+	cmake --build $BUILD_DIR/pg-gvm -j$(nproc)
+
+	# Instalación de pg-gvm
+	mkdir -p $INSTALL_DIR/pg-gvm && cd $BUILD_DIR/pg-gvm
+
+	make DESTDIR=$INSTALL_DIR/pg-gvm install
+
+	sudo cp -rv $INSTALL_DIR/pg-gvm/* /
+
+# *********************************************************************
+
+# 🔥 GSA
+# 🧑‍🎓 La aplicación web en JavaScript, React y NodeJS 
+# *********************************************************************
+	# Descarga las fuentes
+	curl -f -L https://github.com/greenbone/gsa/releases/download/v$GSA_VERSION/gsa-dist-$GSA_VERSION.tar.gz -o $SOURCE_DIR/gsa-$GSA_VERSION.tar.gz
+	curl -f -L https://github.com/greenbone/gsa/releases/download/v$GSA_VERSION/gsa-dist-$GSA_VERSION.tar.gz.asc -o $SOURCE_DIR/gsa-$GSA_VERSION.tar.gz.asc
+
+	# Extraigo el archivo tar
+	mkdir -p $SOURCE_DIR/gsa-$GSA_VERSION
+	tar -C $SOURCE_DIR/gsa-$GSA_VERSION -xvzf $SOURCE_DIR/gsa-$GSA_VERSION.tar.gz
+	
+	# Instalación de GSA 
+	sudo mkdir -p $INSTALL_PREFIX/share/gvm/gsad/web/
+	sudo cp -rv $SOURCE_DIR/gsa-$GSA_VERSION/* $INSTALL_PREFIX/share/gvm/gsad/web/
+# *********************************************************************
+
+# 🔥 gsad
+# 🧑‍🎓 En C. Se comunica con gvmd mediante GMP
+# 🧑‍🎓 Servidor web con contenido estático y proporciona una API para la web
+# *********************************************************************
+	# Descarga las fuentes
+	curl -f -L https://github.com/greenbone/gsad/archive/refs/tags/v$GSAD_VERSION.tar.gz -o $SOURCE_DIR/gsad-$GSAD_VERSION.tar.gz
+	curl -f -L https://github.com/greenbone/gsad/releases/download/v$GSAD_VERSION/gsad-$GSAD_VERSION.tar.gz.asc -o $SOURCE_DIR/gsad-$GSAD_VERSION.tar.gz.asc
+
+	# Extraigo el archivo tar
+	tar -C $SOURCE_DIR -xvzf $SOURCE_DIR/gsad-$GSAD_VERSION.tar.gz
+
+	# Compilar e instalar 
+	mkdir -p $BUILD_DIR/gsad
+
+	cmake \
+	  -S $SOURCE_DIR/gsad-$GSAD_VERSION \
+	  -B $BUILD_DIR/gsad \
+	  -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
+	  -DCMAKE_BUILD_TYPE=Release \
+	  -DSYSCONFDIR=/etc \
+	  -DLOCALSTATEDIR=/var \
+	  -DGVMD_RUN_DIR=/run/gvmd \
+	  -DGSAD_RUN_DIR=/run/gsad \
+	  -DGVM_LOG_DIR=/var/log/gvm \
+	  -DLOGROTATE_DIR=/etc/logrotate.d
+
+	cmake --build $BUILD_DIR/gsad -j$(nproc)
+
+	# Instalación de gsad
+	mkdir -p $INSTALL_DIR/gsad && cd $BUILD_DIR/gsad
+
+	make DESTDIR=$INSTALL_DIR/gsad install
+
+	sudo cp -rv $INSTALL_DIR/gsad/* /
+# *********************************************************************
+
+# 🔥 openvas-smb
+# 🧑‍🎓 Módulo auxiliar para openvas-scanner, para interactuar con sistemas Microsoft Windows a través de la API
+# *********************************************************************
+	# Descarga las fuentes
+	curl -f -L https://github.com/greenbone/openvas-smb/archive/refs/tags/v$OPENVAS_SMB_VERSION.tar.gz -o $SOURCE_DIR/openvas-smb-$OPENVAS_SMB_VERSION.tar.gz
+	curl -f -L https://github.com/greenbone/openvas-smb/releases/download/v$OPENVAS_SMB_VERSION/openvas-smb-v$OPENVAS_SMB_VERSION.tar.gz.asc -o $SOURCE_DIR/openvas-smb-$OPENVAS_SMB_VERSION.tar.gz.asc
+
+	# Extraigo el archivo tar
+	tar -C $SOURCE_DIR -xvzf $SOURCE_DIR/openvas-smb-$OPENVAS_SMB_VERSION.tar.gz
+
+	# Compilar e instalar 
+	mkdir -p $BUILD_DIR/openvas-smb
+
+	cmake \
+	  -S $SOURCE_DIR/openvas-smb-$OPENVAS_SMB_VERSION \
+	  -B $BUILD_DIR/openvas-smb \
+	  -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
+	  -DCMAKE_BUILD_TYPE=Release
+
+	cmake --build $BUILD_DIR/openvas-smb -j$(nproc)
+
+	# Instalación de openvas-smb
+	mkdir -p $INSTALL_DIR/openvas-smb && cd $BUILD_DIR/openvas-smb
+
+	make DESTDIR=$INSTALL_DIR/openvas-smb install
+
+	sudo cp -rv $INSTALL_DIR/openvas-smb/* /
+
+# *********************************************************************
+
+# 🔥 openvas-scanner
+# 🧑‍🎓 Motor de escaneo con todas las funciones que ejecuta un flujo de pruebas de vulnerabilidad (VT) continuamente actualizado y ampliado
+# *********************************************************************
+	# Descarga las fuentes
+	curl -f -L https://github.com/greenbone/openvas-scanner/archive/refs/tags/v$OPENVAS_SCANNER_VERSION.tar.gz -o $SOURCE_DIR/openvas-scanner-$OPENVAS_SCANNER_VERSION.tar.gz
+	curl -f -L https://github.com/greenbone/openvas-scanner/releases/download/v$OPENVAS_SCANNER_VERSION/openvas-scanner-v$OPENVAS_SCANNER_VERSION.tar.gz.asc -o $SOURCE_DIR/openvas-scanner-$OPENVAS_SCANNER_VERSION.tar.gz.asc
+
+	# Extraigo el archivo tar
+	tar -C $SOURCE_DIR -xvzf $SOURCE_DIR/openvas-scanner-$OPENVAS_SCANNER_VERSION.tar.gz
+
+	# Compilar e instalar 
+	mkdir -p $BUILD_DIR/openvas-scanner
+
+	cmake \
+	  -S $SOURCE_DIR/openvas-scanner-$OPENVAS_SCANNER_VERSION \
+	  -B $BUILD_DIR/openvas-scanner \
+	  -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
+	  -DCMAKE_BUILD_TYPE=Release \
+	  -DSYSCONFDIR=/etc \
+	  -DLOCALSTATEDIR=/var \
+	  -DOPENVAS_FEED_LOCK_PATH=/var/lib/openvas/feed-update.lock \
+	  -DOPENVAS_RUN_DIR=/run/ospd
+
+	cmake --build $BUILD_DIR/openvas-scanner -j$(nproc)
+
+	# Compilar e openvas-scanner
+	mkdir -p $INSTALL_DIR/openvas-scanner && cd $BUILD_DIR/openvas-scanner
+
+	make DESTDIR=$INSTALL_DIR/openvas-scanner install
+
+	sudo cp -rv $INSTALL_DIR/openvas-scanner/* /
+
+	# A partir de la versión 23.0, la openvasd_serverconfiguración debe establecerse en una OpenVASDinstancia en ejecución
+	printf "table_driven_lsc = yes\n" | sudo tee /etc/openvas/openvas.conf
+	printf "openvasd_server = http://10.1.10.2:3000\n" | sudo tee -a /etc/openvas/openvas.conf
+
+# *********************************************************************
+
+# 🔥 ospd-openvas
+# 🧑‍🎓 Motor de escaneo con todas las funciones que ejecuta un flujo de pruebas de vulnerabilidad (VT) continuamente actualizado y ampliado
+# *********************************************************************
+	# Descarga las fuentes
+	curl -f -L https://github.com/greenbone/ospd-openvas/archive/refs/tags/v$OSPD_OPENVAS_VERSION.tar.gz -o $SOURCE_DIR/ospd-openvas-$OSPD_OPENVAS_VERSION.tar.gz
+	curl -f -L https://github.com/greenbone/ospd-openvas/releases/download/v$OSPD_OPENVAS_VERSION/ospd-openvas-v$OSPD_OPENVAS_VERSION.tar.gz.asc -o $SOURCE_DIR/ospd-openvas-$OSPD_OPENVAS_VERSION.tar.gz.asc
+
+	# Extraigo el archivo tar
+	tar -C $SOURCE_DIR -xvzf $SOURCE_DIR/ospd-openvas-$OSPD_OPENVAS_VERSION.tar.gz
+
+	# Instalación de ospd-openvas
+	cd $SOURCE_DIR/ospd-openvas-$OSPD_OPENVAS_VERSION
+
+	mkdir -p $INSTALL_DIR/ospd-openvas
+
+	python3 -m pip install --root=$INSTALL_DIR/ospd-openvas --no-warn-script-location .
+
+	sudo cp -rv $INSTALL_DIR/ospd-openvas/* /
+
+# *********************************************************************
+
+# 🔥 openvasd
+# 🧑‍🎓 Utiliza para detectar productos vulnerables, actualmente solo notus está integrado en gvmd
+# *********************************************************************
+	# Descarga de las fuentes de gvm-libs
+	curl -f -L https://github.com/greenbone/openvas-scanner/archive/refs/tags/v$OPENVAS_DAEMON.tar.gz -o $SOURCE_DIR/openvas-scanner-$OPENVAS_DAEMON.tar.gz
+	curl -f -L https://github.com/greenbone/openvas-scanner/releases/download/v$OPENVAS_DAEMON/openvas-scanner-v$OPENVAS_DAEMON.tar.gz.asc -o $SOURCE_DIR/openvas-scanner-$OPENVAS_DAEMON.tar.gz.asc
+
+	# Si la firma es válida, se puede extraer el archivo tar
+	tar -C $SOURCE_DIR -xvzf $SOURCE_DIR/openvas-scanner-$OPENVAS_DAEMON.tar.gz
+
+	# Crea el directorio de destino donde se instalarán los binarios de openvasd
+	mkdir -p $INSTALL_DIR/openvasd/usr/local/bin
+	cd $SOURCE_DIR/openvas-scanner-$OPENVAS_DAEMON/rust/src/openvasd
+	
+	# Compila el código fuente del proyecto openvasd en modo optimizado
+	cargo build --release
+
+	cd $SOURCE_DIR/openvas-scanner-$OPENVAS_DAEMON/rust/src/scannerctl
+	cargo build --release
+
+	# copia de binarios
+	sudo cp -v ../../target/release/openvasd $INSTALL_DIR/openvasd/usr/local/bin/
+	sudo cp -v ../../target/release/scannerctl $INSTALL_DIR/openvasd/usr/local/bin/
+	sudo cp -rv $INSTALL_DIR/openvasd/* /
+
+# *********************************************************************
+
+# 🔥 greenbone-feed-sync
+# 🧑‍🎓 script basado en Python para descargar todos los datos de la fuente de la comunidad Greenbone a su máquina local
+# *********************************************************************
+	# Instalación de greenbone-feed-sync en todo el sistema para todos los usuarios
+	mkdir -p $INSTALL_DIR/greenbone-feed-sync
+
+	python3 -m pip install --root=$INSTALL_DIR/greenbone-feed-sync --no-warn-script-location greenbone-feed-sync
+
+	sudo cp -rv $INSTALL_DIR/greenbone-feed-sync/* /
+# *********************************************************************
+
+# 🔥 gvm-tools
+# 🧑‍🎓 Colección de herramientas que ayudan a controlar instalaciones 
+# *********************************************************************
+	# Instalación de gvm-tools en todo el sistema
+	mkdir -p $INSTALL_DIR/gvm-tools
+
+	python3 -m pip install --root=$INSTALL_DIR/gvm-tools --no-warn-script-location gvm-tools
+
+	sudo cp -rv $INSTALL_DIR/gvm-tools/* /
+# *********************************************************************
+
+# 🔥 servidor Redis
+# 🧑‍🎓 Utilizado por el escáner (openvas-scanner y ospd-openvas) para manejar la información de VT 
+# *********************************************************************
+	# Agregar configuración para ejecutar el servidor Redis para el escáner
+	sudo cp $SOURCE_DIR/openvas-scanner-$OPENVAS_SCANNER_VERSION/config/redis-openvas.conf /etc/redis/
+	sudo chown redis:redis /etc/redis/redis-openvas.conf
+	echo "db_address = /run/redis-openvas/redis.sock" | sudo tee -a /etc/openvas/openvas.conf
+
+	# inicio redis con la configuración de openvas
+	sudo systemctl start redis-server@openvas.service
+	sudo systemctl enable redis-server@openvas.service
+
+	# el usuario gvm debe poder acceder al socket Unix redis en /run/redis-openvas/redis.sock
+	sudo usermod -aG redis gvm
+# *********************************************************************
+
+# 08.📌 Ajustes de permisos
+# *********************************************************************
+	sudo mkdir -p /var/lib/notus
+	sudo mkdir -p /run/gvmd
+
+	sudo chown -R gvm:gvm /var/lib/gvm
+	sudo chown -R gvm:gvm /var/lib/openvas
+	sudo chown -R gvm:gvm /var/lib/notus
+	sudo chown -R gvm:gvm /var/log/gvm
+	sudo chown -R gvm:gvm /run/gvmd
+
+	sudo chmod -R g+srw /var/lib/gvm
+	sudo chmod -R g+srw /var/lib/openvas
+	sudo chmod -R g+srw /var/log/gvm
+
+	# Ajuste de permisos de gvmd
+	sudo chown gvm:gvm /usr/local/sbin/gvmd
+	sudo chmod 6750 /usr/local/sbin/gvmd
+# *********************************************************************
+
+# 09.📌 Validaciones de feeds
+# *********************************************************************
+	curl -f -L https://www.greenbone.net/GBCommunitySigningKey.asc -o /tmp/GBCommunitySigningKey.asc
+
+	mkdir -p $GNUPGHOME
+
+	gpg --import /tmp/GBCommunitySigningKey.asc
+	echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" | gpg --import-ownertrust
+
+	# Creación de un llavero GPG para la validación del contenido de los feeds
+	sudo mkdir -p $OPENVAS_GNUPG_HOME
+	sudo cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/
+	sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME
+# *********************************************************************
+
+# 10.📌 Configuración de sudo para escanear 
+# *********************************************************************
+	echo "%gvm ALL = NOPASSWD: /usr/local/sbin/openvas" | sudo tee /etc/sudoers.d/gvm \
+	&& sudo chmod 0440 /etc/sudoers.d/gvm
+# *********************************************************************
+
+# 11.📌 Configuración de PostgreSQL
+# *********************************************************************
+	sudo apt install -y postgresql
+	
+	sudo systemctl start postgresql@15-main
+	
+	sudo -u postgres bash
+		> cd
+		> createuser -DRS gvm
+		> createdb -O gvm gvmd
+		> psql gvmd -c "create role dba with superuser noinherit; grant dba to gvm;"
+		> exit
+# *********************************************************************
+
+# 12.📌 Configurar un usuario administrador
+# *********************************************************************
+	# creo un usuario con contraseña
+	# /usr/local/sbin/gvmd --create-user=admin
+
+	# esto son cosas mias que he agregado
+	# ldconfig -p | grep libgvm_base
+	# sudo ldconfig
+	/usr/local/sbin/gvmd --create-user=admin --password='admin'
+	vim /var/log/gvm/gvmd.log	
+	# sudo -u gvm greenbone-feed-sync --type all
+
+	# Configuración del propietario de la importación de feeds
+	/usr/local/sbin/gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value `/usr/local/sbin/gvmd --get-users --verbose | grep admin | awk '{print $2}'`
+# *********************************************************************
+
+# ============================================================================================================
+## Configuración de servicios para Systemd
+# ============================================================================================================
+# daemons ospd-openvas , openvasd , gvmd y gsad
+# 🔥 Archivo de servicio Systemd para ospd-openvas
+# *********************************************************************
+cat << EOF > $BUILD_DIR/ospd-openvas.service
+[Unit]
+Description=OSPd Wrapper for the OpenVAS Scanner (ospd-openvas)
+Documentation=man:ospd-openvas(8) man:openvas(8)
+After=network.target networking.service redis-server@openvas.service openvasd.service
+Wants=redis-server@openvas.service openvasd.service
+ConditionKernelCommandLine=!recovery
+
+[Service]
+Type=exec
+User=gvm
+Group=gvm
+RuntimeDirectory=ospd
+RuntimeDirectoryMode=2775
+PIDFile=/run/ospd/ospd-openvas.pid
+ExecStart=/usr/local/bin/ospd-openvas --foreground --unix-socket /run/ospd/ospd-openvas.sock --pid-file /run/ospd/ospd-openvas.pid --log-file /var/log/gvm/ospd-openvas.log --lock-file-dir /var/lib/openvas --socket-mode 0o770 --notus-feed-dir /var/lib/notus/advisories
+SuccessExitStatus=SIGKILL
+Restart=always
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo cp -v $BUILD_DIR/ospd-openvas.service /etc/systemd/system/
+# *********************************************************************
+
+# 🔥 Archivo de servicio systemd para gvmd
+# *********************************************************************
+cat << EOF > $BUILD_DIR/gvmd.service
+[Unit]
+Description=Greenbone Vulnerability Manager daemon (gvmd)
+After=network.target networking.service postgresql.service ospd-openvas.service
+Wants=postgresql.service ospd-openvas.service
+Documentation=man:gvmd(8)
+ConditionKernelCommandLine=!recovery
+
+[Service]
+Type=exec
+User=gvm
+Group=gvm
+PIDFile=/run/gvmd/gvmd.pid
+RuntimeDirectory=gvmd
+RuntimeDirectoryMode=2775
+ExecStart=/usr/local/sbin/gvmd --foreground --osp-vt-update=/run/ospd/ospd-openvas.sock --listen-group=gvm
+Restart=always
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo cp -v $BUILD_DIR/gvmd.service /etc/systemd/system/
+# *********************************************************************
+
+# 🔥 Archivo de servicio systemd para gsad
+# *********************************************************************
+# le digo que escuche la 0.0.0.0 para que lea toda la red local
+cat << EOF > $BUILD_DIR/gsad.service
+[Unit]
+Description=Greenbone Security Assistant daemon (gsad)
+Documentation=man:gsad(8) https://www.greenbone.net
+After=network.target gvmd.service
+Wants=gvmd.service
+
+[Service]
+Type=exec
+User=gvm
+Group=gvm
+RuntimeDirectory=gsad
+RuntimeDirectoryMode=2775
+PIDFile=/run/gsad/gsad.pid
+ExecStart=/usr/local/sbin/gsad --foreground --listen=0.0.0.0 --port=9392 --http-only
+Restart=always
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target
+Alias=greenbone-security-assistant.service
+EOF
+
+sudo cp -v $BUILD_DIR/gsad.service /etc/systemd/system/
+
+# pruebo que está escuchando el puerto
+sudo netstat -tulnp | grep 9392
+# tcp        0      0 0.0.0.0:9392           0.0.0.0:*               LISTEN      <pid>/gsad
+# *********************************************************************
+
+# 🔥 Archivo de servicio systemd para openvasd
+# *********************************************************************
+cat << EOF > $BUILD_DIR/openvasd.service
+[Unit]
+Description=OpenVASD
+Documentation=https://github.com/greenbone/openvas-scanner/tree/main/rust/openvasd
+ConditionKernelCommandLine=!recovery
+
+[Service]
+Type=exec
+User=gvm
+RuntimeDirectory=openvasd
+RuntimeDirectoryMode=2775
+ExecStart=/usr/local/bin/openvasd --mode service_notus --products /var/lib/notus/products --advisories /var/lib/notus/advisories --listening 0.0.0.0:3000
+SuccessExitStatus=SIGKILL
+Restart=always
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo cp -v $BUILD_DIR/openvasd.service /etc/systemd/system/
+# *********************************************************************
+
+# 13.📌 Realizar una sincronización de feeds 
+# *********************************************************************
+sudo systemctl daemon-reload
+
+# actualizar los feeds (vulnerabilidades, escaneos, rendimiento)
+sudo /usr/local/bin/greenbone-feed-sync
+
+sudo systemctl start ospd-openvas
+sudo systemctl start gvmd
+sudo systemctl start gsad
+sudo systemctl start openvasd
+
+sudo systemctl enable ospd-openvas
+sudo systemctl enable gvmd
+sudo systemctl enable gsad
+sudo systemctl enable openvasd
+
+sudo systemctl status ospd-openvas
+sudo systemctl status gvmd
+sudo systemctl status gsad
+sudo systemctl status openvasd
+
+vim /var/log/gvm/ospd-openvas.log
+# OSPD[33464] 2025-02-25 09:37:40,532: INFO: (ospd.main) Starting OSPd OpenVAS version 22.7.1.
+
+vim /var/log/gvm/gvmd.log
+
+# *********************************************************************
+
+# Cómo abrir Greenbone Security Assistant en el navegado
+xdg-open "http://<IP_DEL_SERVIDOR>:9392" 2>/dev/null >/dev/null &
+
+# Para abrir la aplicación web, es a través de la IP y el puerto
+http://<IP_DEL_SERVIDOR>:9392/
+
+
+==================================================================================================================================================
+==========[Entorno WEB]===========================================================================================================================
+
+Administration > Feed Status 
+
+# Mientras aparezca el siguiente error hay que esperar 
+# Ese mensaje indica que Greenbone/OpenVAS aún está sincronizando los feeds y, mientras no termine, no podrás realizar escaneos
+
+	[PRIMER VOLCADO]:
+	*****************
+	# El tiempo aproximado en una maquina virtual: 6 Horas 
+		[NVT]:			10-30 minutos	
+		[CERT]:	 		30 min - 3 hora		
+		[GVMD_DATA]: 		30 min y 2 horas			
+		[SCAP]:			2-6 horas
+
+	# Error:
+	+-----------------------------------------------------------------------------------------------------------------------------------------------+
+	|	Feed is currently syncing.														|
+	|	Please wait while the feed is syncing. Scans are not available during this time. For more information, visit the Documentation.		|
+	+-----------------------------------------------------------------------------------------------------------------------------------------------+
+	
+# La web es reactiva y el mensaje de error tiene un timeout por lo que no vuelve a aparecer pero eso no significa que haya terminado de volcar los datos...
+# para comprobar que vuelve a aparecer hay que recargar la web : CNTRL + F5	
+
+
+===================================================================================================================================================
+
+⚠️[FALLO DE FEED]⚠️:
+## 🔴 NUNCA hay que volver a generar los feed de los greenbone si es por otro error o funciona bien
+## 🔴 En el caso de que deje de funcionar los feeds tengo qeu hacer lo siguiente: 
+
+sudo systemctl stop ospd-openvas
+sudo systemctl stop gvmd
+sudo systemctl stop gsad
+sudo systemctl stop openvasd
+
+	+-------------------------------------------------------+
+	|	sudo -u gvm greenbone-feed-sync --type all	|
+	|	# sudo -u gvm greenbone-nvt-sync		|
+	|	# sudo -u gvm greenbone-scapdata-sync		|
+	|	# sudo -u gvm greenbone-certdata-sync		|
+	|	# sudo -u gvm greenbone-feed-sync		|
+	+-------------------------------------------------------+
+
+# 🔴 Si se borran los archivos .lock con feed-sync se vuelven a crear 
+# 🔴 Si se bloquea al hacer un feed-sync se puede forzar el borrado del archivo .lock y volverlos a lanzar un feed-sync
+
+
+==================================================================================================================================================
+==========[Entorno WEB con NVT CERT GVMD_DATA SCAP cargados]======================================================================================
+
+Configuration > Target > New Target > 192.168.0.1/24 
+
+SCANS > Task > New Task
+	Name: --
+	Scan Target: (El que hemos creado anteriormente...) ⬆️
+	Min QoD: 70
+	Maximum concurrently executed NVTs per host: 4
+	Maximum concurrently scanned hosts: 254
+
+# esto puede tardar una estimación de 10 horas 

@@ -1,0 +1,208 @@
+
+#=========================================================================================================================
+[🐋WHITE WHALE]::
+# documentación no-oficial         : https://es.linux-console.net/?p=29687
+# documentación no-oficial         : https://www.php.net/manual/es/install.unix.debian.php
+
+#=========================================================================================================================
+[🐋INSTALACIONES]::
+# instalaciones 
+apt update
+apt upgrade -y
+
+# entro en el volumen e instalo el script
+cd /docker-volume
+apt install vim -y
+vim script-00.sh
+# i - (shift + botón derecho):
+--------------------------------------------------------------------------------------
+    # código de /SCRIPTS/script-00.sh de este github
+--------------------------------------------------------------------------------------
+
+# doy permisos y hago la instalación
+chmod +x script-00.sh
+./script-00.sh
+source ~/.bashrc
+
+#=========================================================================================================================
+[🐋SERVIDOR APACHE PHP]:
+
+
+
+
+
+
+
+
+
+
+#=========================================================================================================================
+[🐋INSTALACIÓN DE MARIADB]:
+# Compruebo que funciona todo bien
+
+# Como quiero que la base de datos permanezca en mi servidor y no en uno independiente voy a instalar mysql
+sudo apt update && sudo apt install -y mariadb-server
+sudo systemctl status mariadb
+sudo systemctl start mariadb
+sudo systemctl enable mariadb
+
+# Buenas prácticas para mantenimiento de una base de datos
+sudo mysql_secure_installation
+
+# entro a la base de datos
+sudo mysql -u root -p
+
+# creo la base de datos express_db con usuario express y privilegios root
+# CREATE DATABASE express_db;
+# para crear un usuario con acceso localhost 
+CREATE USER 'root'@'localhost' IDENTIFIED BY 'Tutipoda&452';
+GRANT ALL PRIVILEGES ON express_db.* TO 'express'@'localhost';
+FLUSH PRIVILEGES;
+
+## es buena práctica utilizar varios usuarios para dar privilegios solo 
+# este es el usuario con el que me voy a registrar desde .env de node para limitar 
+CREATE USER 'express'@'localhost' IDENTIFIED BY 'Wupotoge&888';
+GRANT SELECT, INSERT, UPDATE, DELETE ON express_db.* TO 'express'@'localhost';
+FLUSH PRIVILEGES;
+
+# este caso seria para crear un usuario fuera del servidor
+# CREATE USER 'root'@'%' IDENTIFIED BY 'toor';
+# GRANT ALL PRIVILEGES ON express_db.* TO 'express'@'%';
+# FLUSH PRIVILEGES;
+
+# entro a la base de datos
+USE express_db;
+
+# Creo la tabla necesaria para el proyecto
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario VARCHAR(50) NOT NULL,
+    contraseña TEXT NOT NULL
+);
+
+# Agrego un valor
+INSERT INTO usuarios (id, usuario, contraseña) VALUES
+(1, 'isaac', 'aca217fb549886ea0c52a7e59563d9667fe1683622829f3e4699bbdd97074273638dd8a13c418f262a4652afa2f287dddc92fb90ae3d738e9b62f5568d33271d:d09b1a120e5950e0cd0cebac83a78715');
+
+# compruebo la tabla
+SELECT * FROM usuarios;
+exit;
+
+# Configurar MySQL 
+vim /etc/mysql/mariadb.conf.d/50-server.cnf
+	# para conexiones locales
+	> bind-address = 127.0.0.1 
+	# para aceptar conexiones remotas
+	# > bind-address = 0.0.0.0
+
+# Reinicio MySQL
+sudo systemctl restart mariadb
+
+# reinicio pm2
+cd /var/www/express
+pm2 start ecosystem.config.js
+
+#=========================================================================================================================
+[🐋INSTALAR CERTIFICADO]:
+# certificado con dominio local
+⚠️ Para un dominio local como el mio necesito un certificado autofirmado
+
+# creo la carpeta
+mkdir /var/www/express/letsencrypt
+cd /var/www/express/letsencrypt
+
+## .key :: (clave privada)
+# Genero una clave privada
+openssl genpkey -algorithm RSA -out pruebas.local.key -aes256
+
+## .csr :: (Solicitud de firma de certificado)
+# Genero un archivo de solicitud de firma de certificado (CSR)
+# En un entorno real, una vez generado mi CSR desde mi servidor lo tengo que enviar a la empresa de venta de dominio (como Namecheap) o Autoridad Certificadora (CA) y ellos me lo validan y me devuelven un .crt
+openssl req -new -key pruebas.local.key -out pruebas.local.csr
+
+## .crt o .pfx o .pem :: (clave pública)
+# Genero el certificado autofirmado con caducidad de 1 año (solo lo genero en el caso que sean pruebas, los "certificados autofirmados" se hacen cuando el dominio no es real)
+# En un entorno real, debería enviar la CSR a una Autoridad de Certificación (CA) y utilizar el certificado que me proporcionarían.
+openssl x509 -req -days 365 -in pruebas.local.csr -signkey pruebas.local.key -out pruebas.local.crt
+
+# En el caso de caducarse, en un entorno real, tengo que generar otro CSR y repitiendo el proceso con la Autoridad Certificadora (CA).
+
+# edito la configuración de mi sitio Nginx
+cd /etc/nginx/sites-available
+vim express
+----------------------------------------------------
+# https
+server {
+    listen 443 ssl;
+    server_name pruebas.local;
+
+    ssl_certificate /var/www/express/letsencrypt/pruebas.local.crt;
+    ssl_certificate_key /var/www/express/letsencrypt/pruebas.local.key.nopass;
+
+    location / {
+        proxy_pass http://app_cluster;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+# http
+server {
+    listen 80;
+    server_name pruebas.local;
+    return 301 https://$host$request_uri;
+}
+----------------------------------------------------
+
+# agrego la configuración del cluster en el archivo principal de nginx - al final del bloque de configuración de http 
+vim /etc/nginx/nginx.conf
+----------------------------------------------------
+...
+upstream app_cluster {
+    server 127.0.0.1:3000;
+    # server 127.0.0.1:3001;
+    # server 127.0.0.1:3002;
+}
+
+include /etc/nginx/conf.d/*.conf;
+include /etc/nginx/sites-enabled/*;
+...
+----------------------------------------------------
+
+# verifico la configuración
+sudo nginx -t
+
+# reinicio el servicio de nginx
+sudo systemctl restart nginx
+
+# para comprobar el certificado
+openssl s_client -connect pruebas.local:443
+
+
+-
+⚠️ si me da un error en el certificado privado pruebo a quitarle la contraseña
+⚠️ si no me a dado ningún error o quiero dejar la encriptación ya he finalizado 100% la configuración
+# creo una nueva clave
+sudo openssl rsa -in /var/www/express/letsencrypt/pruebas.local.key -out /var/www/express/letsencrypt/pruebas.local.key.nopass
+
+# modifico mi archivo y agrego la nueva clave
+sudo vim /etc/nginx/sites-available/express
+----------------------------------------------------
+...
+	ssl_certificate_key /var/www/express/letsencrypt/pruebas.local.key.nopass;
+	# ssl_certificate_key /var/www/express/letsencrypt/pruebas.local.key;
+...
+----------------------------------------------------
+
+# comprueba el archivo de certificado 
+openssl x509 -in /var/www/express/letsencrypt/pruebas.local.crt -text -noout
+
+#=========================================================================================================================
+[🐋MATO PROCESOS SI HAY FALLO]:
+# compruebo los procesos en mi puerto
+lsof -i :3000
+
+# mato el proceso
+sudo kill -9 <PID>

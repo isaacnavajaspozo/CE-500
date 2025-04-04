@@ -1,0 +1,114 @@
+#===========================================================================================================================
+[🐋INSTALACIÓN ETHERNET]:
+# OpenEDR : (No es un antivirus, no elimina amenazas). Detecta actividad sospechosa y envía alertas sobre posibles amenazas en los Windows instalados
+# Documentación instalación Linux  : https://github.com/ComodoSecurity/openedr
+# Documentación no-oficial         : https://www.reddit.com/r/ComputerSecurity/comments/1ew6sgr/open_source_edr_for_linux/?
+# Documentacion no-oficial         : https://misnotasdelinux.blogspot.com/2012/07/instalacion-completa-de-open-erp-61.html
+
+
+#===========================================================================================================================
+[🐋INSTALACIÓN OPENEDR COMO CENTRAL EN LINUX]:
+# ✅ Instalación Central · Linux::
+# Sigo la guía : https://github.com/ComodoSecurity/openedr
+
+#===========================================================================================================================
+[🐋INSTALACIÓN OPENEDR COMO AGENTE EN WINDOWS]:
+# ✅ Instalación Agente · Windows::
+# Visita el sitio oficial de OpenEDR: https://www.openedr.com/.
+# Haz clic en "Get Started for Free" y completa el registro para obtener acceso al instalador.
+# Una vez registrado, descarga el archivo MSI correspondiente para Windows.
+# Instalación del agente en Windows:
+
+# Ejecuta el archivo MSI descargado.
+# Sigue las instrucciones del asistente de instalación, aceptando los términos y condiciones.
+# Por defecto, OpenEDR se instalará en C:\Program Files\OpenEdr\EdrAgentV2.
+# Configuración del agente:
+
+# Después de la instalación, el agente comenzará a generar datos de telemetría y los almacenará en C:\ProgramData\edrsvc\log\output_events.
+# Para analizar estos datos, puedes utilizar soluciones de streaming de logs y plataformas de análisis como Elasticsearch ELK y Filebeat.
+
+
+
+--------------------
+
+
+# Actualizar y preparar el sistema
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y curl wget gnupg lsb-release
+
+# Descargar e instalar OpenEDR
+# git clone https://github.com/opendedr/opendedr.git && cd opendedr
+wget https://www.openedr.com/download/Openedr-Linux.tar.gz
+tar -xvzf Openedr-Linux.tar.gz
+
+# Mover el directorio a una ubicación adecuada
+sudo mv Openedr-Linux /opt/openedr
+
+# Instalar OpenEDR como servicio (Systemd)
+sudo nano /etc/systemd/system/openedr.service
+----------------------------------------------------------------
+[Unit]
+Description=OpenEDR Service
+After=network.target
+
+[Service]
+ExecStart=/opt/openedr/bin/startedr
+WorkingDirectory=/opt/openedr
+User=root
+Restart=always
+Environment=PATH=/opt/openedr/bin:/usr/bin:/bin
+
+[Install]
+WantedBy=multi-user.target
+----------------------------------------------------------------
+
+# Habilitar y arrancar el servicio
+sudo systemctl daemon-reload
+sudo systemctl enable openedr
+sudo systemctl start openedr
+sudo systemctl status openedr
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+----------------------------------------------------------
+1/4
+
+apt update && apt upgrade -y
+
+# Instalar dependencias comunes
+apt install -y git curl openjdk-11-jre-headless
+
+# Instalar Docker (si OpenEDR lo requiere o necesitas gestionarlo dentro del contenedor)
+apt install -y docker.io
+
+git clone https://github.com/OpenEDR/openedr.git /opt/openedr
+cd /opt/openedr
+
+# Instalar OpenEDR
+./install.sh
+
+# Iniciar OpenEDR
+./start.sh
+
+# Verifica que OpenEDR esté en funcionamiento
+ps aux | grep openedr  # Verifica que OpenEDR esté en ejecución
+
+# Reiniciar contenedor si es necesario
+

@@ -1,0 +1,281 @@
+#=========================================================================================================================
+[🐋WHITE WHALE]::
+# 📄🚫 No puedo utilizar dockerfiles porque me han pedido desde el centro que realice las instalaciones como si fuesen servidores independientes
+# 📄🚫 Es decir que la idea de utilizar docker-compose me sirve solo para dividir en una misma máquina los distintos servidores
+
+
+#=========================================================================================================================
+[🐋CREAR IMÁGENES DE DOCKER-COMPOSE]::
+# Entrar en la ruta
+cd /docker-compose
+
+# Crear docker-compose de la máquina 1 (Samba)
+vim docker-compose-samba.yml
+----------------------------------------------------------------------------
+version: "3.9"  # Última versión y estable
+# modo bridge por defecto
+
+services:
+  vm1-samba:
+    image: debian                          # Usamos la imagen de Debian
+    hostname: vm1-samba.whitewhale.local   # Nuevo nombre del host
+    container_name: vm1-samba              # El nombre del contenedor
+    command: bash                          # Comando que se ejecutará cuando el contenedor se inicie
+    ports:
+      - "445:445"                          # Mapea el puerto TCP 445
+      - "139:139"                          # Mapea el puerto TCP 139
+      - "137:137/udp"                      # Mapea el puerto UDP 137
+      - "138:138/udp"                      # Mapea el puerto UDP 138
+    volumes:
+      - vol-vm1-samba:/docker-volume       # Montamos el volumen en el contenedor
+    tty: true                              # Mantiene el contenedor en ejecución (similar a -it)
+    stdin_open: true                       # Permite interacción con el contenedor (similar a -it)
+    # command: sleep infinity                # Mantiene el contenedor en ejecución para configurarlo manualmente
+
+volumes:
+  vol-vm1-samba:                           # Definimos el volumen
+----------------------------------------------------------------------------
+
+# Crear docker-compose de la máquina 2 (Pentesting)
+# esta máquina la creo en modo host ya que la voy a utilizar como red-team y pruebas de penetración y no quiero estar dependiendo de gestionar puertos debido a que no voy a conocer las necesidades futuras
+vim docker-compose-pentesting.yml
+----------------------------------------------------------------------------
+version: "3.9"
+services:
+  vm2-pentesting:
+    image: kalilinux/kali-rolling                  # Usamos la imagen de Kali
+    hostname: vm2-pentesting.whitewhale.local      # Nuevo nombre del host
+    container_name: vm2-pentesting                 # El nombre del contenedor
+    command: bash                                  # Comando que se ejecutará cuando el contenedor se inicie
+    network_mode: host                             # Usa la red del host
+    volumes:
+      - vol-vm2-pentesting:/docker-volume          # Montamos el volumen en el contenedor
+    tty: true                                      # Mantiene el contenedor en ejecución (similar a -it)
+    stdin_open: true                               # Permite interacción con el contenedor (similar a -it)
+
+volumes:
+  vol-vm2-pentesting:                              # Definimos el volumen
+----------------------------------------------------------------------------
+
+-
+
+# Crear docker-compose de la máquina 3 (BitWarden)
+vim docker-compose-bitwarden.yml
+----------------------------------------------------------------------------
+version: "3.9"  # Última versión y estable
+# modo bridge por defecto
+
+services:
+  vm3-bitwarden:
+    image: debian                                  # Usamos la imagen de Debian
+    hostname: vm3-bitwarden.whitewhale.local       # Nuevo nombre del host
+    container_name: vm3-bitwarden                  # El nombre del contenedor será vm1-smb
+    command: bash                                  # Comando que se ejecutará cuando el contenedor se inicie
+    ports:
+      - "8080:80"                                  # Mapea el puerto 80 (HTTP) a 8080
+      - "8443:443"                                 # Mapea el puerto 443 (HTTPS) a 8443
+    volumes:
+      - vol-vm3-bitwarden:/docker-volume           # Montamos el volumen en el contenedor
+    tty: true                                      # Mantiene el contenedor en ejecución
+    stdin_open: true                               # Permite interacción con el contenedor
+
+volumes:
+  vol-vm3-bitwarden:                                # Definimos el volumen
+----------------------------------------------------------------------------
+
+# Crear docker-compose de la máquina 4 (Greenbone)
+vim docker-compose-greenbone.yml
+----------------------------------------------------------------------------
+version: "3.9"                                        # Última versión y estable
+
+services:
+  vm4-greenbone:
+    image: debian                                     # Usamos la imagen de Debian
+    hostname: vm4-greenbone.whitewhale.local
+    container_name: vm4-greenbone                     # El nombre del contenedor será vm1-smb
+    command: bash                                     # Comando que se ejecutará cuando el contenedor se inicie
+    network_mode: host                                # El contenedor usará la red del host
+    volumes:
+      - vol-vm4-greenbone:/docker-volume              # Montamos el volumen en el contenedor
+    tty: true                                         # Mantiene el contenedor en ejecución (similar a -it)
+    stdin_open: true                                  # Permite interacción con el contenedor (similar a -it)
+ 
+volumes:
+  vol-vm4-greenbone:                                  # Definimos el volumen que usaremos
+----------------------------------------------------------------------------
+
+# Crear docker-compose de la máquina 5 (OpenEDR)
+vim docker-compose-openedr.yml
+----------------------------------------------------------------------------
+version: "3.9"                                        # Última versión y estable
+
+services:
+  vm5-openedr:
+    image: debian                                     # Usamos la imagen de Debian
+    hostname: vm5-openedr.whitewhale.local
+    container_name: vm5-openedr                       # El nombre del contenedor será vm1-smb
+    command: bash                                     # Comando que se ejecutará cuando el contenedor se inicie
+    network_mode: host                                # El contenedor usará la red del host
+    volumes:
+      - vol-vm5-openedr:/docker-volume                # Montamos el volumen en el contenedor
+    tty: true                                         # Mantiene el contenedor en ejecución (similar a -it)
+    stdin_open: true                                  # Permite interacción con el contenedor (similar a -it)
+ 
+volumes:
+  vol-vm5-openedr:                                    # Definimos el volumen que usaremos
+----------------------------------------------------------------------------
+
+# Crear docker-compose de la máquina 6 (Nginx)
+vim docker-compose-web.yml
+----------------------------------------------------------------------------
+version: "3.9"                                        # Última versión y estable
+
+services:
+  vm6-web:
+    image: debian                                     # Usamos la imagen de Debian
+    hostname: vm6-nginx.whitewhale.local
+    container_name: vm6-nginx                         # El nombre del contenedor será vm1-smb
+    command: bash                                     # Comando que se ejecutará cuando el contenedor se inicie
+    network_mode: host                                # El contenedor usará la red del host
+    volumes:
+      - vol-vm6-nginx:/docker-volume                  # Montamos el volumen en el contenedor
+    tty: true                                         # Mantiene el contenedor en ejecución (similar a -it)
+    stdin_open: true                                  # Permite interacción con el contenedor (similar a -it)
+ 
+volumes:
+  vol-vm6-nginx:                                      # Definimos el volumen que usaremos
+----------------------------------------------------------------------------
+
+# Crear docker-compose de la máquina 6 (Apache)
+vim docker-compose-web.yml
+----------------------------------------------------------------------------
+version: "3.9"                                        # Última versión y estable
+
+services:
+  vm7-web:
+    image: debian                                     # Usamos la imagen de Debian
+    hostname: vm7-apache.whitewhale.local
+    container_name: vm7-apache                        # El nombre del contenedor será vm1-smb
+    command: bash                                     # Comando que se ejecutará cuando el contenedor se inicie
+    network_mode: host                                # El contenedor usará la red del host
+    volumes:
+      - vol-vm7-apache:/docker-volume                 # Montamos el volumen en el contenedor
+    tty: true                                         # Mantiene el contenedor en ejecución (similar a -it)
+    stdin_open: true                                  # Permite interacción con el contenedor (similar a -it)
+ 
+volumes:
+  vol-vm7-apache:                                     # Definimos el volumen que usaremos
+----------------------------------------------------------------------------
+
+# Crear docker-compose de la máquina 7 (Nagios)
+vim docker-compose-nagios.yml
+----------------------------------------------------------------------------
+version: "3.9"                                        # Última versión y estable
+
+services:
+  vm8-nagios:
+    image: debian                                     # Usamos la imagen de Debian
+    hostname: vm8-nagios.whitewhale.local
+    container_name: vm8-nagios                        # El nombre del contenedor será vm1-smb
+    command: bash                                     # Comando que se ejecutará cuando el contenedor se inicie
+    network_mode: host                                # El contenedor usará la red del host
+    volumes:
+      - vol-vm7-nagios:/docker-volume                 # Montamos el volumen en el contenedor
+    tty: true                                         # Mantiene el contenedor en ejecución (similar a -it)
+    stdin_open: true                                  # Permite interacción con el contenedor (similar a -it)
+ 
+volumes:
+  vol-vm8-nagios:                                     # Definimos el volumen que usaremos
+----------------------------------------------------------------------------
+
+
+#=========================================================================================================================
+[🐋CREAR ALIAS EN SERVIDOR PRINCIPAL]::
+## TEORIA :: Datos y posibilidades a tener en cuenta para crear alias
+# 🧑‍🎓 En el caso de lanzar una máquina en segundo plano (modo detached)
+# docker-compose -f /docker-compose/docker-compose-samba.yml up -d
+# 🧑‍🎓 Si se ejecuta el modo detached no se detendrá hasta forzar su detección (aunque salga y entre de la máquina)
+# docker stop <nombre_del_contenedor>
+# 🧑‍🎓 En el caso de que se haya inicializado en segundo plano, para acceder después a la máquina se hará de la siguiente manera
+# docker exec -it vm1-samba bash
+# 🧑‍🎓 Para iniciar una máquina directamente que no se quiera ejecutar en segundo plano si no interactuar con su terminal
+docker start -i vm1-samba
+
+# creo un script para ejecutar rápidamente las máquinas
+cd /docker-volume
+touch docker-manager.sh
+
+# doy permiso de ejecución
+chmod +x docker-manager.sh
+
+[SCRIPT docker-manager.sh]:
+--------------------------------------------------------------------------------------------------------------------------
+  # Guardo el script que tengo en /SCRIPT/docker-manager.sh
+--------------------------------------------------------------------------------------------------------------------------
+
+# Entro a bashrc
+vim ~/.bashrc
+--------------------------------------------------------------------------------------------------------------------------
+## alias para ejecutar el script principal de las máquinas
+alias _docker-manager="/docker-compose/docker-manager.sh"
+--------------------------------------------------------------------------------------------------------------------------
+
+# actualizo los cambios 
+source ~/.bashrc
+
+# ejecuto script
+_docker-manager
+
+
+#=========================================================================================================================
+[🐋🔥DENTRO DE LA MÁQUINA DOCKER]:
+## Repito este bloque por cada máquina:
+# Desde la máquina principal creo el script como ejecutable
+# Ver dirección física del volumen
+cd /var/lib/docker/volumes/
+
+# Compruebo alias, por ejemplo pentesting
+ _vm2.pentesting
+
+# actualizo los paquetes del contenedor
+apt-get update
+
+# creo un archivo 
+cd /docker-volume
+touch script-00.sh
+
+# doy permiso de ejecución
+chmod +x script-00.sh
+
+# instalo nano y pego el código
+apt install nano -y
+nano script-00.sh
+
+[SCRIPT script-00.sh]:
+--------------------------------------------------------------------------------------------------------------------------
+  # Guardo el script que tengo en /SCRIPT/script-00.sh
+--------------------------------------------------------------------------------------------------------------------------
+
+# Ejecuto el script 
+/docker-volume/script-00.sh
+
+# Salir de la máquina
+exit
+
+#=========================================================================================================================
+[🐋COMPROBAR VOLUMEN]::
+# Con docker-compose le mando crear un volumen por lo que una vez generada la máquina no es necesario crear su volumen, pero puedo comprobar que existen solo los necesarios 
+# Esto quiere decir que si borro algún docker-compose tengo que eliminar de forma independiente su volumen
+
+# Ver volumenes 
+docker volume ls
+
+# Ver dirección física del volumen
+cd /var/lib/docker/volumes/
+
+# Creo volumen si no está creado
+# docker volume create vol-vm2-smb
+
+# Borrar volumen
+# docker volume rm <nombre_del_volumen>
+

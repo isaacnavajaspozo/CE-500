@@ -1,0 +1,149 @@
+#=========================================================================================================================
+[🐋WHITE WHALE]::
+Documentación ofical samba                 : https://wiki.samba.org/index.php/Setting_up_Samba_as_a_Standalone_Server
+Documentación oficial de usuarios samba    : https://wiki.samba.org/index.php/User_and_Group_management
+Documentación oficial de restic            : https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html#local
+
+#=========================================================================================================================
+[🐋INSTALACIONES]::
+
+# instalaciones 
+apt update
+apt upgrade -y
+
+# entro en el volumen e instalo el script
+cd /docker-volume
+apt install vim -y
+vim script-00.sh
+# i - (shift + botón derecho):
+--------------------------------------------------------------------------------------
+    # código de /SCRIPTS/script-00.sh de este github
+--------------------------------------------------------------------------------------
+
+# doy permisos y hago la instalación
+chmod +x script-00.sh
+./script-00.sh
+source ~/.bashrc
+
+# Instalación samba
+apt install -y samba 
+
+# Creo la carpeta samba dentro del volumen
+mkdir /docker-volume/samba
+
+#=========================================================================================================================
+[🐋MODIFICAR RUTA DE SAMBA]::
+# modificar ruta de servicio
+mv /etc/samba/smb.conf /etc/samba/_smb.conf
+cd /docker-volume
+touch smb.conf
+
+# creo un enlace simbólico del archivo de configuración
+ln -s /docker-volume/samba/smb.conf /etc/samba/smb.conf
+
+# voy agregar un solo usuario a la configuración Ilerna2, 
+# pero lo configuro dentro de un grupo por si en un futuro quiero agregar más usuarios con los mismos permisos
+vim /etc/samba/smb.conf
+--------------------------------------------------------------------------------------
+[global]
+   workgroup = WORKGROUP                                                   # Grupo de trabajo
+   server string = Samba Server                                            # Descripción
+   netbios name = samba                                                    # Nombre en la red
+   security = user                                                         # Modo de seguridad basado en usuarios
+   map to guest = Bad User                                                 # Usuario invitados no validos
+   dns proxy = no                                                          # Proxy para consultas DNS
+   passdb backend = tdbsam:/docker-volume/samba/samba_passdb.tdbrm         # Declaro la ubicación de la db de usuarios
+
+[public]
+   path = /docker-volume/archivos_samba/                                    # Ruta de la carpeta
+   browsable = yes                                                          # Carpeta visible en red
+   writable = yes                                                           # Permite la escritura en la carpeta
+   guest ok = no                                                            # No permite usuarios invitados
+   read only = no                                                           # Permite la escritura
+   valid users = Ilerna2                                                    # Acceso a Ilerna2
+   force user = nobody                                                      # Archivos sean propiedad de nobody (por si quiero agregar más usuarios)                        
+   force group = smbIlerna                                                  # Archivos propiedad del grupo smbIlerna
+   create mask = 0770                                                       # Permisos para archivos creados,
+   directory mask = 0775                                                    # Permisos para directorios creados, 
+--------------------------------------------------------------------------------------
+
+# Reinicio el servicio
+systemctl daemon-reload
+systemctl restart smbd 
+systemctl enable smbd  
+systemctl status smbd  
+
+# Entro desde mi misma red
+\\<NOMBRE_DEL_HOST>
+
+# crear archivo de contraseñas de usuarios
+touch /docker-volume/samba/samba_passdb.tdbrm
+chown nobody:smbIlerna /docker-volume/samba/samba_passdb.tdbrm
+chmod 0660 /docker-volume/samba/samba_passdb.tdbrm
+
+# si todo va bien, creo un usuario
+sudo useradd -s /usr/sbin/nologin Ilerna2
+# creo usuario para samba
+smbpasswd -a Ilerna2
+    > **********
+# compruebo que existe
+pdbedit -L
+
+# creo un grupo y lo añado al usuario Ilerna2
+groupadd smbIlerna
+usermod -aG smbIlerna Ilerna2
+
+# creo carpeta para archivos samba y doy permisos a las carpetas
+mkdir /docker-volume/archivos_samba
+chown -R nobody:smbIlerna /docker-volume/archivos_samba/
+chmod -R 0770 /docker-volume/archivos_samba/
+
+#=========================================================================================================================
+[🐋DEJO EN SEGUNDO PLANO ESTA MÁQUINA]::
+exit
+docker ps
+
+# Dejo habilitada la máquina docker si no aparece con docker ps
+_docker_manager
+Ingrese el número del contenedor: 1
+¿Quieres inicializar la máquina en segundo plano? (s/n): s
+
+# Compruebo que esté en segundo plano
+docker ps
+
+#=========================================================================================================================
+[🐋INSTALO RESTIC]::
+# restic lo voy a utilizar en caso de querer rescatar archivos en vivo
+apt install restic -y
+
+# creo la carpeta de backups fuera del volumen (ya que no quiero que forme parte de la memoría del volúmen)
+mkdir /backups
+
+# reinicio el servicio
+systemctl restart smbd
+
+# Inicializa un nuevo repositorio de Restic
+export RESTIC_REPOSITORY=/backups
+export RESTIC_PASSWORD=**********
+restic init
+
+# respaldo inicial de los archivos
+restic backup /backups
+
+# creo un alias
+vim ~/.bashrc
+--------------------------------------------------------------------------------------
+    alias _crear_backup='restic backup /backups'
+--------------------------------------------------------------------------------------
+source ~/.bashrc
+
+-
+## para recuperar archivos
+# listar snapshots
+restic snapshots
+
+# recuperar archivos
+restic restore <snapshot_id> --target /ruta/a/la/carpeta/de/recuperacion
+
+# eliminar snapshot
+restic forget <snapshot_id>

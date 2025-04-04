@@ -1,0 +1,563 @@
+#=========================================================================================================================
+[🐋WHITE WHALE]::
+# Documentación configurar Node 		: https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-20-04-es?
+# Documentación configurar Nginx 		: https://carlosazaustre.es/como-configurar-nginx-con-node-js-en-produccion?
+# Documentación certificado 			: https://medium.com/@ali_97803/deploy-de-una-app-de-express-js-con-github-actions-usando-nginx-en-modo-https-855126f93164#82a4
+# Documentación oficial de SQL/Debian 		: https://wiki.debian.org/MySQL
+# Documentación oficial de mariaDB 		: https://mariadb.com/kb/en/documentation/
+# Documentación oficial de MySQL 		: https://dev.mysql.com/doc/
+# Documentación no-oficial certificados		: https://rlodeiro.info/blog/certificado-autofirmado/
+# Documentación oficial de Lets Encrypt		: https://letsencrypt.org/
+# Documentación OpenSSL				: https://docs.openssl.org/3.0/man7/migration_guide/
+# Documentación de mongodb	   		: https://www.mongodb.com/docs/
+#						: https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-debian/?
+#						: https://www.mongodb.com/docs/manual/reference/configuration-options/#systemlog
+#						: https://www.mongodb.com/docs/manual/
+
+#=========================================================================================================================
+[🐋INSTALACIONES]::
+# instalaciones 
+apt update
+apt upgrade -y
+
+# entro en el volumen e instalo el script
+cd /docker-volume
+apt install vim -y
+vim script-00.sh
+# i - (shift + botón derecho):
+--------------------------------------------------------------------------------------
+    # código de /SCRIPTS/script-00.sh de este github
+--------------------------------------------------------------------------------------
+
+# doy permisos y hago la instalación
+chmod +x script-00.sh
+./script-00.sh
+source ~/.bashrc
+
+#=========================================================================================================================
+[🐋SERVIDOR NGINX EXPRESS.JS]:
+🧑‍🎓 NODE  :: Entorno de ejecución para JavaScript en el servidor. Permite ejecutar código JavaScript fuera del navegador.
+🧑‍🎓 NGINX :: Servidor web y proxy inverso. Es ligero, rápido y ampliamente utilizado para actuar como proxy inverso para aplicaciones.
+🧑‍🎓 PM2   :: Gestor de procesos para aplicaciones Node.js. Mantiene las aplicaciones en ejecución, maneja ciclos de vida y garantiza su disponibilidad, incluso después de fallos o reinicios del servidor.
+
+## ⚠️ Como no dispongo actualmente de ningún dominio real voy a utilizar el host de mi Linux, para que llegue a funcionar tengo que forzar el host de Windows:
+	> <IP_LINUX>	<HOST_MAQUINA_NGINX>
+## Configuro express en el servidor de manera simple para comprobar que funcione::
+## configuración express
+
+# Instalo Node.js y npm 
+sudo apt update
+sudo apt install -y nodejs npm
+node -v
+npm -v
+
+# instalo nginx 
+apt install -y nginx
+systemctl status nginx
+
+# Instalación inicial:
+	mkdir /var/www/express && cd /var/www/express
+	cd express
+	npm init -y
+	npm install express
+	npm install --save-dev typescript @types/node @types/express ts-node
+	# Para ayudar a TypeScript a comprender los tipos utilizados en bibliotecas externas
+	npm install --save-dev @types/node @types/express
+	# Para que los cambios en TypeScript se cambie automáticamente sin reiniciar el servidor
+	npm install --save-dev nodemon
+
+# Configuración de TypeScript tsconfig.json:
+vim tsconfig.json
+-----------------------------------------------------------------------
+{
+    "compilerOptions": {
+        "target": "ES6",
+        "module": "commonjs",
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true
+    },
+    "include": [
+        "app/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
+-----------------------------------------------------------------------
+
+# Creo archivo nodemon.json:
+vim nodemon.json
+-----------------------------------------------------------------------
+{
+  "watch": ["app"],
+  "ext": "ts",
+  "exec": "ts-node app/index.ts"
+}
+-----------------------------------------------------------------------
+	
+# Modifico archivo package.json:
+vim package.json
+-----------------------------------------------------------------------
+"scripts": {
+  "start": "nodemon"
+}
+-----------------------------------------------------------------------
+
+# Creo un archivo /app/index.ts:
+mkdir app
+cd app
+vim index.ts
+-----------------------------------------------------------------------
+import express, { Request, Response } from 'express';
+
+const app = express();
+const port = 3000;
+
+app.get('/', (req: Request, res: Response) => {
+  res.send('Hello Ilerna, i can write TypeScript with Express.js!');
+});
+
+app.listen(port, () => {
+  console.log(`Server is running at http://localhost:${port}`);
+});
+-----------------------------------------------------------------------
+
+# modifico el host para que la web se vea vía web simulando al dominio : pruebas.local
+hostnamectl set-hostname <HOST_SERVIDOR>
+vim /etc/hosts
+----------------------------------------------------------------------------
+127.0.0.1   localhost
+<IP_DEL_SERVIDOR_PRIVADA>   <HOST_SERVIDOR>
+	
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+----------------------------------------------------------------------------
+
+# compruebo el host modificado 
+hostname
+
+# Ejecuto la aplicación
+cd /var/www/express
+npm run start
+
+# pruebo a entrar en http://<IP_DEL_SERVIDOR>:3000
+# si consigo entrar vuelco el proyecto de express.js que quiero que muestre
+
+## Configurar Nginx:
+# configuro un proxy inverso
+# Un proxy inverso es un servidor que recibe las solicitudes de los clientes y las redirige a uno o varios servidores internos, ocultando su identidad.
+systemctl restart nginx
+vim /etc/nginx/sites-available/express
+----------------------------------------------------
+server {
+    listen 80;
+    server_name <HOST_SERVIDOR>:3000;			# dominio o IP
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+----------------------------------------------------
+
+# creo enlace simbolico
+sudo ln -s /etc/nginx/sites-available/express /etc/nginx/sites-enabled/
+
+# reinicio nginx
+sudo systemctl restart nginx
+
+# Una vez llegados a este punto y visto que funciona Nginx con Express.js && Typescript, migro el proyecto que he desarrollado, en este mismo GitHub al servidor de desarrollo.
+# A partir de aora voy a crear un proyecto con Nginx con Express.js y con Typescript en una configuración cluster con tres puertos diferentes.
+
+#=========================================================================================================================
+[🐋INSTALACIÓN DE PM2]:
+# PM2 no solo es útil para gestionar procesos en producción, sino que también es muy eficaz para gestionar el ciclo de vida de la aplicación, incluyendo el despliegue (deploy), la gestión de procesos, y la configuración de producción.
+
+## process manager:
+# Para mantenerlo activo después de cerrar la terminal
+npm install -g pm2
+
+cd /var/www/express
+# Voy a utilizar una forma más simple de crear el pm2 ya que luego creo el archivo ecosystem.config.js para sustituir esta configuración, 
+# la primera vez lo probe así por eso lo dejo comentado, por lo que este apartado me lo salto de configurar...
+	# pm2 start npm --name "express" -- run start --watch 		# --watch sirve para reiniciar la aplicación si hay cambios y que no se caiga la aplicación
+	# pm2 startup 							# Configura PM2 para que inicie tu aplicación automáticamente en caso de reinicio del servidor
+	# pm2 save							# guarda la configuración
+	# otros comandos pm2	
+	# pm2 delete express
+	# pm2 restart express
+
+# creo un archivo de configuración para pm2
+cd /var/www/express
+vim ecosystem.config.js
+----------------------------------------------------
+module.exports = {
+  apps: [
+    {
+      name: 'express',                                  // Nombre del proceso
+      script: 'node_modules/ts-node/dist/bin.js',       // Archivo principal del servidor, utilizo ts-node para ejecutar archivos TypeScript.
+      args: 'app/index.ts',                             // Ejecuto el archivo Typescript
+      instances: 3,                                     // Número de instancias para escalar la aplicación (clusters)
+      exec_mode: 'cluster',
+      autorestart: true,                                // Reiniciar automáticamente si el proceso falla
+      max_restarts: 3,                                  // Limitar a 3 reinicios seguidos, para no saturar la aplicación en caso de fallo
+      restart_delay: 2000,                              // Esperar 1 segundo entre reinicios
+      iwatch: ["app"],
+      gnore_watch: ["node_modules"],                   // ignoro archivos que no quiero que evalue si cambian
+      wait_ready: true,
+      listen_timeout: 3000,
+      watch_options: {
+         usePolling: true                               // Usar polling puede ayudar si tu sistema de archivos no detecta los cambios en tiempo real
+      },
+      env: {
+        NODE_ENV: 'production'                          // Puedo forzar una variable de entorno dentro del archivo .env para afirmar que cuando se ejecute pm2 sea en producción
+      }
+    }
+  ],
+
+  // # Puedo gestionar un repositorio git desde aquí
+  //deploy: {
+  //  production: {
+  //    user: 'deploy_user',
+  //    host: 'your.server.com',
+  //    ref: 'origin/master',
+  //    repo: 'git@github.com:yourrepo.git',
+  //    path: '/var/www/yourapp',
+  //    'post-deploy': 'npm install && pm2 reload ecosystem.config.js --env production',
+  //  }
+  //}
+};
+
+module.exports = {
+	apps: [
+	  {
+	    name: 'express',                                  // Nombre del proceso
+	    script: 'node_modules/ts-node/dist/bin.js',       // Archivo principal del servidor, utilizo ts-node para ejecutar el archivo TypeScript.
+	    args: 'app/index.ts',                             // Ejecuto el archivo Typescript
+	    instances: 1,                                     // Número de instancias para escalar la aplicación (clusters)
+	    autorestart: true,                                // Reiniciar automáticamente si el proceso falla
+	    max_restarts: 5,                                  // Limitar a 5 reinicios seguidos, para no saturar la aplicación en caso de fallo
+	    restart_delay: 2000,                              // Esperar 1 segundo entre reinicios
+	    watch: true,                                      // Observar cambios en el directorio
+	    ignore_watch: ["node_modules"],                   // ignoro archivos que no quiero que evalue si cambian
+	    env: {
+	      NODE_ENV: 'production'                          // Puedo forzar una variable de entorno dentro del archivo .env para afirmar que cuando se ejecute pm2 sea en producción
+	    }
+	  }
+	],
+	
+	// # Puedo gestionar un repositorio git desde aquí
+	//deploy: {
+	//  production: {
+	//    user: 'deploy_user',
+	//    host: 'your.server.com',
+	//    ref: 'origin/master',
+	//    repo: 'git@github.com:yourrepo.git',
+	//    path: '/var/www/yourapp',
+	//    'post-deploy': 'npm install && pm2 reload ecosystem.config.js --env production',
+	//  }
+	//}
+};
+----------------------------------------------------
+
+# reinicio mi app con PM2
+pm2 start ecosystem.config.js
+
+# Para comprobar el listado de pm2
+pm2 ps
+
+# comprobar los fallos del proyecto express
+pm2 logs express
+
+#=========================================================================================================================
+[🐋INSTALACIÓN DE MONGODB]:
+# importar la clave pública de MongoDB
+wget -O mongodb. - https://www.mongodb.org/static/pgp/server-6.0.asc
+
+# añadir el repositorio de MongoDB
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/debian $(lsb_release -sc)/mongodb-org/6.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+
+# actualizo
+sudo apt update
+
+# instalar mongodb
+sudo apt install -y mongodb-org
+
+# iniciar servicio mongodb
+sudo systemctl start mongod
+sudo systemctl enable mongod
+sudo systemctl status mongod
+
+# acceder al shell mongo
+mongo
+
+# crear una base de datos
+use nombre_de_base_de_datos
+
+# crear un usuario con permisos
+db.createUser({
+  user: "nombre_usuario",
+  pwd: "contraseña_segura",
+// roles según sea necesario...
+  roles: [
+    { role: "read", db: "nombre_de_base_de_datos" },           // Solo lectura
+    { role: "readWrite", db: "nombre_de_base_de_datos" },      // Lectura y escritura
+    { role: "dbAdmin", db: "nombre_de_base_de_datos" },        // Administración de la base de datos
+    { role: "dbOwner", db: "nombre_de_base_de_datos" },        // Propietario de la base de datos
+    { role: "clusterAdmin", db: "admin" },                      // Administración de clústeres (para MongoDB en clúster)
+    { role: "backup", db: "admin" },                            // Permisos de respaldo
+    { role: "restore", db: "admin" },                           // Permisos de restauración
+    { role: "userAdmin", db: "nombre_de_base_de_datos" },       // Administración de usuarios en la base de datos
+    { role: "userAdminAnyDatabase", db: "admin" },              // Administración de usuarios en cualquier base de datos
+    { role: "root", db: "admin" },                              // Acceso completo (superusuario)
+    { role: "readAnyDatabase", db: "admin" },                   // Lectura en cualquier base de datos
+    { role: "readWriteAnyDatabase", db: "admin" }               // Lectura y escritura en cualquier base de datos
+  ]
+})
+
+# sugerencia:
+# Usa el rol readWrite para usuarios que solo necesiten leer y escribir en una base de datos.
+# Usa el rol dbAdmin para administradores de base de datos.
+
+# comprobar los usuarios
+show users
+
+# autenticación y conexión con el usuario
+# Configurar el cortafuegos
+vim /etc/mongod.conf
+-
+security:
+  authorization: "enabled" 		# autenticación con usuario existente
+...
+net:
+  bindIp: 127.0.0.1, 192.168.1.100  	# Permitir solo IPs locales y 192.168.1.100
+...
+net:
+  http:
+    enabled: false  			# Deshabilitar la interfaz HTTP
+-
+
+# reinicio servicio
+systemctl restart mongod
+
+# conectarse con el usuario creado
+mongo -u nombre_usuario -p contraseña_segura --authenticationDatabase nombre_de_base_de_datos
+
+
+
+## otras configuraciones de seguridad
+# encriptación en reposo: MongoDB Enterprise ofrece encriptación de datos en reposo, lo cual cifra los datos almacenados en disco. Si usas la versión comunitaria, puedes usar una solución externa de cifrado.
+# encriptación en tránsito: Configura TLS/SSL para cifrar el tráfico de la base de datos entre los clientes y el servidor MongoDB.
+vim /etc/mongod.conf
+-
+net:
+  ssl:
+    mode: requireSSL  # Forzar la encriptación de datos en tránsito
+    PEMKeyFile: /ruta/al/certificado.pem
+...
+
+# monitorización del Acceso
+systemLog:
+  destination: file
+  path: /var/log/mongodb/mongod.log
+  logAppend: true
+-
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#=========================================================================================================================
+[🐋INSTALACIÓN DE MARIADB]:
+# Compruebo que funciona todo bien
+
+# Como quiero que la base de datos permanezca en mi servidor y no en uno independiente voy a instalar mysql
+sudo apt update && sudo apt install -y mariadb-server
+sudo systemctl status mariadb
+sudo systemctl start mariadb
+sudo systemctl enable mariadb
+
+# Buenas prácticas para mantenimiento de una base de datos
+sudo mysql_secure_installation
+
+# entro a la base de datos
+sudo mysql -u root -p
+
+# creo la base de datos express_db con usuario express y privilegios root
+# CREATE DATABASE express_db;
+# para crear un usuario con acceso localhost 
+CREATE USER 'root'@'localhost' IDENTIFIED BY 'Tutipoda&452';
+GRANT ALL PRIVILEGES ON express_db.* TO 'express'@'localhost';
+FLUSH PRIVILEGES;
+
+## es buena práctica utilizar varios usuarios para dar privilegios solo 
+# este es el usuario con el que me voy a registrar desde .env de node para limitar 
+CREATE USER 'express'@'localhost' IDENTIFIED BY 'Wupotoge&888';
+GRANT SELECT, INSERT, UPDATE, DELETE ON express_db.* TO 'express'@'localhost';
+FLUSH PRIVILEGES;
+
+# este caso seria para crear un usuario fuera del servidor
+# CREATE USER 'root'@'%' IDENTIFIED BY 'toor';
+# GRANT ALL PRIVILEGES ON express_db.* TO 'express'@'%';
+# FLUSH PRIVILEGES;
+
+# entro a la base de datos
+USE express_db;
+
+# Creo la tabla necesaria para el proyecto
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario VARCHAR(50) NOT NULL,
+    contraseña TEXT NOT NULL
+);
+
+# Agrego un valor
+INSERT INTO usuarios (id, usuario, contraseña) VALUES
+(1, 'isaac', 'aca217fb549886ea0c52a7e59563d9667fe1683622829f3e4699bbdd97074273638dd8a13c418f262a4652afa2f287dddc92fb90ae3d738e9b62f5568d33271d:d09b1a120e5950e0cd0cebac83a78715');
+
+# compruebo la tabla
+SELECT * FROM usuarios;
+exit;
+
+# Configurar MySQL 
+vim /etc/mysql/mariadb.conf.d/50-server.cnf
+	# para conexiones locales
+	> bind-address = 127.0.0.1 
+	# para aceptar conexiones remotas
+	# > bind-address = 0.0.0.0
+
+# Reinicio MySQL
+sudo systemctl restart mariadb
+
+# reinicio pm2
+cd /var/www/express
+pm2 start ecosystem.config.js
+
+
+#=========================================================================================================================
+[🐋INSTALAR CERTIFICADO]:
+# certificado con dominio local
+⚠️ Para un dominio local como el mio necesito un certificado autofirmado
+
+# creo la carpeta
+mkdir /var/www/express/letsencrypt
+cd /var/www/express/letsencrypt
+
+## .key :: (clave privada)
+# Genero una clave privada
+openssl genpkey -algorithm RSA -out pruebas.local.key -aes256
+
+## .csr :: (Solicitud de firma de certificado)
+# Genero un archivo de solicitud de firma de certificado (CSR)
+# En un entorno real, una vez generado mi CSR desde mi servidor lo tengo que enviar a la empresa de venta de dominio (como Namecheap) o Autoridad Certificadora (CA) y ellos me lo validan y me devuelven un .crt
+openssl req -new -key pruebas.local.key -out pruebas.local.csr
+
+## .crt o .pfx o .pem :: (clave pública)
+# Genero el certificado autofirmado con caducidad de 1 año (solo lo genero en el caso que sean pruebas, los "certificados autofirmados" se hacen cuando el dominio no es real)
+# En un entorno real, debería enviar la CSR a una Autoridad de Certificación (CA) y utilizar el certificado que me proporcionarían.
+openssl x509 -req -days 365 -in pruebas.local.csr -signkey pruebas.local.key -out pruebas.local.crt
+
+# En el caso de caducarse, en un entorno real, tengo que generar otro CSR y repitiendo el proceso con la Autoridad Certificadora (CA).
+
+# edito la configuración de mi sitio Nginx
+cd /etc/nginx/sites-available
+vim express
+----------------------------------------------------
+# https
+server {
+    listen 443 ssl;
+    server_name pruebas.local;
+
+    ssl_certificate /var/www/express/letsencrypt/pruebas.local.crt;
+    ssl_certificate_key /var/www/express/letsencrypt/pruebas.local.key.nopass;
+
+    location / {
+        proxy_pass http://app_cluster;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+# http
+server {
+    listen 80;
+    server_name pruebas.local;
+    return 301 https://$host$request_uri;
+}
+----------------------------------------------------
+
+# agrego la configuración del cluster en el archivo principal de nginx - al final del bloque de configuración de http 
+vim /etc/nginx/nginx.conf
+----------------------------------------------------
+...
+upstream app_cluster {
+    server 127.0.0.1:3000;
+    # server 127.0.0.1:3001;
+    # server 127.0.0.1:3002;
+}
+
+include /etc/nginx/conf.d/*.conf;
+include /etc/nginx/sites-enabled/*;
+...
+----------------------------------------------------
+
+# verifico la configuración
+sudo nginx -t
+
+# reinicio el servicio de nginx
+sudo systemctl restart nginx
+
+# para comprobar el certificado
+openssl s_client -connect pruebas.local:443
+
+
+-
+⚠️ si me da un error en el certificado privado pruebo a quitarle la contraseña
+⚠️ si no me a dado ningún error o quiero dejar la encriptación ya he finalizado 100% la configuración
+# creo una nueva clave
+sudo openssl rsa -in /var/www/express/letsencrypt/pruebas.local.key -out /var/www/express/letsencrypt/pruebas.local.key.nopass
+
+# modifico mi archivo y agrego la nueva clave
+sudo vim /etc/nginx/sites-available/express
+----------------------------------------------------
+...
+	ssl_certificate_key /var/www/express/letsencrypt/pruebas.local.key.nopass;
+	# ssl_certificate_key /var/www/express/letsencrypt/pruebas.local.key;
+...
+----------------------------------------------------
+
+# comprueba el archivo de certificado 
+openssl x509 -in /var/www/express/letsencrypt/pruebas.local.crt -text -noout
+
+#=========================================================================================================================
+[🐋MATO PROCESOS SI HAY FALLO]:
+# compruebo los procesos en mi puerto
+lsof -i :3000
+
+# mato el proceso
+sudo kill -9 <PID>
+

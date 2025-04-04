@@ -1,0 +1,189 @@
+#=========================================================================================================================
+[🐋WHITE WHALE]::
+# Documentación no-oficial   : https://serverspace.io/es/support/help/install-bitwarden-debian-11/
+# Documentación oficial      : https://bitwarden.com/help/install-on-premise-linux/
+# No hay una documentación oficial para utilizar vaultwarden sin docker 
+# yo quiero hacerlo con docker pero utilizandolo de forma controlada como máquina debian, así que necesito instalarlo como si no tuviese docker
+# Documentación no-oficial   : https://community.hetzner.com/tutorials/how-to-install-vaultwarden
+
+#=========================================================================================================================
+[🐋INSTALACIONES]::
+# instalaciones 
+apt update
+apt upgrade -y
+
+# entro en el volumen e instalo el script
+cd /docker-volume
+apt install vim -y
+vim script-00.sh
+# i - (shift + botón derecho):
+--------------------------------------------------------------------------------------
+    # código de /SCRIPTS/script-00.sh de este github
+--------------------------------------------------------------------------------------
+
+# doy permisos y hago la instalación
+chmod +x script-00.sh
+./script-00.sh
+source ~/.bashrc
+
+#=========================================================================================================================
+[🐋INSTALACIÓN BITWARDEN]::
+# actualizar el sistema
+sudo apt update && sudo apt upgrade -y
+
+# instalar dependencias
+sudo apt install -y sqlite3 curl unzip build-essential pkg-config libssl-dev
+
+# crear un usuario dedicado para Vaultwarden
+sudo useradd -r -m -U -d /opt/vaultwarden vaultwarden
+
+# descargar Vaultwarden
+cd /opt/vaultwarden
+curl -fsSL https://github.com/dani-garcia/vaultwarden/archive/refs/tags/1.33.2.tar.gz -o vaultwarden.tar.gz
+sudo -u vaultwarden tar -xvzf vaultwarden.tar.gz
+rm vaultwarden.tar.gz
+mv /opt/vaultwarden/vaultwarden-1.33.2/* /opt/vaultwarden/
+mv /opt/vaultwarden/vaultwarden-1.33.2/.* /opt/vaultwarden/
+rmdir /opt/vaultwarden/vaultwarden-1.33.2
+rm /opt/vaultwarden/vaultwarden.tar.gz
+
+# configurar Vaultwarden
+sudo -u vaultwarden cp .env.template .env
+vim /opt/vaultwarden/.env
+    > DOMAIN=https://tudominio.com
+    > SIGNUPS_ALLOWED=false                                # en false no permite registros 
+    > DATABASE_URL=data/db.sqlite3
+
+# crear un servicio systemd
+vim /etc/systemd/system/vaultwarden.service
+-----------------------------------------------------------------------
+[Unit]
+Description=Vaultwarden Server
+After=network.target
+
+[Service]
+User=vaultwarden
+Group=vaultwarden
+WorkingDirectory=/opt/vaultwarden
+ExecStart=/opt/vaultwarden/vaultwarden
+Restart=always
+EnvironmentFile=/opt/vaultwarden/.env
+
+[Install]
+WantedBy=multi-user.target
+-----------------------------------------------------------------------
+
+# habilitar y ejecutar Vaultwarden
+sudo systemctl daemon-reload
+sudo systemctl enable vaultwarden
+sudo systemctl start vaultwarden
+sudo systemctl status vaultwarden
+
+# si sale un error de: ExecStart es porque no existe el binario así que lo creo
+# instalo 
+sudo apt install build-essential curl git libssl-dev pkg-config
+
+# instalo Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source $HOME/.cargo/env
+
+# creo el binario vaultwarden en el directorio target/release
+cd /opt/vaultwarden
+cargo build --release
+cargo build --release --features sqlite
+ls target/release/
+
+sudo systemctl daemon-reload
+sudo systemctl start vaultwarden
+sudo systemctl enable vaultwarden
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ejecuto reposiorio
+apt install -y
+git clone https://github.com/bitwarden/server.git
+cd server
+
+# instalo el script
+./bitwarden.sh install
+./bitwarden.sh start
+
+## cliente# Actualizar el sistema:
+sudo apt update && sudo apt upgrade -y
+
+# Instalar dependencias necesarias:
+sudo apt install -y curl apt-transport-https gnupg
+
+# Añadir la clave GPG de Bitwarden:
+curl -fsSL https://vault.bitwarden.com/download/?app=desktop&platform=linux | sudo apt-key add -
+
+# Añadir el repositorio de Bitwarden:
+echo "deb [arch=amd64] https://vault.bitwarden.com/debian stable main" | sudo tee /etc/apt/sources.list.d/bitwarden.list
+
+# Instalar Bitwarden:
+sudo apt update
+sudo apt install bitwarden
+
+# Iniciar Bitwarden:
+bitwarden
+

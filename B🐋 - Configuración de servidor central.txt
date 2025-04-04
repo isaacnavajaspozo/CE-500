@@ -1,0 +1,285 @@
+#=========================================================================================================================
+[🐋WHITE WHALE]::
+# Documentación oficial SSH    : https://www.openssh.com/
+# Documentación no-oficial     : https://synay.net/es/support/kb/disabling-automatic-workstation-sleep-debian-12
+
+#=========================================================================================================================
+[🐋INSTALACIONES]::
+# Instalaciones generales
+apt install -y htop lm-sensors vim net-tools openssh-server iptables iptables-persistent fail2ban
+
+#=========================================================================================================================
+[🐋CONFIGURACIÓN DE LA RED]::
+# Compruebo ip por DHCP
+ifconfig
+
+# desactivo ip6
+sudo nano /etc/default/grub
+----------------------------------------------------------------------------
+    GRUB_CMDLINE_LINUX_DEFAULT="quiet splash ipv6.disable=1"
+----------------------------------------------------------------------------
+sudo update-grub
+
+# Configuro el host
+nano /etc/hostname
+----------------------------------------------------------------------------
+    srv.whitewhale.local
+----------------------------------------------------------------------------
+
+# Configuración archivo host
+# host -> srv.whitewhale.local | alias -> WhiteWhale
+sudo nano /etc/hosts
+----------------------------------------------------------------------------
+    127.0.0.1               localhost
+    127.0.0.1               srv.whitewhale.local   WhiteWhale
+    
+    # The following lines are desirable for IPv6 capable hosts
+    ::1     localhost ip6.localhost ip6.loopback localhost.localdomain 
+ 
+    # Multicast (solo IPv6)
+    # ff02::1     ip6-allnodes
+    # ff02::2     ip6-allrouters
+----------------------------------------------------------------------------
+
+# Cambiar ip estática
+nano /etc/network/interfaces
+----------------------------------------------------------------------------
+    # Configuración de la interfaz WiFi
+    # This file describes the network interfaces available on your system
+    # and how to activate them. For more information, see interfaces(5).
+    
+    source /etc/network/interfaces.d/*
+    
+    # The loopback network interface
+    auto lo
+    iface lo inet loopback
+      
+    # La interfaz Ethernet (configuración estática)
+     auto eno1
+     iface eno1 inet static
+       address <LA_MISMA_IP_DHCP_ANTERIOR>
+             netmask 255.255.255.0
+             gateway <PUERTA_DE_ENLACE>
+             dns-nameservers 8.8.8.8 1.1.1.1
+    
+     # The primary network interface
+     #allow-hotplug wlp3s0
+     #iface wlp3s0 inet dhcp
+     #   wpa-ssid <SSID_WIFI>
+     #   wpa-psk  <PASSWORD_WIFI>
+----------------------------------------------------------------------------
+
+# Reinicio la red
+systemctl restart networking
+systemctl status networking
+
+# Reinicio la máquina
+sudo reboot
+
+#=========================================================================================================================
+[🐋INSTALACIÓN SSH]::
+# Amplio tiempo de ssh y deshabilitar la suspensión
+systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
+
+# Realizo unos cambios en el archivo de configuración
+nano /etc/ssh/sshd_config
+----------------------------------------------------------------------------
+    Port 22
+    PasswordAuthentication yes
+----------------------------------------------------------------------------
+
+# Inicializo el servicio y lo habilito para inicio de la sesión
+systemctl start sshd
+systemctl status sshd
+systemctl enable sshd
+
+#=========================================================================================================================
+[🐋CREO USUARIOS NECESARIOS]::
+# creo script para generar contraseña
+
+cd Docker-compose
+vim bcrypt_hash.sh
+----------------------------------------------------------------------------
+#!/bin/bash
+# Verificar si apache2-utils está instalado
+if ! dpkg -l | grep -q apache2-utils; then
+    echo "apache2-utils no está instalado. Instalando..."
+    sudo apt-get update
+    sudo apt-get install -y apache2-utils
+fi
+# Verificar si se proporcionó una contraseña
+if [ -z "$1" ]; then
+    echo "Uso: $0 <contraseña>"
+    exit 1
+fi
+
+# Usar htpasswd para generar el hash bcrypt
+HASH=$(htpasswd -bnB "" "$1" | cut -d: -f2)
+
+# Mostrar el hash
+echo "Hash bcrypt: $HASH"
+----------------------------------------------------------------------------
+
+# doy permisos al script 
+chmod +x bcrypt_hash.sh
+
+# ejecuto script
+./bcrypt_hash.sh <TU_CONTRASEÑA>
+
+# Debian utiliza la encriptación bcrypt para validar usuarios
+# Añado usuario con privilegios de root
+useradd --comment "<NOMBRE_DE_USUARIO> - Admin" --uid 0 --gid 0 --non-unique -m -s /bin/bash \
+-p '' <NOMBRE_DE_USUARIO>
+ln -sf /root/.bashrc /home/<NOMBRE_DE_USUARIO>/.bashrc
+ln -sf /root/.vimrc /home/<NOMBRE_DE_USUARIO>/.vimrc
+ln -sf /root/.selected_editor /home/<NOMBRE_DE_USUARIO>/.selected_editor 
+
+# Eliminar usuario innecesarios
+cat /etc/passwd
+sudo userdel -r <NOMBRE_DE_USUARIO>
+
+#=========================================================================================================================
+[🐋AJUSTES DEL SERVIDOR]::
+# Me registro con el usuario
+# Modifico configuración de terminal de usuario (lo agrego al final de los alias, antes de  if [ -f ~/.bash_aliases ]; then...)
+nano ~/.bashrc
+----------------------------------------------------------------------------
+    ## alias del servidor    
+    alias ls='ls --color=auto'
+    alias la='ls $LS_OPTIONS -lhai'
+    alias _liberarespacioram='sudo sync; echo 1 | sudo tee /proc/sys/vm/drop_caches | echo "petición realizada correctamente." && echo "" && free -h'
+    ## alias para las máquinas
+    alias _srv.samba="docker start -i vm1-smb"
+    
+    ## Cambiar diseño del prompt
+    PS1='${debian_chroot:+($debian_chroot)}\[\e[0;90m\]r00t🐋\[\e[1;36m\][\H]\e[1;36m\]\e[1;32m \w\e[0;37m $: '
+
+    ## cambiar colores para ls
+    # color-verde:    directorios
+    # color-blanco:   archivos normales
+    # color-magenta:  enlaces simbolicos
+    # color-amarillo: directorios bloqueados, enlaces especiales, dispositivos de bloque y los de caracter
+    # color-rojo:     archivos huérfanos, archivos bloqueados, archivos ejecutables (negrita)
+    # color azul:     FIFO
+    export LS_COLORS="di=1;32:fi=0;37:ln=1;35:so=0;38;5;208:pi=0;34:bd=0;33:cd=0;33:or=0;31:mi=0;31:ex=1;31"
+----------------------------------------------------------------------------
+source ~/.bashrc
+
+#=========================================================================================================================
+[🐋CONFIGURACIÓN DE VIM]::
+# # creo el archivo vimrc
+sudo nano ~/.vimrc
+
+# archivo .vimrc
+----------------------------------------------------------------------------
+    " configuración archivo .vimrc
+    "=========================================================
+    " Habilitar numeración de líneas
+    set number
+    " Resaltar la línea actual
+    set cursorline
+    " Habilitar el uso del mouse (si se habilita no permite copia y pegar en ssh)
+    "set mouse=a
+    " Mantener el cursor centrado al desplazarse
+    set scrolloff=8
+    " Habilitar la búsqueda incremental
+    set incsearch
+    " Resaltar coincidencias de búsqueda
+    set hlsearch
+    " Ignorar mayúsculas y minúsculas en las búsquedas
+    set ignorecase
+    set smartcase
+    " Usar espacios en lugar de tabulaciones
+    set expandtab
+    set tabstop=4          " Número de espacios para un tabulador
+    set shiftwidth=4       " Número de espacios para el autoindentar
+    " Habilitar el modo de autocompletar
+    set wildmenu
+    " Habilitar el plegado de texto
+    set foldmethod=indent
+    set foldlevel=99       " Plegar automáticamente
+    " Configurar el esquema de color
+    syntax on              " Activar la sintaxis
+    set background=dark    " Para temas oscuros
+    colorscheme industry  " Cambiar el esquema de color (puedes cambiar 'industry' o 'blue' entre otros)
+    highlight Comment ctermfg=Green guifg=#00FF00        " Color para comentarios en el código
+    highlight LineNr ctermfg=Magenta                     " Color para números de línea en el margen
+    highlight CursorLineNr ctermfg=DarkMagenta           " Color para el número de línea de la línea actual
+    highlight Normal ctermfg=White ctermbg=DarkGray      " Color de fondo y texto del área principal
+    highlight Keyword ctermfg=LightGray                  " Color para palabras clave del lenguaje
+    highlight Function ctermfg=Yellow                    " Color para nombres de funciones
+    highlight Type ctermfg=Magenta                       " Color para tipos de datos (int, float, etc.)
+    highlight Constant ctermfg=Magenta                   " Color para constantes (números, booleanos)
+    highlight Identifier ctermfg=White                   " Color para identificadores (nombres de variables)
+    highlight Statement ctermfg=Yellow                   " Color para sentencias del lenguaje (return, break, etc.)
+    highlight Error ctermfg=White ctermbg=Red            " Color para errores de sintaxis
+    highlight Search ctermfg=Black ctermbg=Yellow        " Color para coincidencias de búsqueda
+    highlight Visual ctermbg=Grey                        " Color de fondo para selección en modo visual
+    highlight Keyword ctermfg=White                      " (Redundante) Color para palabras clave del lenguaje
+    highlight StatusLine ctermfg=Blue ctermbg=White      " Color para la línea de estado activa
+    highlight StatusLineNC ctermfg=Blue ctermbg=DarkGray " Color para la línea de estado inactiva
+    highlight Special ctermfg=Blue                       " Color para símbolos especiales (@, #, etc.)
+    highlight PreProc ctermfg=Grey                       " Color para preprocesadores (por ejemplo, en C/C++)
+    highlight Type ctermfg=Grey                          " Color para tipos de datos (redundante)
+    highlight Todo ctermfg=Black ctermbg=Yellow          " Color para tareas pendientes (TODO, FIXME, etc.)
+    highlight Underlined ctermfg=White                   " Color para texto subrayado
+    highlight Pmenu ctermbg=DarkGray                     " Color de fondo del menú emergente (completado)
+    highlight PmenuSel ctermbg=Blue ctermfg=White        " Color de fondo y texto del elemento seleccionado en el menú
+    highlight DiffAdd ctermbg=Green                      " Color para líneas añadidas en comparación
+    highlight DiffChange ctermbg=Yellow                  " Color para líneas cambiadas en comparación
+    highlight DiffDelete ctermbg=Red                     " Color para líneas eliminadas en comparación
+    highlight Folded ctermfg=White ctermbg=DarkBlue      " Color para líneas plegadas
+
+    " Mostrar la línea de estado
+    set laststatus=2
+    " Desactivar el sonido de campana
+    set noerrorbells
+    " Guardar el historial de comandos
+    set history=1000
+    " habilitar copiar y pegar desde ssh
+    set clipboard=unnamedplus
+----------------------------------------------------------------------------
+
+#=========================================================================================================================
+[🐋CONFIGURACIÓN DE IPTABLES]::
+# Compruebo la instalación
+sudo iptables -L
+
+# configuro archivo iptables firewall ip4
+vim /etc/iptables/rules.v4
+
+⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
+# me falta configuración de iptables
+# Lo dejo para el final cuando tenga terminadas todas las máquinas
+...
+
+#=========================================================================================================================
+[🐋CONFIGURACIÓN DE FAIL2BAN]::
+# Modifico las variables del siguiente archivo
+vim /etc/fail2ban/jail.conf
+----------------------------------------------------------------------------
+# Modifico todas las siguientes variables
+    [DEFAULT]
+    ## Tiempo que la IP estará bloqueada
+    bantime = 1h
+    ## Tiempo de intentos fallidos
+    findtime = 10m
+    ## Número máximo de intentos
+    maxretry = 5
+
+    [sshd]
+    ## Permito conexión SSH
+    enabled = true
+    port = 22
+    filter = sshd
+    logpath = /var/log/auth.log
+
+----------------------------------------------------------------------------
+
+# creo el archivo
+touch /var/log/auth.log
+
+# Reinicio el servicio y lo habilito para su reinicio
+systemctl start fail2ban
+systemctl status fail2ban
+systemctl enable fail2ban
