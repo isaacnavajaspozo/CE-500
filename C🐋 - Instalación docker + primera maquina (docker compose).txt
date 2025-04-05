@@ -36,7 +36,7 @@ for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do
 # instalar última versión docker
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-# inicializao docker y lo activo al iniciar la sesión
+# inicializo docker y lo activo al iniciar la sesión
 sudo systemctl start docker
 sudo systemctl enable docker
 
@@ -57,7 +57,7 @@ docker-compose --version
 # creo una carpeta para los archivos docker-compose
 mkdir docker-compose
 
-# 🧑‍🎓 Tengo que crear los archivos .yml (que se muestran en el siguiente apartado D🐋) para los archivo docker-compose
+# 🧑‍🎓 Tengo que crear los archivos .yml (que se muestran en el siguiente apartado "D🐋") para los archivos docker-compose
 
 # Para lanzar el contendor en segundo plano y activar el contenedor lo hago con el siguiente comando
 docker-compose -f docker-compose-samba.yml up -d
@@ -72,45 +72,6 @@ docker exec -it vm1-samba bash
 
 #=========================================================================================================================
 [🐋🔥CREO ALIAS + SCRIPT]:
-# creo un alias para asignación rápida desde el servidor principal de la máquina docker
-echo 'alias _vm1.samba=""docker start -i vm1-samba"' >> ~/.bashrc && source ~/.bashrc
-
-
-
-
-
-
-
-
-
-#=========================================================================================================================
-[🐋🔥VOLUMENES]:
-# creo un volumen 
-# Con docker-compose le mando crear un volumen por lo que una vez generada la máquina no es necesario crear su volumen, así que este apartado me lo salto
-
-## 🧑‍🎓 Volúmenes de Docker: Para que los cambios en tus contenedores sean persistentes, debes utilizar volúmenes de Docker. Los volúmenes permiten que los datos se mantengan incluso cuando el contenedor se detenga o se elimine.
-# docker volume create docker-compose_vol-vm1-samba
-
-  # inspecciono volumenes para ver las propiedades
-  # docker volume inspect docker-compose_vol-vm1-samba
-
-  # lista los volumenes 
-  # docker volume ls
-
-  # eliminar un volumen
-  # docker volume rm docker-compose_vol-vm1-samba
-
-  # eliminar docker-compose
-  docker ps -a
-  docker stop vm1-smb
-  docker rm vm1-smb
-  # si es necesario elimino el volumen y la imagen docker
-  # rm /docker-compose/docker-compose-samba.yml
-
-
-
-#=========================================================================================================================
-[🐋🔥EJECUTAR SCRIPT INICIAL]:
 # actualizo los paquetes del contenedor
 apt-get update
 
@@ -122,75 +83,52 @@ touch script-00.sh
 chmod +x script-00.sh
 
 # instalo nano y pego el código
-apt install nano
-nano script-00.sh
+apt install vim
+vim script-00.sh
 
 [SCRIPT script-00.sh]:
+# dentro de vim pulsar i + (shift + botón derecho)
 --------------------------------------------------------------------------------------------------------------------------
    # Ejecuto el script que tengo en /SCRIPT/script-00.sh de este repositorio GitHub
 --------------------------------------------------------------------------------------------------------------------------
 
-
-#=========================================================================================================================
-[🐋🔥COMPROBACIÓN]:
-root@b588c1588934:/# 
-  # hacer una prueba de crear un archivo en la raíz y después volver a entrar para comprobar que permanece
-  touch prueba.txt && ls
-
-  # para salir del contenedor
-  exit
-  
-  # para volver a iniciar contenedor
-  docker start -i vm1-samba
-  
-  # para enumerar los conedores activos 
-  docker ps -a
-
-  # comprobar que el archivo existe
-  ls
-      # prueba.txt
-
-  +---------------------------------------------------------------------------------------------------------------------------------------------+
-  |  [FUNCIONAMIENTO DE VOLUMENES]:                                                                                                             |
-  |  * Como solo quiero crear un volumen, voy a crear un alias de las carpetas que quiero que se copien a la carpeta del volumen del contenedor |
-  |  * De esta manera, cada vez que quiera sustituir los datos del volumen ejecuto el alias                                                     |
-  |  * por ejemplo: en un mismo volumen puedo tener la carpeta de /etc/smb y /bin, guardando dentro del volumen: /smb /bin                      |
-  |  Para hacer la copia de forma recursiva es: cp -r /etc/smb/ /Docker-volume/                                                                 |
-  +---------------------------------------------------------------------------------------------------------------------------------------------+
-
-# Ejecutar alias en máquina docker
-echo "alias _force-data='cp -r /etc/smb/ /docker-volume/ && cp -r /bin/ /docker-volume/'" >> ~/.bashrc && source ~/.bashrc && echo "Done: Alias _Force-data added successfully!" || echo "Error: Failed to add alias."
-
-
-#=========================================================================================================================
-[🐋🔥CREO ALIAS EN SERVIDOR PRINCIPAL]:
 # creo un alias para asignación rápida desde el servidor principal de la máquina docker
-echo 'alias _vm1.samba=""docker start -i vm1-samba"' >> ~/.bashrc && source ~/.bashrc
-
-# por cada contenedor en Docker que necesite:
-#    + Tengo que generar un volúmen Docker nuevo "vm1-samba" pero puedo utilizar la misma imagen debian
-#    + Tengo un alias en cada contenedor que va a copiar todos los datos de configuración que necesite volcar
-#    + Tengo un alias en el servidor principal que va a ejecutar cada contenedor de forma inidividual rápidamente
-
+echo 'alias _docker_manager="./docker-compose/docker-manager.sh"' >> ~/.bashrc && source ~/.bashrc
 
 #=========================================================================================================================
-[🐋🔥UNA VEZ YA CREADO EL SERVIDOR]:
-# inicializo el contenedor 
-docker start vm1-samba
+[🐋🧑‍🎓MANTENIMIENTO DE DOCKER-COMPOSE]:
+# creo un volumen 
+# Con docker-compose le mando crear un volumen por lo que una vez generada la máquina no es necesario crear su volumen, así que este apartado me lo salto
 
-# en el ejemplo de un servidor samba pas olo siguiente para obtener la IP después de iniciar el contenedor
-docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' vm1-samba
-    # 172.17.0.2
+## 🧑‍🎓 Volúmenes de Docker: 
+# Para que los cambios en tus contenedores sean persistentes, debes utilizar volúmenes de Docker. Los volúmenes permiten que los datos se mantengan incluso cuando el contenedor se detenga o se elimine.
 
+## Lógica de VOLUMENES::
+  # para crear un volumen
+  # docker volume create docker-compose_vol-vm1-samba
 
-#=========================================================================================================================
-[🐋🔥REPETICIÓN]:
-# Tengo que crear por cada máquina virtual que quiero hacer en docker:
-    # Un volumen:                                             Voy a guardar dentro todas las carpetas de configuración de la máquina.
-    # Un archivo de configuración docker-compose:             Voy a crear un archivo .yml para configurar la máquina docker.
-    # Un script dentro del alias de la máquina:               Este script va a ser de instalación general, (igual para todas las máquinas).
-    # Un script dentro del alias de la máquina:               Opción 1 : cuando se ejecute va a copiar automáticamente todas las carpetas de configuración del servidor. Opción 2: Va a desplegar automaticamentelas carpetas de configuración del volúmen a su ubicación real del servidor.
-    # Un alias en la máquina:                                 (Opcional). Un alias de acceso rápido que ejecute el script del volúmen.
-    # Un alias em el servidor principal:                      Para ejecutar de forma rápida el servidor de la máquina.
+  # inspecciono volumenes para ver las propiedades
+  # docker volume inspect docker-compose_vol-vm1-samba
 
+  # lista los volumenes 
+  # docker volume ls
 
+  # eliminar un volumen
+  # docker volume rm docker-compose_vol-vm1-samba
+
+  # eliminar docker-compose
+  # docker ps -a
+  # docker stop vm1-smb
+  # docker rm vm1-smb
+  # si es necesario elimino el volumen y la imagen docker
+  # rm /docker-compose/docker-compose-samba.yml
+
+## Lógica de MAQUINAS::
+  # apagar maquina
+  # docker-compose -f docker-compose-samba.yml down
+
+  # eliminar la máquina sin los vólumenes asociados
+  # docker-compose -f docker-compose-samba.yml rm
+
+  # eliminar la máquina con los volúmenes asociados (-v)
+  # docker-compose -f docker-compose-samba.yml down -v
