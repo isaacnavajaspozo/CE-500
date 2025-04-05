@@ -7,11 +7,11 @@
 [🐋RESUMEN PROYECTO · MÁQUINAS LABORATORÍO]:
 # 🧑‍🎓 Dentro de un servidor Debian, voy a crear con docker-compose un conjunto de máquinas que me sirvan como virtualizador de servidores 
 # 🧑‍🎓 Cada máquina dispondra de un solo volúmen, para persistir los datos. En dicho volúmen voy a guardar las carpetas de configuración necsarias para el funcionamiento de la máquina
-# 🧑‍🎓 Cada volúmen, dentro de cada máquina, dispondrá de dos sciprts:    
+# 🧑‍🎓 Cada volúmen, dentro de cada máquina, dispondrá de dos modulos:    
       # script-00.sh: para la instalación inicial del servidor
-      # script-33.sh: para el volcado hacia la máquina o envío hacia el volúmen de las carpetas de configuración
-# 🧑‍🎓 El servidor principal dispondrá de un alias por cada máquina para un acceso rápido de la máquina
-# 🧑‍🎓 Todas las imágenes docker-compose estarán configuradas en modo host así puedo compartir puertos para distintas máquinas y es más adaptable a los cambios de la máquina, comportandose así como un único servidor pero separando cada máquina de forma independiente y con la posibilidad de apagar o encender cada máquina de forma separada.
+      # sistemas de carpetas: archivos importantes del servicio utilizado para dicha máquina
+# 🧑‍🎓 El servidor principal dispondrá de un alias que ejecuta un script para inicializar las maquinas
+# 🧑‍🎓 Todas las imágenes docker-compose estarán en modo bridge con los puertos necesarios abiertos a excepción de la máquina para pentesting que estará en modo host debido a que quiero utilizarla más adelante y no quiero estas pendiente de modificar los puertos para cada prueba de pentesting.
 
 #=========================================================================================================================
 [🐋INSTALACIÓN]:
@@ -57,38 +57,31 @@ docker-compose --version
 # creo una carpeta para los archivos docker-compose
 mkdir docker-compose
 
-# Creo el archivo .yml para el archivo docker-compose
-# el archivo por defecto es docker-compose.yml
-nano docker-compose-samba.yml
-------------------------------------------------------------------------------------------------------------------------------------
-      version: "3.9"  # Puedes usar la versión que prefieras, pero 3.9 es una versión reciente y estable.
-      
-      services:
-        vm1-samba:
-          image: debian  # Usamos la imagen de Debian
-          restart: always  # Esta opción asegura que el contenedor se reinicie automáticamente
-          hostname: vm1-samba.whitewhale.local  # Agrego un nombre del host para distinguirlo del servidor principal
-          container_name: vm1-samba  # El nombre del contenedor será vm1-samba
-          command: bash  # Comando que se ejecutará cuando el contenedor se inicie
-          network_mode: host  # El contenedor usará la red del host para comportarse como un único servidor
-          volumes:
-            - vol-vm1-samba:/docker-volume  # Montamos el volumen en el contenedor
-          tty: true  # Mantiene el contenedor en ejecución (similar a -it)
-          stdin_open: true  # Permite interacción con el contenedor (similar a -it)
-      
-      volumes:
-        vol-vm1-samba:  # Definimos el volumen que usaremos
-------------------------------------------------------------------------------------------------------------------------------------
+# 🧑‍🎓 Tengo que crear los archivos .yml (que se muestran en el siguiente apartado D🐋) para los archivo docker-compose
 
-# Lanzo el contenedor que por defecto docker-compose up -d lanzará docker-compose.override.yml y docker-compose.yml
+# Para lanzar el contendor en segundo plano y activar el contenedor lo hago con el siguiente comando
 docker-compose -f docker-compose-samba.yml up -d
 
-# Compruebo que está lanzado
+# Compruebo que el contenedor está lanzado
 docker ps
+# Compruebo todos los contenedores
 docker ps -a
 
 # acceder al contenedor 
 docker exec -it vm1-samba bash
+
+#=========================================================================================================================
+[🐋🔥CREO ALIAS + SCRIPT]:
+# creo un alias para asignación rápida desde el servidor principal de la máquina docker
+echo 'alias _vm1.samba=""docker start -i vm1-samba"' >> ~/.bashrc && source ~/.bashrc
+
+
+
+
+
+
+
+
 
 #=========================================================================================================================
 [🐋🔥VOLUMENES]:
@@ -114,10 +107,7 @@ docker exec -it vm1-samba bash
   # si es necesario elimino el volumen y la imagen docker
   # rm /docker-compose/docker-compose-samba.yml
 
-#=========================================================================================================================
-[🐋🔥CREO ALIAS EN SERVIDOR PRINCIPAL]:
-# creo un alias para asignación rápida desde el servidor principal de la máquina docker
-echo 'alias _vm1.samba=""docker start -i vm1-samba"' >> ~/.bashrc && source ~/.bashrc
+
 
 #=========================================================================================================================
 [🐋🔥EJECUTAR SCRIPT INICIAL]:
