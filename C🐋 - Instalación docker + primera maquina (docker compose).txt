@@ -41,7 +41,7 @@ sudo systemctl start docker
 sudo systemctl enable docker
 
 #=========================================================================================================================
-[🐋🔥DOCKER COMPOSE]:
+[🐋DOCKER COMPOSE]:
 # instalo jq necesario para completar la instalación de docker-compose
 apt install jq 
 
@@ -71,32 +71,7 @@ docker ps -a
 docker exec -it vm1-samba bash
 
 #=========================================================================================================================
-[🐋🔥CREO ALIAS + SCRIPT]:
-# actualizo los paquetes del contenedor
-apt-get update
-
-# creo un archivo 
-cd /docker-volume
-touch script-00.sh
-
-# doy permiso de ejecución
-chmod +x script-00.sh
-
-# instalo nano y pego el código
-apt install vim
-vim script-00.sh
-
-[SCRIPT script-00.sh]:
-# dentro de vim pulsar i + (shift + botón derecho)
---------------------------------------------------------------------------------------------------------------------------
-   # Ejecuto el script que tengo en /SCRIPT/script-00.sh de este repositorio GitHub
---------------------------------------------------------------------------------------------------------------------------
-
-# creo un alias para asignación rápida desde el servidor principal de la máquina docker
-echo 'alias _docker_manager="./docker-compose/docker-manager.sh"' >> ~/.bashrc && source ~/.bashrc
-
-#=========================================================================================================================
-[🐋🧑‍🎓MANTENIMIENTO DE DOCKER-COMPOSE]:
+[🧑‍🎓MANTENIMIENTO DE DOCKER-COMPOSE]:
 # creo un volumen 
 # Con docker-compose le mando crear un volumen por lo que una vez generada la máquina no es necesario crear su volumen, así que este apartado me lo salto
 
@@ -123,6 +98,7 @@ echo 'alias _docker_manager="./docker-compose/docker-manager.sh"' >> ~/.bashrc &
   # si es necesario elimino el volumen y la imagen docker
   # rm /docker-compose/docker-compose-samba.yml
 
+## 🧑‍🎓 Máquinas de Docker compose: 
 ## Lógica de MAQUINAS::
   # apagar maquina
   # docker-compose -f docker-compose-samba.yml down
