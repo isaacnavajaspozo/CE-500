@@ -1,13 +1,13 @@
 # 🧠 Velociraptor es una plataforma de respuesta a incidentes y forense digita que permite la recolección de datos, la monitorización y la ejecución de consultas en sistemas finales (ayuda a investigar y responder a incidentes en tiempo rea).
 #===========================================================================================================================
-[🐋INSTALACIÓN ETHERNET]:
+[⛩️INSTALACIÓN ETHERNET]:
 # Versiones                            : https://github.com/Velocidex/velociraptor/releases
 # Documentación oficial                : https://github.com/Velocidex/velociraptor?tab=readme-ov-file
 # Documentación oficial                : https://github.com/Velocidex/velociraptor
 # Documentación oficial                : https://docs.velociraptor.app/
 
 #===========================================================================================================================
-[🐋INSTALACIÓN SERVIDOR-VELOCIRAPTOR EN LINUX]:
+[⛩️INSTALACIÓN SERVIDOR-VELOCIRAPTOR EN LINUX]:
 # Herramientas básicas
 sudo apt update && sudo apt install -y wget unzip openssl
 
@@ -49,7 +49,7 @@ sudo systemctl daemon-reexec
 sudo systemctl enable --now velociraptor
 
 #===========================================================================================================================
-[🐋INSTALACIÓN AGENTE-VELOCIRAPTOR EN WINDOWS]:
+[⛩️INSTALACIÓN AGENTE-VELOCIRAPTOR EN WINDOWS]:
 # 📦 Desde Linux genero el agente (generará un .exe)
 velociraptor --config server.config.yaml config client
 
