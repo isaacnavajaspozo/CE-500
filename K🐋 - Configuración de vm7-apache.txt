@@ -1,4 +1,4 @@
-
+# 🧠 Apache es un servidor web de código abierto y altamente configurable, usado para alojar aplicaciones y sitios web.
 #=========================================================================================================================
 [🐋WHITE WHALE]::
 # documentación no-oficial         : https://es.linux-console.net/?p=29687
