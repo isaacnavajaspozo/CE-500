@@ -3,13 +3,13 @@
 # 📄🚫 No puedo utilizar dockerfiles porque me han pedido desde el centro que realice las instalaciones como si fuesen servidores independientes
 # 📄🚫 Es decir que la idea de utilizar docker-compose me sirve solo para dividir en una misma máquina los distintos servidores
 
-
 #=========================================================================================================================
 [⛩️CREAR IMÁGENES DE DOCKER-COMPOSE]::
 # Entrar en la ruta
 cd /docker-compose
 
 # Crear docker-compose de la máquina 1 (Samba)
+# 🧑‍🎓 Esta máquina la configuro en modo bridge para separarla de mi red LAN
 vim docker-compose-samba.yml
 ----------------------------------------------------------------------------
 version: "3.9"  # Última versión y estable
@@ -37,7 +37,7 @@ volumes:
 ----------------------------------------------------------------------------
 
 # Crear docker-compose de la máquina 2 (Pentesting)
-# esta máquina la creo en modo host ya que la voy a utilizar como red-team y pruebas de penetración y no quiero estar dependiendo de gestionar puertos debido a que no voy a conocer las necesidades futuras
+# 🧑‍🎓 En esta máquina la creo en modo host ya que la voy a utilizar como red-team y pruebas de penetesting y necesito todo el acceso a la red
 vim docker-compose-pentesting.yml
 ----------------------------------------------------------------------------
 version: "3.9"
@@ -57,9 +57,8 @@ volumes:
   vol-vm2-pentesting:                              # Definimos el volumen
 ----------------------------------------------------------------------------
 
--
-
 # Crear docker-compose de la máquina 3 (BitWarden)
+# 🧑‍🎓 Esta máquina la configuro en modo bridge para separarla de mi red LAN
 vim docker-compose-bitwarden.yml
 ----------------------------------------------------------------------------
 version: "3.9"  # Última versión y estable
@@ -84,48 +83,53 @@ volumes:
 ----------------------------------------------------------------------------
 
 # Crear docker-compose de la máquina 4 (Greenbone)
+# 🧑‍🎓 En esta máquina necesito que sea tipo host ya que voy a necesitar escanear la red y por tanto acceso completo a la LAN
 vim docker-compose-greenbone.yml
 ----------------------------------------------------------------------------
-version: "3.9"                                        # Última versión y estable
+version: "3.9"
 
 services:
-  vm4-greenbone:
+ vm4-greenbone:
     image: debian                                     # Usamos la imagen de Debian
     hostname: vm4-greenbone.whitewhale.local
-    container_name: vm4-greenbone                     # El nombre del contenedor será vm1-smb
+    container_name: vm4-greenbone                     # El nombre del contenedor
     command: bash                                     # Comando que se ejecutará cuando el contenedor se inicie
     network_mode: host                                # El contenedor usará la red del host
     volumes:
       - vol-vm4-greenbone:/docker-volume              # Montamos el volumen en el contenedor
     tty: true                                         # Mantiene el contenedor en ejecución (similar a -it)
     stdin_open: true                                  # Permite interacción con el contenedor (similar a -it)
- 
+
 volumes:
   vol-vm4-greenbone:                                  # Definimos el volumen que usaremos
+
+
 ----------------------------------------------------------------------------
 
-# Crear docker-compose de la máquina 5 (OpenEDR)
-vim docker-compose-openedr.yml
+# Crear docker-compose de la máquina 5 (Velociraptor)
+# 🧑‍🎓 En esta máquina necesito que sea tipo host ya que voy a necesitar escanear la red y por tanto acceso completo a la LAN
+vim docker-compose-velociraptor.yml
 ----------------------------------------------------------------------------
 version: "3.9"                                        # Última versión y estable
 
 services:
-  vm5-openedr:
+  vm5-velociraptor:
     image: debian                                     # Usamos la imagen de Debian
-    hostname: vm5-openedr.whitewhale.local
-    container_name: vm5-openedr                       # El nombre del contenedor será vm1-smb
+    hostname: vm5-velociraptor.whitewhale.local
+    container_name: vm5-velociraptor                  # El nombre del contenedor
     command: bash                                     # Comando que se ejecutará cuando el contenedor se inicie
     network_mode: host                                # El contenedor usará la red del host
     volumes:
-      - vol-vm5-openedr:/docker-volume                # Montamos el volumen en el contenedor
+      - vol-vm5-velociraptor:/docker-volume           # Montamos el volumen en el contenedor
     tty: true                                         # Mantiene el contenedor en ejecución (similar a -it)
     stdin_open: true                                  # Permite interacción con el contenedor (similar a -it)
  
 volumes:
-  vol-vm5-openedr:                                    # Definimos el volumen que usaremos
+  vol-vm5-velociraptor:                                    # Definimos el volumen que usaremos
 ----------------------------------------------------------------------------
 
 # Crear docker-compose de la máquina 6 (Nginx)
+# 🧑‍🎓 Esta máquina la configuro en modo bridge para separarla de mi red LAN
 vim docker-compose-web.yml
 ----------------------------------------------------------------------------
 version: "3.9"                                        # Última versión y estable
@@ -146,7 +150,8 @@ volumes:
   vol-vm6-nginx:                                      # Definimos el volumen que usaremos
 ----------------------------------------------------------------------------
 
-# Crear docker-compose de la máquina 6 (Apache)
+# Crear docker-compose de la máquina 7 (Apache)
+# 🧑‍🎓 Esta máquina la configuro en modo bridge para separarla de mi red LAN
 vim docker-compose-web.yml
 ----------------------------------------------------------------------------
 version: "3.9"                                        # Última versión y estable
@@ -167,8 +172,9 @@ volumes:
   vol-vm7-apache:                                     # Definimos el volumen que usaremos
 ----------------------------------------------------------------------------
 
-# Crear docker-compose de la máquina 7 (Nagios)
-vim docker-compose-nagios.yml
+# Crear docker-compose de la máquina 8 (Zabbix)
+# 🧑‍🎓 Esta máquina la configuro en modo bridge para separarla de mi red LAN
+vim docker-compose-zabbix.yml
 ----------------------------------------------------------------------------
 version: "3.9"                                        # Última versión y estable
 
@@ -187,7 +193,6 @@ services:
 volumes:
   vol-vm8-nagios:                                     # Definimos el volumen que usaremos
 ----------------------------------------------------------------------------
-
 
 #=========================================================================================================================
 [⛩️CREAR ALIAS EN SERVIDOR PRINCIPAL]::
@@ -225,42 +230,6 @@ source ~/.bashrc
 
 # ejecuto script
 _docker-manager
-
-
-#=========================================================================================================================
-[⛩️🔥DENTRO DE LA MÁQUINA DOCKER]:
-## Repito este bloque por cada máquina:
-# Desde la máquina principal creo el script como ejecutable
-# Ver dirección física del volumen
-cd /var/lib/docker/volumes/
-
-# Compruebo alias, por ejemplo pentesting
- _vm2.pentesting
-
-# actualizo los paquetes del contenedor
-apt-get update
-
-# creo un archivo 
-cd /docker-volume
-touch script-00.sh
-
-# doy permiso de ejecución
-chmod +x script-00.sh
-
-# instalo nano y pego el código
-apt install nano -y
-nano script-00.sh
-
-[SCRIPT script-00.sh]:
---------------------------------------------------------------------------------------------------------------------------
-  # Guardo el script que tengo en /SCRIPT/script-00.sh
---------------------------------------------------------------------------------------------------------------------------
-
-# Ejecuto el script 
-/docker-volume/script-00.sh
-
-# Salir de la máquina
-exit
 
 #=========================================================================================================================
 [⛩️COMPROBAR VOLUMEN]::
