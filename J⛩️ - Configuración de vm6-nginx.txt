@@ -1,6 +1,6 @@
 # 🧠 Nginx es un servidor web y proxy reverso eficiente y ligero, optimizado para manejar altas cargas y tráfico concurrente.
 #=========================================================================================================================
-[🐋WHITE WHALE]::
+[⛩️WHITE WHALE]::
 # Documentación configurar Node 		: https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-20-04-es?
 # Documentación configurar Nginx 		: https://carlosazaustre.es/como-configurar-nginx-con-node-js-en-produccion?
 # Documentación certificado 			: https://medium.com/@ali_97803/deploy-de-una-app-de-express-js-con-github-actions-usando-nginx-en-modo-https-855126f93164#82a4
@@ -13,7 +13,7 @@
 #						: https://www.mongodb.com/docs/manual/
 
 #=========================================================================================================================
-[🐋INSTALACIONES]::
+[⛩️INSTALACIONES]::
 # instalaciones 
 apt update
 apt upgrade -y
@@ -33,7 +33,7 @@ chmod +x script-00.sh
 source ~/.bashrc
 
 #=========================================================================================================================
-[🐋SERVIDOR NGINX EXPRESS.JS]:
+[⛩️SERVIDOR NGINX EXPRESS.JS]:
 🧑‍🎓 NODE  :: Entorno de ejecución para JavaScript en el servidor. Permite ejecutar código JavaScript fuera del navegador.
 🧑‍🎓 NGINX :: Servidor web y proxy inverso. Es ligero, rápido y ampliamente utilizado para actuar como proxy inverso para aplicaciones.
 🧑‍🎓 PM2   :: Gestor de procesos para aplicaciones Node.js. Mantiene las aplicaciones en ejecución, maneja ciclos de vida y garantiza su disponibilidad, incluso después de fallos o reinicios del servidor.
@@ -187,7 +187,7 @@ sudo systemctl restart nginx
 # A partir de aora voy a crear un proyecto con Nginx con Express.js y con Typescript en una configuración cluster con tres puertos diferentes.
 
 #=========================================================================================================================
-[🐋INSTALACIÓN DE PM2]:
+[⛩️INSTALACIÓN DE PM2]:
 # PM2 no solo es útil para gestionar procesos en producción, sino que también es muy eficaz para gestionar el ciclo de vida de la aplicación, incluyendo el despliegue (deploy), la gestión de procesos, y la configuración de producción.
 
 ## process manager:
@@ -287,7 +287,7 @@ pm2 ps
 pm2 logs express
 
 #=========================================================================================================================
-[🐋INSTALACIÓN DE MONGODB]:
+[⛩️INSTALACIÓN DE MONGODB]:
 # importar la clave pública de MongoDB
 wget -O mongodb. - https://www.mongodb.org/static/pgp/server-6.0.asc
 
@@ -397,7 +397,7 @@ pm2 start ecosystem.config.js
 https://www.mongodb.com/try/download/compass
 
 #=========================================================================================================================
-[🐋INSTALAR CERTIFICADO]:
+[⛩️INSTALAR CERTIFICADO]:
 # certificado con dominio local
 ⚠️ Para un dominio local como el mio necesito un certificado autofirmado
 
@@ -494,7 +494,7 @@ sudo vim /etc/nginx/sites-available/express
 openssl x509 -in /var/www/express/letsencrypt/pruebas.local.crt -text -noout
 
 #=========================================================================================================================
-[🐋MATO PROCESOS SI HAY FALLO]:
+[⛩️MATO PROCESOS SI HAY FALLO]:
 # compruebo los procesos en mi puerto
 lsof -i :3000
 
