@@ -38,6 +38,7 @@ sudo apt install -y sqlite3 curl unzip build-essential pkg-config libssl-dev
 sudo useradd -r -m -U -d /opt/vaultwarden vaultwarden
 
 # descargar Vaultwarden
+mkdir /opt/vaultwarden
 cd /opt/vaultwarden
 curl -fsSL https://github.com/dani-garcia/vaultwarden/archive/refs/tags/1.33.2.tar.gz -o vaultwarden.tar.gz
 sudo -u vaultwarden tar -xvzf vaultwarden.tar.gz
