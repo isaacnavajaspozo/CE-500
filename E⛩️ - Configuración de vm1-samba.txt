@@ -1,11 +1,11 @@
 #=========================================================================================================================
-[🐋WHITE WHALE]::
+[⛩️WHITE WHALE]::
 Documentación ofical samba                 : https://wiki.samba.org/index.php/Setting_up_Samba_as_a_Standalone_Server
 Documentación oficial de usuarios samba    : https://wiki.samba.org/index.php/User_and_Group_management
 Documentación oficial de restic            : https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html#local
 
 #=========================================================================================================================
-[🐋INSTALACIONES]::
+[⛩️INSTALACIONES]::
 
 # instalaciones 
 apt update
@@ -32,7 +32,7 @@ apt install -y samba
 mkdir /docker-volume/samba
 
 #=========================================================================================================================
-[🐋MODIFICAR RUTA DE SAMBA]::
+[⛩️MODIFICAR RUTA DE SAMBA]::
 # modificar ruta de servicio
 mv /etc/samba/smb.conf /etc/samba/_smb.conf
 cd /docker-volume
@@ -99,7 +99,7 @@ chown -R nobody:smbIlerna /docker-volume/archivos_samba/
 chmod -R 0770 /docker-volume/archivos_samba/
 
 #=========================================================================================================================
-[🐋DEJO EN SEGUNDO PLANO ESTA MÁQUINA]::
+[⛩️DEJO EN SEGUNDO PLANO ESTA MÁQUINA]::
 exit
 docker ps
 
@@ -112,7 +112,7 @@ Ingrese el número del contenedor: 1
 docker ps
 
 #=========================================================================================================================
-[🐋INSTALO RESTIC]::
+[⛩️INSTALO RESTIC]::
 # restic lo voy a utilizar en caso de querer rescatar archivos en vivo
 apt install restic -y
 
