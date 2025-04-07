@@ -1,10 +1,10 @@
 #=========================================================================================================================
-[🐋WHITE WHALE]::
+[⛩️WHITE WHALE]::
 # Guia de instalación debian       : https://docs.docker.com/engine/install/debian/
 # Guía de instalación volumenes    : https://docs.docker.com/storage/volumes/
 
 #=========================================================================================================================
-[🐋RESUMEN PROYECTO · MÁQUINAS LABORATORÍO]:
+[⛩️RESUMEN PROYECTO · MÁQUINAS LABORATORÍO]:
 # 🧑‍🎓 Dentro de un servidor Debian, voy a crear con docker-compose un conjunto de máquinas que me sirvan como virtualizador de servidores 
 # 🧑‍🎓 Cada máquina dispondra de un solo volúmen, para persistir los datos. En dicho volúmen voy a guardar las carpetas de configuración necsarias para el funcionamiento de la máquina
 # 🧑‍🎓 Cada volúmen, dentro de cada máquina, dispondrá de dos modulos:    
@@ -14,7 +14,7 @@
 # 🧑‍🎓 Todas las imágenes docker-compose estarán en modo bridge con los puertos necesarios abiertos a excepción de la máquina para pentesting que estará en modo host debido a que quiero utilizarla más adelante y no quiero estas pendiente de modificar los puertos para cada prueba de pentesting.
 
 #=========================================================================================================================
-[🐋INSTALACIÓN]:
+[⛩️INSTALACIÓN]:
 # si tengo instalado docker desinstalo todos los paquetes en conflicto
 for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt-get remove $pkg; done
 
@@ -41,7 +41,7 @@ sudo systemctl start docker
 sudo systemctl enable docker
 
 #=========================================================================================================================
-[🐋DOCKER COMPOSE]:
+[⛩️DOCKER COMPOSE]:
 # instalo jq necesario para completar la instalación de docker-compose
 apt install jq 
 
