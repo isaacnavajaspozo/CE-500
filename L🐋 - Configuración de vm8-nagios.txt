@@ -1,1 +1,0 @@
-# Nagios o (Prometehus con grafana)
