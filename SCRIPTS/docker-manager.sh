@@ -7,10 +7,10 @@ CONTAINERS=(
     [2]="vm2-pentesting"
     [3]="vm3-bitwarden"
     [4]="vm4-greenbone"
-    [5]="vm5-openedr"
+    [5]="vm5-velociraptor"
     [6]="vm6-nginx"
     [7]="vm7-apache"
-    [8]="vm8-nagios"
+    [8]="vm8-zabbix"
 )
 
 declare -A COMPOSE_FILES
@@ -19,10 +19,10 @@ COMPOSE_FILES=(
     [2]="/docker-compose/docker-compose-pentesting.yml"
     [3]="/docker-compose/docker-compose-bitwarden.yml"
     [4]="/docker-compose/docker-compose-greenbone.yml"
-    [5]="/docker-compose/docker-compose-openedr.yml"
+    [5]="/docker-compose/docker-compose-velociraptor.yml"
     [6]="/docker-compose/docker-compose-nginx.yml"
     [7]="/docker-compose/docker-compose-apache.yml"
-    [8]="/docker-compose/docker-compose-nagios.yml"
+    [8]="/docker-compose/docker-compose-zabbix.yml"
 )
 
 # Mostrar opciones
@@ -49,8 +49,8 @@ read BACKGROUND
 if [[ "$BACKGROUND" == "s" ]]; then
     docker-compose -f "$COMPOSE_FILE" up -d
     echo "Contenedor $CONTAINER_NAME ejecutándose en segundo plano."
+    exit 0
 else
-# tengo que agregar lógica para saber si esta ejecutandose en segundo plano que la pare
     echo "Saliendo..."
 fi
 
