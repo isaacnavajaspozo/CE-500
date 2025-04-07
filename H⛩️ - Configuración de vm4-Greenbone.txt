@@ -73,10 +73,11 @@ source ~/.bashrc
 # *********************************************************************
 	# Greenbone debe ejecutarse como un usuario y un grupo dedicado (no le doy acceso a terminal)
 	useradd -r -M -U -G sudo -s /usr/sbin/nologin gvm
-	
+
+	## en local tendría que crear un usuario para Greenbone pero en mi caso de docker trabajo directamente
 	# permitir que el usuario actual ejecute gvmd
-	usermod -aG gvm "nombre de usuario Linux"
-	su "nombre de usuario Linux"
+	# usermod -aG gvm "nombre de usuario Linux"
+	# su "nombre de usuario Linux"
 # *********************************************************************
 
 # 03.📌 Instalaciones
@@ -270,8 +271,8 @@ source ~/.bashrc
 	tar -C $SOURCE_DIR/gsa-$GSA_VERSION -xvzf $SOURCE_DIR/gsa-$GSA_VERSION.tar.gz
 	
 	# Instalación de GSA 
-	sudo mkdir -p $INSTALL_PREFIX/share/gvm/gsad/web/
-	sudo cp -rv $SOURCE_DIR/gsa-$GSA_VERSION/* $INSTALL_PREFIX/share/gvm/gsad/web/
+	mkdir -p $INSTALL_PREFIX/share/gvm/gsad/web/
+	cp -rv $SOURCE_DIR/gsa-$GSA_VERSION/* $INSTALL_PREFIX/share/gvm/gsad/web/
 # *********************************************************************
 
 # 🔥 gsad
@@ -336,7 +337,7 @@ source ~/.bashrc
 
 	make DESTDIR=$INSTALL_DIR/openvas-smb install
 
-	sudo cp -rv $INSTALL_DIR/openvas-smb/* /
+	cp -rv $INSTALL_DIR/openvas-smb/* /
 
 # *********************************************************************
 
@@ -395,7 +396,7 @@ source ~/.bashrc
 
 	python3 -m pip install --root=$INSTALL_DIR/ospd-openvas --no-warn-script-location .
 
-	sudo cp -rv $INSTALL_DIR/ospd-openvas/* /
+	cp -rv $INSTALL_DIR/ospd-openvas/* /
 
 # *********************************************************************
 
@@ -420,10 +421,11 @@ source ~/.bashrc
 	cargo build --release
 
 	# copia de binarios
-	sudo cp -v ../../target/release/openvasd $INSTALL_DIR/openvasd/usr/local/bin/
-	sudo cp -v ../../target/release/scannerctl $INSTALL_DIR/openvasd/usr/local/bin/
-	sudo cp -rv $INSTALL_DIR/openvasd/* /
+	cp -v ../../target/release/openvasd $INSTALL_DIR/openvasd/usr/local/bin/
+	cp -v ../../target/release/scannerctl $INSTALL_DIR/openvasd/usr/local/bin/
+	cp -rv $INSTALL_DIR/openvasd/* /
 
+# me quedo aqui...
 # *********************************************************************
 
 # 🔥 greenbone-feed-sync
