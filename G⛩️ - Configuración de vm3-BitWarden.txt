@@ -41,17 +41,17 @@ sudo useradd -r -m -U -d /opt/vaultwarden vaultwarden
 mkdir /opt/vaultwarden
 cd /opt/vaultwarden
 curl -fsSL https://github.com/dani-garcia/vaultwarden/archive/refs/tags/1.33.2.tar.gz -o vaultwarden.tar.gz
-sudo -u vaultwarden tar -xvzf vaultwarden.tar.gz
+tar -xzvf vaultwarden.tar.gz
 rm vaultwarden.tar.gz
 mv /opt/vaultwarden/vaultwarden-1.33.2/* /opt/vaultwarden/
 mv /opt/vaultwarden/vaultwarden-1.33.2/.* /opt/vaultwarden/
 rmdir /opt/vaultwarden/vaultwarden-1.33.2
-rm /opt/vaultwarden/vaultwarden.tar.gz
 
 # configurar Vaultwarden
-sudo -u vaultwarden cp .env.template .env
+# sudo -u vaultwarden cp .env.template .env
+cp .env.template .env
 vim /opt/vaultwarden/.env
-    > DOMAIN=https://tudominio.com
+    > DOMAIN=https://vm3-bitwarden.whitewhale.local
     > SIGNUPS_ALLOWED=false                                # en false no permite registros 
     > DATABASE_URL=data/db.sqlite3
 
@@ -80,7 +80,7 @@ sudo systemctl enable vaultwarden
 sudo systemctl start vaultwarden
 sudo systemctl status vaultwarden
 
-# si sale un error de: ExecStart es porque no existe el binario así que lo creo
+# ⚠️ si sale un error de: ExecStart es porque no existe el binario así que lo creo
 # instalo 
 sudo apt install build-essential curl git libssl-dev pkg-config
 
