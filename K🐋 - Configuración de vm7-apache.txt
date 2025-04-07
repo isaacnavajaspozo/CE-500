@@ -3,6 +3,13 @@
 [🐋WHITE WHALE]::
 # documentación no-oficial         : https://es.linux-console.net/?p=29687
 # documentación no-oficial         : https://www.php.net/manual/es/install.unix.debian.php
+# Documentación certificado 			: https://medium.com/@ali_97803/deploy-de-una-app-de-express-js-con-github-actions-usando-nginx-en-modo-https-855126f93164#82a4
+# Documentación oficial de SQL/Debian 		: https://wiki.debian.org/MySQL
+# Documentación oficial de mariaDB 		: https://mariadb.com/kb/en/documentation/
+# Documentación oficial de MySQL 		: https://dev.mysql.com/doc/
+# Documentación no-oficial certificados		: https://rlodeiro.info/blog/certificado-autofirmado/
+# Documentación oficial de Lets Encrypt		: https://letsencrypt.org/
+# Documentación OpenSSL				: https://docs.openssl.org/3.0/man7/migration_guide/
 
 #=========================================================================================================================
 [🐋INSTALACIONES]::
