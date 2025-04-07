@@ -1,6 +1,6 @@
 # 🧠 Apache es un servidor web de código abierto y altamente configurable, usado para alojar aplicaciones y sitios web.
 #=========================================================================================================================
-[🐋WHITE WHALE]::
+[⛩️WHITE WHALE]::
 # documentación no-oficial         : https://es.linux-console.net/?p=29687
 # documentación no-oficial         : https://www.php.net/manual/es/install.unix.debian.php
 # Documentación certificado 			: https://medium.com/@ali_97803/deploy-de-una-app-de-express-js-con-github-actions-usando-nginx-en-modo-https-855126f93164#82a4
@@ -12,7 +12,7 @@
 # Documentación OpenSSL				: https://docs.openssl.org/3.0/man7/migration_guide/
 
 #=========================================================================================================================
-[🐋INSTALACIONES]::
+[⛩️INSTALACIONES]::
 # instalaciones 
 apt update
 apt upgrade -y
@@ -32,7 +32,7 @@ chmod +x script-00.sh
 source ~/.bashrc
 
 #=========================================================================================================================
-[🐋SERVIDOR APACHE PHP]:
+[⛩️SERVIDOR APACHE PHP]:
 
 
 
@@ -44,7 +44,7 @@ source ~/.bashrc
 
 
 #=========================================================================================================================
-[🐋INSTALACIÓN DE MARIADB]:
+[⛩️INSTALACIÓN DE MARIADB]:
 # Compruebo que funciona todo bien
 
 # Como quiero que la base de datos permanezca en mi servidor y no en uno independiente voy a instalar mysql
@@ -110,7 +110,7 @@ cd /var/www/express
 pm2 start ecosystem.config.js
 
 #=========================================================================================================================
-[🐋INSTALAR CERTIFICADO]:
+[⛩️INSTALAR CERTIFICADO]:
 # certificado con dominio local
 ⚠️ Para un dominio local como el mio necesito un certificado autofirmado
 
@@ -207,7 +207,7 @@ sudo vim /etc/nginx/sites-available/express
 openssl x509 -in /var/www/express/letsencrypt/pruebas.local.crt -text -noout
 
 #=========================================================================================================================
-[🐋MATO PROCESOS SI HAY FALLO]:
+[⛩️MATO PROCESOS SI HAY FALLO]:
 # compruebo los procesos en mi puerto
 lsof -i :3000
 
