@@ -1,11 +1,11 @@
 #=========================================================================================================================
-[🐋WHITE WHALE]::
+[⛩️WHITE WHALE]::
 # 📄🚫 No puedo utilizar dockerfiles porque me han pedido desde el centro que realice las instalaciones como si fuesen servidores independientes
 # 📄🚫 Es decir que la idea de utilizar docker-compose me sirve solo para dividir en una misma máquina los distintos servidores
 
 
 #=========================================================================================================================
-[🐋CREAR IMÁGENES DE DOCKER-COMPOSE]::
+[⛩️CREAR IMÁGENES DE DOCKER-COMPOSE]::
 # Entrar en la ruta
 cd /docker-compose
 
@@ -190,7 +190,7 @@ volumes:
 
 
 #=========================================================================================================================
-[🐋CREAR ALIAS EN SERVIDOR PRINCIPAL]::
+[⛩️CREAR ALIAS EN SERVIDOR PRINCIPAL]::
 ## TEORIA :: Datos y posibilidades a tener en cuenta para crear alias
 # 🧑‍🎓 En el caso de lanzar una máquina en segundo plano (modo detached)
 # docker-compose -f /docker-compose/docker-compose-samba.yml up -d
@@ -228,7 +228,7 @@ _docker-manager
 
 
 #=========================================================================================================================
-[🐋🔥DENTRO DE LA MÁQUINA DOCKER]:
+[⛩️🔥DENTRO DE LA MÁQUINA DOCKER]:
 ## Repito este bloque por cada máquina:
 # Desde la máquina principal creo el script como ejecutable
 # Ver dirección física del volumen
@@ -263,7 +263,7 @@ nano script-00.sh
 exit
 
 #=========================================================================================================================
-[🐋COMPROBAR VOLUMEN]::
+[⛩️COMPROBAR VOLUMEN]::
 # Con docker-compose le mando crear un volumen por lo que una vez generada la máquina no es necesario crear su volumen, pero puedo comprobar que existen solo los necesarios 
 # Esto quiere decir que si borro algún docker-compose tengo que eliminar de forma independiente su volumen
 
