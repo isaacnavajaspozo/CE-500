@@ -1,5 +1,5 @@
 #=========================================================================================================================
-[🐋WHITE WHALE]::
+[⛩️WHITE WHALE]::
 # Documentación no-oficial   : https://serverspace.io/es/support/help/install-bitwarden-debian-11/
 # Documentación oficial      : https://bitwarden.com/help/install-on-premise-linux/
 # No hay una documentación oficial para utilizar vaultwarden sin docker 
@@ -7,7 +7,7 @@
 # Documentación no-oficial   : https://community.hetzner.com/tutorials/how-to-install-vaultwarden
 
 #=========================================================================================================================
-[🐋INSTALACIONES]::
+[⛩️INSTALACIONES]::
 # instalaciones 
 apt update
 apt upgrade -y
@@ -27,7 +27,7 @@ chmod +x script-00.sh
 source ~/.bashrc
 
 #=========================================================================================================================
-[🐋INSTALACIÓN BITWARDEN]::
+[⛩️INSTALACIÓN BITWARDEN]::
 # actualizar el sistema
 sudo apt update && sudo apt upgrade -y
 
