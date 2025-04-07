@@ -2,6 +2,26 @@
 [⛩️INSTALACIÓN GREENBONE]:
 # Documentación oficial : https://greenbone.github.io/docs/latest/22.4/source-build/index.html
 
+#=========================================================================================================================
+[⛩️INSTALACIONES]::
+# instalaciones 
+apt update
+apt upgrade -y
+
+# entro en el volumen e instalo el script
+cd /docker-volume
+apt install vim -y
+vim script-00.sh
+# i - (shift + botón derecho):
+--------------------------------------------------------------------------------------
+    # código de /SCRIPTS/script-00.sh de este github
+--------------------------------------------------------------------------------------
+
+# doy permisos y hago la instalación
+chmod +x script-00.sh
+./script-00.sh
+source ~/.bashrc
+
 ==================================================================================================================================================
 ==========[ 20/02/2025 · GREENBONE ]==============================================================================================================
 	##.🧑‍🎓 Explicación de componentes OpenVass:
