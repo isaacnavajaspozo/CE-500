@@ -1,15 +1,15 @@
 #=========================================================================================================================
-[🐋WHITE WHALE]::
+[⛩️WHITE WHALE]::
 # Documentación oficial SSH    : https://www.openssh.com/
 # Documentación no-oficial     : https://synay.net/es/support/kb/disabling-automatic-workstation-sleep-debian-12
 
 #=========================================================================================================================
-[🐋INSTALACIONES]::
+[⛩️INSTALACIONES]::
 # Instalaciones generales
 apt install -y htop lm-sensors vim net-tools openssh-server iptables iptables-persistent fail2ban
 
 #=========================================================================================================================
-[🐋CONFIGURACIÓN DE LA RED]::
+[⛩️CONFIGURACIÓN DE LA RED]::
 # Compruebo ip por DHCP
 ifconfig
 
@@ -77,7 +77,7 @@ systemctl status networking
 sudo reboot
 
 #=========================================================================================================================
-[🐋INSTALACIÓN SSH]::
+[⛩️INSTALACIÓN SSH]::
 # Amplio tiempo de ssh y deshabilitar la suspensión
 systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
 
@@ -94,7 +94,7 @@ systemctl status sshd
 systemctl enable sshd
 
 #=========================================================================================================================
-[🐋CREO USUARIOS NECESARIOS]::
+[⛩️CREO USUARIOS NECESARIOS]::
 # creo script para generar contraseña
 
 cd Docker-compose
@@ -139,7 +139,7 @@ cat /etc/passwd
 sudo userdel -r <NOMBRE_DE_USUARIO>
 
 #=========================================================================================================================
-[🐋AJUSTES DEL SERVIDOR]::
+[⛩️AJUSTES DEL SERVIDOR]::
 # Me registro con el usuario
 # Modifico configuración de terminal de usuario (lo agrego al final de los alias, antes de  if [ -f ~/.bash_aliases ]; then...)
 nano ~/.bashrc
@@ -166,7 +166,7 @@ nano ~/.bashrc
 source ~/.bashrc
 
 #=========================================================================================================================
-[🐋CONFIGURACIÓN DE VIM]::
+[⛩️CONFIGURACIÓN DE VIM]::
 # # creo el archivo vimrc
 sudo nano ~/.vimrc
 
@@ -241,7 +241,7 @@ sudo nano ~/.vimrc
 ----------------------------------------------------------------------------
 
 #=========================================================================================================================
-[🐋CONFIGURACIÓN DE IPTABLES]::
+[⛩️CONFIGURACIÓN DE IPTABLES]::
 # Compruebo la instalación
 sudo iptables -L
 
@@ -254,7 +254,7 @@ vim /etc/iptables/rules.v4
 ...
 
 #=========================================================================================================================
-[🐋CONFIGURACIÓN DE FAIL2BAN]::
+[⛩️CONFIGURACIÓN DE FAIL2BAN]::
 # Modifico las variables del siguiente archivo
 vim /etc/fail2ban/jail.conf
 ----------------------------------------------------------------------------
