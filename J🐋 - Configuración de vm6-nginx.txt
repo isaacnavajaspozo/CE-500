@@ -1,11 +1,9 @@
+# 🧠 Nginx es un servidor web y proxy reverso eficiente y ligero, optimizado para manejar altas cargas y tráfico concurrente.
 #=========================================================================================================================
 [🐋WHITE WHALE]::
 # Documentación configurar Node 		: https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-20-04-es?
 # Documentación configurar Nginx 		: https://carlosazaustre.es/como-configurar-nginx-con-node-js-en-produccion?
 # Documentación certificado 			: https://medium.com/@ali_97803/deploy-de-una-app-de-express-js-con-github-actions-usando-nginx-en-modo-https-855126f93164#82a4
-# Documentación oficial de SQL/Debian 		: https://wiki.debian.org/MySQL
-# Documentación oficial de mariaDB 		: https://mariadb.com/kb/en/documentation/
-# Documentación oficial de MySQL 		: https://dev.mysql.com/doc/
 # Documentación no-oficial certificados		: https://rlodeiro.info/blog/certificado-autofirmado/
 # Documentación oficial de Lets Encrypt		: https://letsencrypt.org/
 # Documentación OpenSSL				: https://docs.openssl.org/3.0/man7/migration_guide/
@@ -107,13 +105,24 @@ vim package.json
 
 # Creo un archivo /app/index.ts:
 mkdir app
+npm install express mongoose
 cd app
 vim index.ts
 -----------------------------------------------------------------------
 import express, { Request, Response } from 'express';
+import mongoose from 'mongoose';
 
 const app = express();
 const port = 3000;
+
+const mongoURI = 'mongodb://localhost:27017/tu_base_de_datos'; 
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log('👨‍💻 Connect to MongoDB');
+  })
+  .catch(err => {
+    console.error('Error:', err);
+  });
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello Ilerna, i can write TypeScript with Express.js!');
@@ -297,7 +306,8 @@ sudo systemctl enable mongod
 sudo systemctl status mongod
 
 # acceder al shell mongo
-mongo
+# mongo
+mongosh
 
 # crear una base de datos
 use nombre_de_base_de_datos
@@ -333,7 +343,7 @@ show users
 # autenticación y conexión con el usuario
 # Configurar el cortafuegos
 vim /etc/mongod.conf
--
+----------------------------------------------------
 security:
   authorization: "enabled" 		# autenticación con usuario existente
 ...
@@ -343,7 +353,7 @@ net:
 net:
   http:
     enabled: false  			# Deshabilitar la interfaz HTTP
--
+----------------------------------------------------
 
 # reinicio servicio
 systemctl restart mongod
@@ -357,7 +367,7 @@ mongo -u nombre_usuario -p contraseña_segura --authenticationDatabase nombre_de
 # encriptación en reposo: MongoDB Enterprise ofrece encriptación de datos en reposo, lo cual cifra los datos almacenados en disco. Si usas la versión comunitaria, puedes usar una solución externa de cifrado.
 # encriptación en tránsito: Configura TLS/SSL para cifrar el tráfico de la base de datos entre los clientes y el servidor MongoDB.
 vim /etc/mongod.conf
--
+----------------------------------------------------
 net:
   ssl:
     mode: requireSSL  # Forzar la encriptación de datos en tránsito
@@ -369,92 +379,22 @@ systemLog:
   destination: file
   path: /var/log/mongodb/mongod.log
   logAppend: true
--
+----------------------------------------------------
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#=========================================================================================================================
-[🐋INSTALACIÓN DE MARIADB]:
-# Compruebo que funciona todo bien
-
-# Como quiero que la base de datos permanezca en mi servidor y no en uno independiente voy a instalar mysql
-sudo apt update && sudo apt install -y mariadb-server
-sudo systemctl status mariadb
-sudo systemctl start mariadb
-sudo systemctl enable mariadb
-
-# Buenas prácticas para mantenimiento de una base de datos
-sudo mysql_secure_installation
-
-# entro a la base de datos
-sudo mysql -u root -p
-
-# creo la base de datos express_db con usuario express y privilegios root
-# CREATE DATABASE express_db;
-# para crear un usuario con acceso localhost 
-CREATE USER 'root'@'localhost' IDENTIFIED BY 'Tutipoda&452';
-GRANT ALL PRIVILEGES ON express_db.* TO 'express'@'localhost';
-FLUSH PRIVILEGES;
-
-## es buena práctica utilizar varios usuarios para dar privilegios solo 
-# este es el usuario con el que me voy a registrar desde .env de node para limitar 
-CREATE USER 'express'@'localhost' IDENTIFIED BY 'Wupotoge&888';
-GRANT SELECT, INSERT, UPDATE, DELETE ON express_db.* TO 'express'@'localhost';
-FLUSH PRIVILEGES;
-
-# este caso seria para crear un usuario fuera del servidor
-# CREATE USER 'root'@'%' IDENTIFIED BY 'toor';
-# GRANT ALL PRIVILEGES ON express_db.* TO 'express'@'%';
-# FLUSH PRIVILEGES;
-
-# entro a la base de datos
-USE express_db;
-
-# Creo la tabla necesaria para el proyecto
-CREATE TABLE usuarios (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario VARCHAR(50) NOT NULL,
-    contraseña TEXT NOT NULL
-);
-
-# Agrego un valor
-INSERT INTO usuarios (id, usuario, contraseña) VALUES
-(1, 'isaac', 'aca217fb549886ea0c52a7e59563d9667fe1683622829f3e4699bbdd97074273638dd8a13c418f262a4652afa2f287dddc92fb90ae3d738e9b62f5568d33271d:d09b1a120e5950e0cd0cebac83a78715');
-
-# compruebo la tabla
-SELECT * FROM usuarios;
-exit;
-
-# Configurar MySQL 
-vim /etc/mysql/mariadb.conf.d/50-server.cnf
-	# para conexiones locales
-	> bind-address = 127.0.0.1 
-	# para aceptar conexiones remotas
-	# > bind-address = 0.0.0.0
-
-# Reinicio MySQL
-sudo systemctl restart mariadb
+# con los datos de la base de datos mongodb modifico el archivo 
+vim /var/www/express/app/index.ts
+----------------------------------------------------
+...
+const mongoURI = 'mongodb://localhost:27017/nombre_de_base_de_datos'; 
+...
+----------------------------------------------------
 
 # reinicio pm2
 cd /var/www/express
 pm2 start ecosystem.config.js
 
+# Finalmente puedo acceder desde un Windows al CLI (Command Line Interface) descargando MongoDB Compass
+https://www.mongodb.com/try/download/compass
 
 #=========================================================================================================================
 [🐋INSTALAR CERTIFICADO]:
