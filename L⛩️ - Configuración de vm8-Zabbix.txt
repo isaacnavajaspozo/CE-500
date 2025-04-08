@@ -1,1 +1,0 @@
-# 🧠 Zabbix es una herramienta de monitoreo integral y escalable para infraestructuras de TI, que ofrece visualización, alertas y gestión centralizada de servidores, redes y aplicaciones.
