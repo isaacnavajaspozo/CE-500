@@ -436,7 +436,7 @@ source ~/.bashrc
 
 	python3 -m pip install --root=$INSTALL_DIR/greenbone-feed-sync --no-warn-script-location greenbone-feed-sync
 
-	sudo cp -rv $INSTALL_DIR/greenbone-feed-sync/* /
+	cp -rv $INSTALL_DIR/greenbone-feed-sync/* /
 # *********************************************************************
 
 # 🔥 gvm-tools
@@ -447,20 +447,20 @@ source ~/.bashrc
 
 	python3 -m pip install --root=$INSTALL_DIR/gvm-tools --no-warn-script-location gvm-tools
 
-	sudo cp -rv $INSTALL_DIR/gvm-tools/* /
+	cp -rv $INSTALL_DIR/gvm-tools/* /
 # *********************************************************************
 
 # 🔥 servidor Redis
 # 🧑‍🎓 Utilizado por el escáner (openvas-scanner y ospd-openvas) para manejar la información de VT 
 # *********************************************************************
 	# Agregar configuración para ejecutar el servidor Redis para el escáner
-	sudo cp $SOURCE_DIR/openvas-scanner-$OPENVAS_SCANNER_VERSION/config/redis-openvas.conf /etc/redis/
-	sudo chown redis:redis /etc/redis/redis-openvas.conf
+	cp $SOURCE_DIR/openvas-scanner-$OPENVAS_SCANNER_VERSION/config/redis-openvas.conf /etc/redis/
+	chown redis:redis /etc/redis/redis-openvas.conf
 	echo "db_address = /run/redis-openvas/redis.sock" | sudo tee -a /etc/openvas/openvas.conf
 
 	# inicio redis con la configuración de openvas
-	sudo systemctl start redis-server@openvas.service
-	sudo systemctl enable redis-server@openvas.service
+	systemctl start redis-server@openvas.service
+	systemctl enable redis-server@openvas.service
 
 	# el usuario gvm debe poder acceder al socket Unix redis en /run/redis-openvas/redis.sock
 	sudo usermod -aG redis gvm
@@ -468,22 +468,22 @@ source ~/.bashrc
 
 # 08.📌 Ajustes de permisos
 # *********************************************************************
-	sudo mkdir -p /var/lib/notus
-	sudo mkdir -p /run/gvmd
+	mkdir -p /var/lib/notus
+	mkdir -p /run/gvmd
 
-	sudo chown -R gvm:gvm /var/lib/gvm
-	sudo chown -R gvm:gvm /var/lib/openvas
-	sudo chown -R gvm:gvm /var/lib/notus
-	sudo chown -R gvm:gvm /var/log/gvm
-	sudo chown -R gvm:gvm /run/gvmd
+	chown -R gvm:gvm /var/lib/gvm
+	chown -R gvm:gvm /var/lib/openvas
+	chown -R gvm:gvm /var/lib/notus
+	chown -R gvm:gvm /var/log/gvm
+	chown -R gvm:gvm /run/gvmd
 
-	sudo chmod -R g+srw /var/lib/gvm
-	sudo chmod -R g+srw /var/lib/openvas
-	sudo chmod -R g+srw /var/log/gvm
+	chmod -R g+srw /var/lib/gvm
+	chmod -R g+srw /var/lib/openvas
+	chmod -R g+srw /var/log/gvm
 
 	# Ajuste de permisos de gvmd
-	sudo chown gvm:gvm /usr/local/sbin/gvmd
-	sudo chmod 6750 /usr/local/sbin/gvmd
+	chown gvm:gvm /usr/local/sbin/gvmd
+	chmod 6750 /usr/local/sbin/gvmd
 # *********************************************************************
 
 # 09.📌 Validaciones de feeds
@@ -496,9 +496,9 @@ source ~/.bashrc
 	echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" | gpg --import-ownertrust
 
 	# Creación de un llavero GPG para la validación del contenido de los feeds
-	sudo mkdir -p $OPENVAS_GNUPG_HOME
-	sudo cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/
-	sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME
+	mkdir -p $OPENVAS_GNUPG_HOME
+	cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/
+	chown -R gvm:gvm $OPENVAS_GNUPG_HOME
 # *********************************************************************
 
 # 10.📌 Configuración de sudo para escanear 
@@ -509,9 +509,9 @@ source ~/.bashrc
 
 # 11.📌 Configuración de PostgreSQL
 # *********************************************************************
-	sudo apt install -y postgresql
+	apt install -y postgresql
 	
-	sudo systemctl start postgresql@15-main
+	systemctl start postgresql@15-main
 	
 	sudo -u postgres bash
 		> cd
@@ -531,7 +531,8 @@ source ~/.bashrc
 	# sudo ldconfig
 	/usr/local/sbin/gvmd --create-user=admin --password='admin'
 	vim /var/log/gvm/gvmd.log	
-	# sudo -u gvm greenbone-feed-sync --type all
+	# sudo -u gvm greenbone-feed-sync --type all:q!
+
 
 	# Configuración del propietario de la importación de feeds
 	/usr/local/sbin/gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value `/usr/local/sbin/gvmd --get-users --verbose | grep admin | awk '{print $2}'`
@@ -567,7 +568,7 @@ RestartSec=60
 WantedBy=multi-user.target
 EOF
 
-sudo cp -v $BUILD_DIR/ospd-openvas.service /etc/systemd/system/
+cp -v $BUILD_DIR/ospd-openvas.service /etc/systemd/system/
 # *********************************************************************
 
 # 🔥 Archivo de servicio systemd para gvmd
@@ -595,7 +596,7 @@ TimeoutStopSec=10
 WantedBy=multi-user.target
 EOF
 
-sudo cp -v $BUILD_DIR/gvmd.service /etc/systemd/system/
+cp -v $BUILD_DIR/gvmd.service /etc/systemd/system/
 # *********************************************************************
 
 # 🔥 Archivo de servicio systemd para gsad
