@@ -29,21 +29,29 @@ source ~/.bashrc
 #===========================================================================================================================
 [⛩️INSTALACIÓN SERVIDOR-VELOCIRAPTOR EN LINUX]:
 # Herramientas básicas
-sudo apt update && sudo apt install -y wget unzip openssl
+apt update && sudo apt install -y wget unzip openssl
 
 # Descargar binario
 # Comprobar la última versión antes de descargar : https://github.com/Velocidex/velociraptor/releases
 wget https://github.com/Velocidex/velociraptor/releases/latest/download/velociraptor-v0.74.1-linux-amd64 -O velociraptor
 chmod +x velociraptor
-sudo mv velociraptor /usr/local/bin/
+mv velociraptor /usr/local/bin/
 
 # Inicializar configuración
 velociraptor config generate -i
-  > Frontend (servidor principal)
-  > Puerto del servidor (por defecto: 8000 frontend / 8889 GUI)
-  > Habilita Web UI
-  > Crea certificados (mTLS incluidos)
-  > Guarda el archivo final como server.config.yaml
+    > Self Signed SSL
+    > Linux
+    > /opt/velociraptor
+    > logs
+    > 1 Year
+    > localhost
+    > None - Configure DNS manually
+    > y
+  # Frontend (servidor principal)
+  # Puerto del servidor (por defecto: 8000 frontend / 8889 GUI)
+  # Habilita Web UI
+  # Crea certificados (mTLS incluidos)
+  # Guarda el archivo final como server.config.yaml
 
 # Ejecutar el servidor
 velociraptor --config server.config.yaml frontend
