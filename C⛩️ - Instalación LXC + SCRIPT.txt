@@ -58,6 +58,13 @@ echo "Estado actual de los contenedores:"
 lxc-ls --fancy
 echo ""
 
+echo " ____  __..__         .__ ___.             __      "
+echo "|    |/ _||__|_______ |__|\_ |__  _____   |  | __  ____"
+echo "|      /  |  |\_  __ \|  | | __ \ \__  \  |  |/ / /  _ \ "
+echo "|    |  \ |  | |  | \/|  | | \_\ \ / __ \_|    < (  <_> )"
+echo "|____|__ \|__| |__|   |__| |___  /(____  /|__|_ \ \____/ "
+echo "        \/                     \/      \/      \/        "
+
 # Mostrar menú de opciones
 echo "¿Qué deseas hacer?"
 echo "1) Crear una nueva máquina (debian)"
