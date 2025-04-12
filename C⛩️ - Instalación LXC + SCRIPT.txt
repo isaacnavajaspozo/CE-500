@@ -8,6 +8,11 @@
 # 🧑‍🎓 Voy a crear un script para hacer más sencillo la utilización e instalación de LXC
 
 #=========================================================================================================================
+[⛩️INSTALACIÓN]:
+sudo apt update
+sudo apt install lxc lxc-utils
+
+#=========================================================================================================================
 [⛩️MANUAL DE FUNCIONAMIENTO LXC]:
 # 🧑‍🎓 Este paso lo dejo para conocer los comandos que voy hacer por debajo pero lo quiero qutomatizar con el script del siguiente apartado
 # 📦 Instalación en Debian
