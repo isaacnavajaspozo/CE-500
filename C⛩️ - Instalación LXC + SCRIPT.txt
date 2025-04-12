@@ -83,8 +83,3 @@ chmod +x lxc-managers.sh
 
 # ejecuto el script
 ./lxc-manager.sh
-
-# 🧑‍🎓 Llegados a este punto lo único que tengo que hacer es: 
-#       1º Crear la máquina
-#       2º Inicializar la máquina en segundo plano si no podré acceder a ella
-#       3º Acceder a ella 
