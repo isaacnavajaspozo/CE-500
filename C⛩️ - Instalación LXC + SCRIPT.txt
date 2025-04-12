@@ -90,7 +90,7 @@ esac
 ---------------------------------------------------------------------------------
 
 # doy permisos 
-chmod +x lxc-managers.sh
+chmod +x lxc-manager.sh
 
 # ejecuto el script
 ./lxc-manager.sh
