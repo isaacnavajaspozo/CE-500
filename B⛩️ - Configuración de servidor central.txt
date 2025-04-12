@@ -97,7 +97,7 @@ systemctl enable sshd
 [⛩️CREO USUARIOS NECESARIOS]::
 # creo script para generar contraseña
 
-cd Docker-compose
+cd KIRIBAKO
 vim bcrypt_hash.sh
 ----------------------------------------------------------------------------
 #!/bin/bash
@@ -149,7 +149,7 @@ nano ~/.bashrc
     alias la='ls $LS_OPTIONS -lhai'
     alias _liberarespacioram='sudo sync; echo 1 | sudo tee /proc/sys/vm/drop_caches | echo "petición realizada correctamente." && echo "" && free -h'
     ## alias para las máquinas
-    alias _srv.samba="docker start -i vm1-smb"
+
     
     ## Cambiar diseño del prompt
     PS1='${debian_chroot:+($debian_chroot)}\[\e[0;90m\]r00t🐋\[\e[1;36m\][\H]\e[1;36m\]\e[1;32m \w\e[0;37m $: '
