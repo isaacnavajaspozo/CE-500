@@ -97,7 +97,7 @@ systemctl enable sshd
 [⛩️CREO USUARIOS NECESARIOS]::
 # creo script para generar contraseña
 
-cd KIRIBAKO
+cd /KIRIBAKO
 vim bcrypt_hash.sh
 ----------------------------------------------------------------------------
 #!/bin/bash
