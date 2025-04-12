@@ -1,7 +1,6 @@
 #=========================================================================================================================
 [⛩️WHITE WHALE]::
-# Guia de instalación debian       : https://docs.docker.com/engine/install/debian/
-# Guía de instalación volumenes    : https://docs.docker.com/storage/volumes/
+# Guia de instalación LXC      : https://linuxcontainers.org/#navigation
 
 #=========================================================================================================================
 [⛩️RESUMEN PROYECTO · MÁQUINAS LABORATORÍO]:
