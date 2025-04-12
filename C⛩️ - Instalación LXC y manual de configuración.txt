@@ -1,0 +1,90 @@
+#=========================================================================================================================
+[⛩️WHITE WHALE]::
+# Guia de instalación debian       : https://docs.docker.com/engine/install/debian/
+# Guía de instalación volumenes    : https://docs.docker.com/storage/volumes/
+
+#=========================================================================================================================
+[⛩️RESUMEN PROYECTO · MÁQUINAS LABORATORÍO]:
+# 🧑‍🎓 Dentro de un servidor Debian, voy a crear unas máquinas virtuales con LXC (Linux Containers). Ya que lo que quiero es crear máquinas independientes con distintos servicios.
+# 🧑‍🎓 Voy a crear un script para hacer más sencillo la utilización e instalación de LXC
+
+#=========================================================================================================================
+[⛩️MANUAL DE FUNCIONAMIENTO LXC]:
+# 🧑‍🎓 Este paso lo dejo para conocer los comandos que voy hacer por debajo pero lo quiero qutomatizar con el script del siguiente apartado
+# 📦 Instalación en Debian
+sudo apt update
+sudo apt install lxc lxc-templates bridge-utils
+
+# 🧱 Crear un contenedor Debian
+sudo lxc-create -n vm-samba -t debian
+
+# 🔌 Iniciar el contenedor (segundo plano) : esto es para que aunque salga con "exit" seguirá encendido
+sudo lxc-start -n vm-samba -d
+
+# 🏗️ Comprobar que está en ejecución
+sudo lxc-info -n vm-samba
+# 🫸 Detener el contenedor
+sudo lxc-stop -n vm-samba
+# 📄 Listar 
+lxc-ls --fancy
+
+# 📲 Acceder al contenedor
+sudo lxc-attach -n vm-samba
+
+#=========================================================================================================================
+[⛩️INSTALACIÓN DE SCRIPT]:
+# creo carpeta en servidor principal
+cd /
+mkdir KIRIBAKO
+
+# creo script
+vim lxc-manager.sh
+---------------------------------------------------------------------------------
+#!/bin/bash
+
+# Mostrar estado actual de los contenedores
+echo "Estado actual de los contenedores:"
+lxc-ls --fancy
+echo ""
+
+# Mostrar menú de opciones
+echo "¿Qué deseas hacer?"
+echo "1) Crear una nueva máquina (debian)"
+echo "2) Iniciar una máquina en segundo plano"
+echo "3) Acceder a una máquina"
+echo "4) Parar una máquina"
+read -p "Elige una opción [1-4]: " opcion
+
+case $opcion in
+    1)
+        read -p "Introduce el nombre de la nueva máquina: " nombre
+        sudo lxc-create -n "$nombre" -t debian
+        ;;
+    2)
+        read -p "Introduce el nombre de la máquina a iniciar: " nombre
+        sudo lxc-start -n "$nombre" -d
+        ;;
+    3)
+        read -p "Introduce el nombre de la máquina a la que quieres acceder: " nombre
+        sudo lxc-attach -n "$nombre"
+        ;;
+    4)
+        read -p "Introduce el nombre de la máquina que deseas parar: " nombre
+        sudo lxc-stop -n "$nombre"
+        ;;
+    *)
+        echo "Opción no válida."
+        ;;
+esac
+---------------------------------------------------------------------------------
+
+# doy permisos 
+chmod +x lxc-managers.sh
+
+# ejecuto el script
+./lxc-manager.sh
+
+# 🧑‍🎓 Llegados a este punto lo único que tengo que hacer es: 
+#       1º Crear la máquina
+#       2º Inicializar la máquina en segundo plano si no podré acceder a ella
+#       3º Acceder a ella 
