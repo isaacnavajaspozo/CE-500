@@ -23,7 +23,7 @@ sudo update-grub
 # Configuro el host
 nano /etc/hostname
 ----------------------------------------------------------------------------
-    srv.whitewhale.local
+    kirobako.com
 ----------------------------------------------------------------------------
 
 # Configuración archivo host
@@ -31,7 +31,7 @@ nano /etc/hostname
 sudo nano /etc/hosts
 ----------------------------------------------------------------------------
     127.0.0.1               localhost
-    127.0.0.1               srv.whitewhale.local   WhiteWhale
+    127.0.0.1               kirobako.com    kirobako
     
     # The following lines are desirable for IPv6 capable hosts
     ::1     localhost ip6.localhost ip6.loopback localhost.localdomain 
