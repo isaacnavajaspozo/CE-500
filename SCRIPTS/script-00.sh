@@ -22,7 +22,7 @@ alias grep='grep --color=auto'
 alias df='df --exclude-type=tmpfs'
 
 ## Cambiar diseño del prompt
-PS1='\[\e[0;90m\]r00t🐋\e[38;5;213m[\H]\e[38;5;213m\e[1;32m \w\e[0;37m $: '
+PS1='\[\e[0;90m\]r00t🐧\e[38;5;213m[\H]\e[38;5;213m\e[1;32m \w\e[0;37m $: '
 
 ## cambiar colores para ls
 export LS_COLORS="di=1;32:fi=0;37:ln=1;35:so=0;38;5;208:pi=0;34:bd=0;33:cd=0;33:or=0;31:mi=0;31:ex=1;31"
