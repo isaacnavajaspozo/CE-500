@@ -32,11 +32,15 @@ wget https://github.com/dante1613/Motorcomm-YT6801/raw/main/tuxedo-yt6801/tuxedo
 # Instalo el driver 
 sudo dpkg -i tuxedo-yt6801_1.0.28-1_all.deb
 
+# (Leer la instalación siguiente en consola porque es posible que sugiera instalar nuevos paquetes para utilizar las dependencias mencionadas...)
 # Cargo el modulo 
 echo yt6801 | tee -a /etc/modules
 
 # Creo lista de dependencias
 sudo depmod
+
+# Comprobar el módulo de carga
+lsmod | grep yt6801
         # YT6801        172032        0
 
 # reinicio
