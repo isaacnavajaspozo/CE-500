@@ -1,5 +1,5 @@
 #=========================================================================================================================
-[⛩️WHITE WHALE]::
+[⛩️KIRIBAKO]::
 # Documentación oficial SSH    : https://www.openssh.com/
 # Documentación no-oficial     : https://synay.net/es/support/kb/disabling-automatic-workstation-sleep-debian-12
 
