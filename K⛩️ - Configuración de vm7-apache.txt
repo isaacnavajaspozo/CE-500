@@ -140,101 +140,121 @@ vim /etc/mysql/mariadb.conf.d/50-server.cnf
 sudo systemctl restart mariadb
 
 #=========================================================================================================================
+[⛩️PHP]:
+# creo la carpeta
+cd /var/www
+mkdir php
+
+# creo un archivo php para comprobar la conexión con la base de datos
+cd php && vim index.php
+--------------------------------------------------------------------------------------
+	<?php
+	// Configuración de la conexión
+	$host = '127.0.0.1'; // o localhost
+	$db   = 'express_db';
+	$user = 'admin'; // usuario con acceso a la base de datos
+	$pass = 'Tutipoda&452';
+	$charset = 'utf8mb4';
+	
+	// Configuración de PDO y manejo de errores
+	$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+	$options = [
+	    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, // Muestra excepciones en errores
+	    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,       // Obtención en forma de array asociativo
+	    PDO::ATTR_EMULATE_PREPARES   => false,
+	];
+	
+	try {
+	    // Creando la conexión a la base de datos
+	    $pdo = new PDO($dsn, $user, $pass, $options);
+	    echo "¡Conexión a la base de datos '$db' exitosa!<br><br>";
+	    
+	    // Realizamos una consulta simple para comprobar la tabla 'usuarios'
+	    $stmt = $pdo->query("SELECT * FROM usuarios");
+	    
+	    // Mostramos los resultados
+	    $usuarios = $stmt->fetchAll();
+	    if($usuarios) {
+	        echo "<strong>Usuarios encontrados:</strong><br>";
+	        foreach ($usuarios as $usuario) {
+	            echo "ID: " . $usuario['id'] . " - Usuario: " . $usuario['usuario'] . " - Contraseña: " . $usuario['contraseña'] . "<br>";
+	        }
+	    } else {
+	        echo "La tabla 'usuarios' no tiene registros o no se encontró.";
+	    }
+	    
+	} catch (\PDOException $e) {
+	    // En caso de error, se muestra un mensaje y se detiene la ejecución
+	    throw new \PDOException($e->getMessage(), (int)$e->getCode());
+	}
+	?>
+--------------------------------------------------------------------------------------
+
+# cambio la dirección de apache para la web en http
+vim /etc/apache2/sites-available/vim 000-default.conf
+--------------------------------------------------------------------------------------
+...
+DocumentRoot /var/www/php
+...
+--------------------------------------------------------------------------------------
+
+# cambio la dirección de apache para la web en https
+vim  /etc/apache2/sites-available/default-ssl.conf
+--------------------------------------------------------------------------------------
+...
+DocumentRoot /var/www/php
+...
+--------------------------------------------------------------------------------------
+
+#=========================================================================================================================
 [⛩️INSTALAR CERTIFICADO]:
 # certificado con dominio local
 ⚠️ Para un dominio local como el mio necesito un certificado autofirmado
 
 # creo la carpeta
-mkdir /var/www/express/letsencrypt
-cd /var/www/express/letsencrypt
+mkdir /var/www/php/letsencrypt
+cd /var/www/php/letsencrypt
 
 ## .key :: (clave privada)
 # Genero una clave privada
-openssl genpkey -algorithm RSA -out pruebas.local.key -aes256
+	openssl genpkey -algorithm RSA -out pruebas.local.key -aes256
+	> **********
 
 ## .csr :: (Solicitud de firma de certificado)
 # Genero un archivo de solicitud de firma de certificado (CSR)
 # En un entorno real, una vez generado mi CSR desde mi servidor lo tengo que enviar a la empresa de venta de dominio (como Namecheap) o Autoridad Certificadora (CA) y ellos me lo validan y me devuelven un .crt
-openssl req -new -key pruebas.local.key -out pruebas.local.csr
+	openssl req -new -key pruebas.local.key -out pruebas.local.csr
+	> **********
 
 ## .crt o .pfx o .pem :: (clave pública)
 # Genero el certificado autofirmado con caducidad de 1 año (solo lo genero en el caso que sean pruebas, los "certificados autofirmados" se hacen cuando el dominio no es real)
 # En un entorno real, debería enviar la CSR a una Autoridad de Certificación (CA) y utilizar el certificado que me proporcionarían.
-openssl x509 -req -days 365 -in pruebas.local.csr -signkey pruebas.local.key -out pruebas.local.crt
+	openssl x509 -req -days 365 -in pruebas.local.csr -signkey pruebas.local.key -out pruebas.local.crt
+	> **********
 
 # En el caso de caducarse, en un entorno real, tengo que generar otro CSR y repitiendo el proceso con la Autoridad Certificadora (CA).
 
-# edito la configuración de mi sitio Nginx
-cd /etc/nginx/sites-available
-vim express
-----------------------------------------------------
-# https
-server {
-    listen 443 ssl;
-    server_name pruebas.local;
-
-    ssl_certificate /var/www/express/letsencrypt/pruebas.local.crt;
-    ssl_certificate_key /var/www/express/letsencrypt/pruebas.local.key.nopass;
-
-    location / {
-        proxy_pass http://app_cluster;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
-# http
-server {
-    listen 80;
-    server_name pruebas.local;
-    return 301 https://$host$request_uri;
-}
-----------------------------------------------------
-
-# agrego la configuración del cluster en el archivo principal de nginx - al final del bloque de configuración de http 
-vim /etc/nginx/nginx.conf
-----------------------------------------------------
+# modifico el archivo para https de apache
+vim  /etc/apache2/sites-available/default-ssl.conf
+--------------------------------------------------------------------------------------
 ...
-upstream app_cluster {
-    server 127.0.0.1:3000;
-    # server 127.0.0.1:3001;
-    # server 127.0.0.1:3002;
-}
+DocumentRoot /var/www/php
 
-include /etc/nginx/conf.d/*.conf;
-include /etc/nginx/sites-enabled/*;
+SSLEngine on
+SSLCertificateFile /var/www/php/letsencrypt/pruebas.local.crt
+SSLCertificateKeyFile /var/www/php/letsencrypt/pruebas.local.key
 ...
-----------------------------------------------------
+--------------------------------------------------------------------------------------
 
-# verifico la configuración
-sudo nginx -t
+# habilito ssl
+sudo a2enmod ssl
 
-# reinicio el servicio de nginx
-sudo systemctl restart nginx
+# habilito un nuevo Virtual Host
+sudo a2ensite default-ssl.conf
 
-# para comprobar el certificado
-openssl s_client -connect pruebas.local:443
-
-
--
-⚠️ si me da un error en el certificado privado pruebo a quitarle la contraseña
-⚠️ si no me a dado ningún error o quiero dejar la encriptación ya he finalizado 100% la configuración
-# creo una nueva clave
-sudo openssl rsa -in /var/www/express/letsencrypt/pruebas.local.key -out /var/www/express/letsencrypt/pruebas.local.key.nopass
-
-# modifico mi archivo y agrego la nueva clave
-sudo vim /etc/nginx/sites-available/express
-----------------------------------------------------
-...
-	ssl_certificate_key /var/www/express/letsencrypt/pruebas.local.key.nopass;
-	# ssl_certificate_key /var/www/express/letsencrypt/pruebas.local.key;
-...
-----------------------------------------------------
-
-# comprueba el archivo de certificado 
-openssl x509 -in /var/www/express/letsencrypt/pruebas.local.crt -text -noout
+# reinicio los servicios
+sudo systemctl reload apache2
+sudo systemctl restart apache2
 
 #=========================================================================================================================
 [⛩️MATO PROCESOS SI HAY FALLO]:
