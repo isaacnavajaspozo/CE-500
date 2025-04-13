@@ -4,44 +4,6 @@
 # 📄🚫 Es decir que la idea de utilizar docker-compose me sirve solo para dividir en una misma máquina los distintos servidores
 
 #=========================================================================================================================
-[⛩️NOMBRES DE LAS MÁQUINAS]::
-# Los nombres de las máquinas
-1 - vm-samba
-2 - vm-pentesting (la ejecuto sin script por que quiero que sea un kali)
-3 - vm-bitwarden
-4 - vm-greenbone
-5 - vm-velociraptor
-6 - vm-nginx
-7 - vm-apache
-8 - vm-nagios
-
-#=========================================================================================================================
-[⛩️CREO LAS MÁQUINAS]::
-# 🧑‍🎓 Llegados a este punto lo único que tengo que hacer es ejecutar el script : _kiribako || /KIRIBAKO/lxc-manager.sh
-#       1º Crear las máquinas con los mismos nombres anteriormente mencionados
-#       2º Inicializar las máquinas en segundo plano (para poder acceder a ellas)
-#       3º Acceder a ellas para configurarlas 
-
-#=========================================================================================================================
-[⛩️CREAR ALIAS EN SERVIDOR PRINCIPAL]::
-# 🧑‍🎓 Compruebo que tengo el alias creado para ejecutar el script directamente
-# el script estaba en la ruta /KIRIBAKO/lxc-manager.sh
-ls /KIRIBAKO | grep lxc-manager.sh
-
-# Entro a bashrc
-vim ~/.bashrc
---------------------------------------------------------------------------------------------------------------------------
-## alias para ejecutar el script principal de las máquinas
-alias _kiribako="/KIRIBAKO/lxc-manager.sh"
---------------------------------------------------------------------------------------------------------------------------
-
-# actualizo los cambios 
-source ~/.bashrc
-
-# ejecuto script
-_kiribako
-
-#=========================================================================================================================
 [⛩️BRIDGE DE RED LOCAL]::
 #🧑‍🎓 Por defecto LXC utiliza un bridge de lxcbr0 (que es NAT por defecto), pero voy a utilizar un bridge real (modo puente): br0 que use la red 192.168.1.x. (la misma que mi red local).
 vim /etc/network/interfaces
@@ -92,6 +54,45 @@ lxc.apparmor.allow_nesting = 1
 # reinicio el servicio de la red y reinicio
 systemctl restart networking
 sudo reboot now
+
+#=========================================================================================================================
+[⛩️NOMBRES DE LAS MÁQUINAS]::
+# Los nombres de las máquinas
+1 - vm-samba
+2 - vm-pentesting (la ejecuto sin script por que quiero que sea un kali)
+3 - vm-bitwarden
+4 - vm-greenbone
+5 - vm-velociraptor
+6 - vm-nginx
+7 - vm-apache
+8 - vm-nagios
+
+#=========================================================================================================================
+[⛩️CREO LAS MÁQUINAS]::
+# 🧑‍🎓 Llegados a este punto lo único que tengo que hacer es ejecutar el script : _kiribako || /KIRIBAKO/lxc-manager.sh
+#       1º Crear las máquinas con los mismos nombres anteriormente mencionados
+#       2º Inicializar las máquinas en segundo plano (para poder acceder a ellas)
+#       3º Acceder a ellas para configurarlas 
+
+#=========================================================================================================================
+[⛩️CREAR ALIAS EN SERVIDOR PRINCIPAL]::
+# 🧑‍🎓 Compruebo que tengo el alias creado para ejecutar el script directamente
+# el script estaba en la ruta /KIRIBAKO/lxc-manager.sh
+ls /KIRIBAKO | grep lxc-manager.sh
+
+# Entro a bashrc
+vim ~/.bashrc
+--------------------------------------------------------------------------------------------------------------------------
+## alias para ejecutar el script principal de las máquinas
+alias _kiribako="/KIRIBAKO/lxc-manager.sh"
+--------------------------------------------------------------------------------------------------------------------------
+
+# actualizo los cambios 
+source ~/.bashrc
+
+# ejecuto script
+_kiribako
+
 
 
 
