@@ -37,7 +37,7 @@ mkdir /KIRIBAKO/samba/ && mkdir /KIRIBAKO/samba/datos
 # hago una copia del archivo principal
 mv /etc/samba/smb.conf /etc/samba/_smb.conf
 
-# voy agregar un solo usuario a la configuración Ilerna2, 
+# voy agregar un solo usuario a la configuración Ilerna, 
 # pero lo configuro dentro de un grupo por si en un futuro quiero agregar más usuarios con los mismos permisos
 vim /etc/samba/smb.conf
 --------------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ vim /etc/samba/smb.conf
     writable = yes
     guest ok = no
     read only = no
-    valid users = Ilerna2
+    valid users = Ilerna
     force user = nobody
     force group = smbIlerna
     create mask = 0770
@@ -78,7 +78,7 @@ vim /etc/samba/smb.conf
 #    writable = yes                                              :: Permite la escritura en la carpeta
 #    guest ok = no                                               :: No permite usuarios invitados
 #    read only = no                                              :: Permite la escritura
-#    valid users = Ilerna2                                       :: Acceso a Ilerna2
+#    valid users = Ilerna                                        :: Acceso a Ilerna
 #    force user = nobody                                         :: propiedad de nobody (para agregar más usuarios)
 #    force group = smbIlerna                                     :: Archivos propiedad del grupo smbIlerna
 #    create mask = 0770                                          :: Permisos para archivos creados
@@ -87,16 +87,16 @@ vim /etc/samba/smb.conf
 --------------------------------------------------------------------------------------
 
 # si todo va bien, creo un usuario
-sudo useradd -s /usr/sbin/nologin Ilerna2
+sudo useradd -s /usr/sbin/nologin Ilerna
 # creo usuario para samba
-smbpasswd -a Ilerna2
+smbpasswd -a Ilerna
     > **********
 # compruebo que existe
 pdbedit -L
 
-# creo un grupo y lo añado al usuario Ilerna2
+# creo un grupo y lo añado al usuario Ilerna
 groupadd smbIlerna
-usermod -aG smbIlerna Ilerna2
+usermod -aG smbIlerna Ilerna
 
 # crear archivo de contraseñas de usuarios
 touch /KIRIBAKO/samba/samba_passdb.tdb
