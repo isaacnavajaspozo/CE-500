@@ -1,5 +1,5 @@
 #=========================================================================================================================
-[⛩️WHITE WHALE]::
+[⛩️KIRIBAKO]::
 # 📄🚫 No puedo utilizar dockerfiles porque me han pedido desde el centro que realice las instalaciones como si fuesen servidores independientes
 # 📄🚫 Es decir que la idea de utilizar docker-compose me sirve solo para dividir en una misma máquina los distintos servidores
 
@@ -40,3 +40,63 @@ source ~/.bashrc
 
 # ejecuto script
 _kiribako
+
+#=========================================================================================================================
+[⛩️BRIDGE DE RED LOCAL]::
+#🧑‍🎓 Por defecto LXC utiliza un bridge de lxcbr0 (que es NAT por defecto), pero voy a utilizar un bridge real (modo puente): br0 que use la red 192.168.1.x. (la misma que mi red local).
+vim /etc/network/interfaces
+--------------------------------------------------------------------------------------------------------------------------
+# Configuración de la interfaz WiFi
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# La interfaz Ethernet (configuración estática)
+auto eno1
+iface eno1 inet static
+  address 192.168.1.57
+  netmask 255.255.255.0
+  gateway 192.168.1.1
+  dns-nameservers 8.8.8.8 1.1.1.1
+
+# Bridge que usará la IP del host
+auto br0
+iface br0 inet static
+    address 192.168.1.57
+    netmask 255.255.255.0
+    gateway 192.168.1.1
+    bridge_ports eno1
+    bridge_stp off
+    bridge_fd 0
+    bridge_maxwait 0
+    dns-nameservers 8.8.8.8
+
+# The primary network interface
+#allow-hotplug wlp3s0
+#iface wlp3s0 inet dhcp
+#   wpa-ssid <SSID_WIFI>
+#   wpa-psk  <PASSWORD_WIFI>
+
+--------------------------------------------------------------------------------------------------------------------------
+
+# modifico la configuración de red de LXC para asociar el bridge
+vim /etc/lxc/default.conf
+--------------------------------------------------------------------------------------------------------------------------
+lxc.net.0.type = veth
+lxc.net.0.link = br0
+lxc.net.0.flags = up
+
+lxc.apparmor.profile = generated
+lxc.apparmor.allow_nesting = 1
+--------------------------------------------------------------------------------------------------------------------------
+
+# reinicio el servicio de la red y reinicio
+systemctl restart networking
+sudo reboot now
+
+
+
