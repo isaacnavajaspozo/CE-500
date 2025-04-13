@@ -2,7 +2,8 @@
 echo "Instalando paquetes..."
 apt-get update
 apt-get install systemd systemctl systemd-sysv -y
-apt-get install -y iputils-ping iproute2 sudo vim systemctl net-tools lm-sensors 
+apt install sudo -y
+apt-get install -y iputils-ping iproute2 vim systemctl net-tools lm-sensors 
 
 # Configuración de sensores
 echo "Configurando sensores:"
