@@ -148,7 +148,7 @@ nano ~/.bashrc
     alias ls='ls --color=auto'
     alias la='ls $LS_OPTIONS -lhai'
     alias _liberarespacioram='sudo sync; echo 1 | sudo tee /proc/sys/vm/drop_caches | echo "petición realizada correctamente." && echo "" && free -h'
-    ## alias para las máquinas
+    alias _kiribako='/KIRIBAKO/lxc-manager.sh'
 
     
     ## Cambiar diseño del prompt
