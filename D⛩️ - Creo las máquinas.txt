@@ -17,26 +17,26 @@
 
 #=========================================================================================================================
 [⛩️CREO LAS MÁQUINAS]::
-# 🧑‍🎓 Llegados a este punto lo único que tengo que hacer es ejecutar el script : /KIRIBAKO/lxc-manager.sh
+# 🧑‍🎓 Llegados a este punto lo único que tengo que hacer es ejecutar el script : _kiribako || /KIRIBAKO/lxc-manager.sh
 #       1º Crear las máquinas con los mismos nombres anteriormente mencionados
 #       2º Inicializar las máquinas en segundo plano (para poder acceder a ellas)
 #       3º Acceder a ellas para configurarlas 
 
 #=========================================================================================================================
 [⛩️CREAR ALIAS EN SERVIDOR PRINCIPAL]::
-# 🧑‍🎓 Creo un alias para poder acceder directamente desde cualquier parte del servidor principal
-# recuerdo de que el script estaba en la siguiente ruta /KIRIBAKO/lxc-manager.sh
+# 🧑‍🎓 Compruebo que tengo el alias creado para ejecutar el script directamente
+# el script estaba en la ruta /KIRIBAKO/lxc-manager.sh
 ls /KIRIBAKO | grep lxc-manager.sh
 
 # Entro a bashrc
 vim ~/.bashrc
 --------------------------------------------------------------------------------------------------------------------------
 ## alias para ejecutar el script principal de las máquinas
-alias _lxc-manager="/KIRIBAKO/lxc-manager.sh"
+alias _kiribako="/KIRIBAKO/lxc-manager.sh"
 --------------------------------------------------------------------------------------------------------------------------
 
 # actualizo los cambios 
 source ~/.bashrc
 
 # ejecuto script
-_lxc-manager
+_kiribako
