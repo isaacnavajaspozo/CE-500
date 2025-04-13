@@ -1,5 +1,5 @@
 #=========================================================================================================================
-[⛩️WHITE WHALE]::
+[⛩️KIRIBAKO]::
 # Guia de oficial instalación LXC      : https://linuxcontainers.org/#navigation
 # Guia no oficial                      : https://www.josedomingo.org/pledin/2021/12/introduccion-lxc/
 
@@ -7,10 +7,10 @@
 [⛩️RESUMEN PROYECTO · MÁQUINAS LABORATORÍO]:
 # 🧑‍🎓 Dentro de un servidor Debian, voy a crear unas máquinas virtuales con LXC (Linux Containers). Ya que lo que quiero es crear máquinas independientes con distintos servicios.
 # 🧑‍🎓 Voy a crear un script para hacer más sencillo la utilización e instalación de LXC
-# 🧑‍🎓 Configuración de los contenedores LXC      :: cat /etc/lxc/default.conf
-# 🧑‍🎓 Sistema de archivos del contenedor         :: cd /var/lib/lxc/<NOMBRE_CONTENEDOR>/rootfs/
-# 🧑‍🎓 Listar todas las plantillas                :: ls /usr/share/lxc/templates/
-# 🧑‍🎓 Configuración de red del contenedor        :: cat /var/lib/lxc/<NOMBRE_CONTENEDOR>/config
+#      Configuración de los contenedores LXC      :: cat /etc/lxc/default.conf
+#      Sistema de archivos del contenedor         :: cd /var/lib/lxc/<NOMBRE_CONTENEDOR>/rootfs/
+#      Listar todas las plantillas                :: ls /usr/share/lxc/templates/
+#      Configuración de red del contenedor        :: cat /var/lib/lxc/<NOMBRE_CONTENEDOR>/config
 
 
 #=========================================================================================================================
@@ -45,8 +45,8 @@ sudo apt install lxc lxc-utils
 #=========================================================================================================================
 [⛩️INSTALACIÓN DE SCRIPT]:
 # creo carpeta en servidor principal
-cd /
-mkdir KIRIBAKO
+cd / && mkdir KIRIBAKO
+cd /KIRIBAKO
 
 # creo script
 vim lxc-manager.sh
@@ -67,16 +67,41 @@ echo "        \/                     \/      \/      \/        "
 
 # Mostrar menú de opciones
 echo "¿Qué deseas hacer?"
-echo "1) Crear una nueva máquina (debian)"
+echo "1) Crear una nueva máquina"
 echo "2) Iniciar una máquina en segundo plano"
 echo "3) Acceder a una máquina"
 echo "4) Parar una máquina"
-read -p "Elige una opción [1-4]: " opcion
+echo "5) Eliminar una máquina"
+read -p "Elige una opción [1-5]: " opcion
 
 case $opcion in
     1)
+        # Selección del tipo de sistema operativo
+        echo "¿Qué sistema operativo deseas para la máquina?"
+        echo "1) Debian"
+        echo "2) Ubuntu"
+        echo "3) Kali"
+        read -p "Elige una opción [1-3]: " so
+
+        case $so in
+            1)
+                tipo_so="debian"
+                ;;
+            2)
+                tipo_so="ubuntu"
+                ;;
+            3)
+                tipo_so="kali"
+                ;;
+            *)
+                echo "Opción no válida. Se usará Debian por defecto."
+                tipo_so="debian"
+                ;;
+        esac
+
+        # Nombre de la nueva máquina
         read -p "Introduce el nombre de la nueva máquina: " nombre
-        sudo lxc-create -n "$nombre" -t debian
+        sudo lxc-create -n "$nombre" -t "$tipo_so"
         ;;
     2)
         read -p "Introduce el nombre de la máquina a iniciar: " nombre
@@ -89,6 +114,10 @@ case $opcion in
     4)
         read -p "Introduce el nombre de la máquina que deseas parar: " nombre
         sudo lxc-stop -n "$nombre"
+        ;;
+    5)
+        read -p "Introduce el nombre de la máquina que deseas eliminar: " nombre
+        sudo lxc-destroy -n "$nombre"
         ;;
     *)
         echo "Opción no válida."
