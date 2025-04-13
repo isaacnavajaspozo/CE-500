@@ -62,7 +62,7 @@ vim /etc/samba/smb.conf
     force group = smbIlerna
     create mask = 0770
     directory mask = 0775
-
+--------------------------------------------------------------------------------------
 # ***********************************************************************************************************
 # 🧑‍🎓 Que hace cada opción que he elegido::
 #    interfaces = lo eth0
@@ -84,7 +84,6 @@ vim /etc/samba/smb.conf
 #    create mask = 0770                                          :: Permisos para archivos creados
 #    directory mask = 0775                                       :: Permisos para directorios creados
 # ***********************************************************************************************************
---------------------------------------------------------------------------------------
 
 # si todo va bien, creo un usuario
 sudo useradd -s /usr/sbin/nologin Ilerna
@@ -129,24 +128,24 @@ systemctl status smbd
 # restic lo voy a utilizar en caso de querer rescatar archivos en vivo
 apt install restic -y
 
-# creo la carpeta de backups fuera del volumen (ya que no quiero que forme parte de la memoría del volúmen)
-mkdir /backups
+# creo la carpeta de backups
+mkdir /KIRIBAKO/backups
 
 # reinicio el servicio
 systemctl restart smbd
 
 # Inicializa un nuevo repositorio de Restic
-export RESTIC_REPOSITORY=/backups
+export RESTIC_REPOSITORY=/KIRIBAKO/backups
 export RESTIC_PASSWORD=**********
 restic init
 
 # respaldo inicial de los archivos
-restic backup /backups
+restic backup /KIRIBAKO/backups
 
 # creo un alias
 vim ~/.bashrc
 --------------------------------------------------------------------------------------
-    alias _crear_backup='restic backup /backups'
+    alias _crear_backup='restic backup /KIRIBAKO/backups'
 --------------------------------------------------------------------------------------
 source ~/.bashrc
 
