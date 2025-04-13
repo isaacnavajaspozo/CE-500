@@ -60,6 +60,29 @@ vim /etc/samba/smb.conf
    force group = smbIlerna                                       # Archivos propiedad del grupo smbIlerna
    create mask = 0770                                            # Permisos para archivos creados
    directory mask = 0775                                         # Permisos para directorios creados
+
+[global]
+    interfaces = lo eth0
+    bind interfaces only = yes
+    workgroup = WORKGROUP
+    server string = Samba Server
+    netbios name = samba
+    security = user
+    passdb backend = tdbsam
+    map to guest = Bad User
+
+[public]
+    path = /KIRIBAKO/samba/datos
+    browsable = yes
+    writable = yes
+    guest ok = no
+    read only = no
+    valid users = Ilerna2
+    force user = nobody
+    force group = smbIlerna
+    create mask = 0770
+    directory mask = 0775
+
 --------------------------------------------------------------------------------------
 
 # si todo va bien, creo un usuario
@@ -80,16 +103,16 @@ chown nobody:smbIlerna /KIRIBAKO/samba/samba_passdb.tdb
 chmod 0660 /KIRIBAKO/samba/samba_passdb.tdb
 
 # doy permisos a las carpetas
-sudo chmod -R 770 /KIRIBAKO/samba/datos
+sudo chmod -R 0775 /KIRIBAKO/samba/datos
 sudo chown -R nobody:smbIlerna /KIRIBAKO/samba/datos
 
 # desactivo el active directory
 systemctl disable samba-ad-dc
 apt-get remove samba-ad-dc
 
+# reinicio servicio
 systemctl restart smbd
 systemctl status smbd
-
 
 # Reinicio el servicio
 systemctl daemon-reload
