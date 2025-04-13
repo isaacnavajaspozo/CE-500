@@ -27,7 +27,7 @@ source ~/.bashrc
 #=========================================================================================================================
 [⛩️INSTALACIÓN ZABBIX]::
 # instalaciones necesarias
-apt install -y dpkg wget vim
+apt install -y dpkg wget vim mariadb-server mariadb-client mysql-server
 
 # instalar el repositorio de Zabbix
 wget https://repo.zabbix.com/zabbix/7.2/release/debian/pool/main/z/zabbix-release/zabbix-release_latest_7.2+debian12_all.deb
@@ -36,6 +36,12 @@ apt update
 
 # instalar el servidor, la interfaz y el agente de Zabbix
 apt install zabbix-server-mysql zabbix-frontend-php zabbix-apache-conf zabbix-sql-scripts zabbix-agent
+
+# servicios
+sudo systemctl start mariadb
+sudo systemctl enable mariadb
+sudo systemctl start mysql
+sudo systemctl enable mysql
 
 # crear la base de datos
 mysql -uroot -p
@@ -59,7 +65,9 @@ mysql -uroot -p
 # configurar la base de datos para el servidor Zabbix
 vim /etc/zabbix/zabbix_server.conf
 --------------------------------------------------------------------------------------
+...
 DBPassword=password
+...
 --------------------------------------------------------------------------------------
 
 # iniciar los procesos del servidor 
@@ -68,4 +76,5 @@ systemctl enable zabbix-server zabbix-agent apache2
 
 #=========================================================================================================================
 [⛩️INTERFACE WEB]::
+https://<IP_HOST_VM-ZABBIX>/zabbix
 # configuración desde la interface web
