@@ -76,5 +76,22 @@ systemctl enable zabbix-server zabbix-agent apache2
 
 #=========================================================================================================================
 [⛩️INTERFACE WEB]::
-https://<IP_HOST_VM-ZABBIX>/zabbix
+# busco la web desde http
+http://<IP_HOST_VM-ZABBIX>/zabbix
+
 # configuración desde la interface web
+> Tipo de base de datos : MySQL
+> Servidor de base de dato : localhost
+> Puerto de la base de datos : 3306
+> Nombre de la base de datos : zabbix
+> Usuario : zabbix
+> Contraseña : password
+
+> Nombre del servidor Zabbix: Zabbix
+> Zona horaria: (UTC+02:00) Europe/Madrid
+> Tema por defecto: Azul
+
+
+
+
+
