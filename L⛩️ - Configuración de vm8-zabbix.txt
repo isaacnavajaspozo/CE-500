@@ -91,6 +91,11 @@ http://<IP_HOST_VM-ZABBIX>/zabbix
 > Zona horaria: (UTC+02:00) Europe/Madrid
 > Tema por defecto: Azul
 
+# para entrar a la interface por defecto las credenciales son las siguientes
+Usuario: Admin
+Contraseña: zabbix
+
+# 
 
 
 
