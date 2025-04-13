@@ -153,7 +153,7 @@ nano ~/.bashrc
 
     
     ## Cambiar diseño del prompt
-    PS1='${debian_chroot:+($debian_chroot)}\[\e[0;90m\]r00t🐧\[\e[1;36m\][\H]\e[1;36m\]\e[1;32m \w\e[0;37m $: '
+    PS1='${debian_chroot:+($debian_chroot)}\[\e[0;90m\]r00t箱\[\e[1;36m\][\H]\e[1;36m\]\e[1;32m \w\e[0;37m $: '
 
     ## cambiar colores para ls
     # color-verde:    directorios
