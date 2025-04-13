@@ -1,3 +1,4 @@
+# 🧠 Samba permite compartir archivos e impresoras con sistemas Windows a través de los protocolos SMB/CIFS.
 #=========================================================================================================================
 [⛩️KIRIBAKO]::
 Documentación ofical samba                 : https://wiki.samba.org/index.php/Setting_up_Samba_as_a_Standalone_Server
