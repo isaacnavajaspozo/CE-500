@@ -1,5 +1,5 @@
 #=========================================================================================================================
-[⛩️WHITE WHALE]::
+[⛩️KIRIBAKO]::
 # Documentación no-oficial   : https://serverspace.io/es/support/help/install-bitwarden-debian-11/
 # Documentación oficial      : https://bitwarden.com/help/install-on-premise-linux/
 # No hay una documentación oficial para utilizar vaultwarden sin docker 
@@ -12,8 +12,8 @@
 apt update
 apt upgrade -y
 
-# entro en el volumen e instalo el script
-cd /docker-volume
+# creo una carpeta en el contenedor e instalo el script
+mkdir /KIRIBAKO && cd /KIRIBAKO
 apt install vim -y
 vim script-00.sh
 # i - (shift + botón derecho):
@@ -38,7 +38,6 @@ sudo apt install -y sqlite3 curl unzip build-essential pkg-config libssl-dev
 sudo useradd -r -m -U -d /opt/vaultwarden vaultwarden
 
 # descargar Vaultwarden
-mkdir /opt/vaultwarden
 cd /opt/vaultwarden
 curl -fsSL https://github.com/dani-garcia/vaultwarden/archive/refs/tags/1.33.2.tar.gz -o vaultwarden.tar.gz
 tar -xzvf vaultwarden.tar.gz
