@@ -26,7 +26,8 @@ chmod +x script-00.sh
 source ~/.bashrc
 
 # Instalación samba
-sudo apt install -y samba samba-common samba-common-bin
+sudo apt install -y samba 
+# samba-common samba-common-bin
 
 #=========================================================================================================================
 [⛩️MODIFICAR RUTA DE SAMBA]::
@@ -41,34 +42,13 @@ mv /etc/samba/smb.conf /etc/samba/_smb.conf
 vim /etc/samba/smb.conf
 --------------------------------------------------------------------------------------
 [global]
-   workgroup = WORKGROUP                                         # Grupo de trabajo
-   server string = Samba Server                                  # Descripción
-   netbios name = samba                                          # Nombre en la red
-   security = user                                               # Modo de seguridad basado en usuarios
-   map to guest = Bad User                                       # Usuario invitados no validos
-   dns proxy = no                                                # Proxy para consultas DNS
-   passdb backend = tdbsam:/KIRIBAKO/samba/samba_passdb.tdb      # Declaro la ubicación de la db de usuarios
-
-[public]
-   path = /KIRIBAKO/samba/datos                                  # Ruta de la carpeta
-   browsable = yes                                               # Carpeta visible en red
-   writable = yes                                                # Permite la escritura en la carpeta
-   guest ok = no                                                 # No permite usuarios invitados
-   read only = no                                                # Permite la escritura
-   valid users = Ilerna2                                         # Acceso a Ilerna2
-   force user = nobody                                           # propiedad de nobody (para agregar más usuarios)
-   force group = smbIlerna                                       # Archivos propiedad del grupo smbIlerna
-   create mask = 0770                                            # Permisos para archivos creados
-   directory mask = 0775                                         # Permisos para directorios creados
-
-[global]
     interfaces = lo eth0
     bind interfaces only = yes
     workgroup = WORKGROUP
     server string = Samba Server
     netbios name = samba
     security = user
-    passdb backend = tdbsam
+    passdb backend = tdbsam:/KIRIBAKO/samba/samba_passdb.tdb
     map to guest = Bad User
 
 [public]
@@ -83,6 +63,27 @@ vim /etc/samba/smb.conf
     create mask = 0770
     directory mask = 0775
 
+# ***********************************************************************************************************
+# 🧑‍🎓 Que hace cada opción que he elegido::
+#    interfaces = lo eth0
+#    bind interfaces only = yes
+#    workgroup = WORKGROUP                                       :: Grupo de trabajo
+#    server string = Samba Server                                :: Descripción
+#    netbios name = samba                                        :: Nombre en la red
+#    security = user                                             :: Modo de seguridad basado en usuarios
+#    passdb backend = tdbsam:/KIRIBAKO/samba/samba_passdb.tdb    :: Declaro la ubicación de la db de usuarios
+#    map to guest = Bad User                                     :: Usuario invitados no validos
+#    path = /KIRIBAKO/samba/datos                                :: Ruta de la carpeta
+#    browsable = yes                                             :: Carpeta visible en red
+#    writable = yes                                              :: Permite la escritura en la carpeta
+#    guest ok = no                                               :: No permite usuarios invitados
+#    read only = no                                              :: Permite la escritura
+#    valid users = Ilerna2                                       :: Acceso a Ilerna2
+#    force user = nobody                                         :: propiedad de nobody (para agregar más usuarios)
+#    force group = smbIlerna                                     :: Archivos propiedad del grupo smbIlerna
+#    create mask = 0770                                          :: Permisos para archivos creados
+#    directory mask = 0775                                       :: Permisos para directorios creados
+# ***********************************************************************************************************
 --------------------------------------------------------------------------------------
 
 # si todo va bien, creo un usuario
@@ -107,8 +108,8 @@ sudo chmod -R 0775 /KIRIBAKO/samba/datos
 sudo chown -R nobody:smbIlerna /KIRIBAKO/samba/datos
 
 # desactivo el active directory
-systemctl disable samba-ad-dc
-apt-get remove samba-ad-dc
+# systemctl disable samba-ad-dc
+# apt-get remove samba-ad-dc
 
 # reinicio servicio
 systemctl restart smbd
