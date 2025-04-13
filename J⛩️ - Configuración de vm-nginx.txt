@@ -38,8 +38,6 @@ source ~/.bashrc
 🧑‍🎓 NGINX :: Servidor web y proxy inverso. Es ligero, rápido y ampliamente utilizado para actuar como proxy inverso para aplicaciones.
 🧑‍🎓 PM2   :: Gestor de procesos para aplicaciones Node.js. Mantiene las aplicaciones en ejecución, maneja ciclos de vida y garantiza su disponibilidad, incluso después de fallos o reinicios del servidor.
 
-## ⚠️ Como no dispongo actualmente de ningún dominio real voy a utilizar el host de mi Linux, para que llegue a funcionar tengo que forzar el host de Windows:
-	> <IP_LINUX>	<HOST_MAQUINA_NGINX>
 ## Configuro express en el servidor de manera simple para comprobar que funcione::
 ## configuración express
 
@@ -55,7 +53,6 @@ systemctl status nginx
 
 # Instalación inicial:
 	mkdir /var/www/express && cd /var/www/express
-	cd express
 	npm init -y
 	npm install express
 	npm install --save-dev typescript @types/node @types/express ts-node
@@ -99,7 +96,8 @@ vim nodemon.json
 vim package.json
 -----------------------------------------------------------------------
 "scripts": {
-  "start": "nodemon"
+  "start": "nodemon",
+...
 }
 -----------------------------------------------------------------------
 
@@ -110,43 +108,34 @@ cd app
 vim index.ts
 -----------------------------------------------------------------------
 import express, { Request, Response } from 'express';
-import mongoose from 'mongoose';
 
 const app = express();
 const port = 3000;
 
-const mongoURI = 'mongodb://localhost:27017/tu_base_de_datos'; 
-mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => {
-    console.log('👨‍💻 Connect to MongoDB');
-  })
-  .catch(err => {
-    console.error('Error:', err);
-  });
-
 app.get('/', (req: Request, res: Response) => {
-  res.send('Hello Ilerna, i can write TypeScript with Express.js!');
+  res.send('Hello Ilerna, I can write TypeScript with Express.js!');
 });
 
 app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
+  console.log(`🚀 Server is running at http://localhost:${port}`);
 });
 -----------------------------------------------------------------------
 
+# ⚠️ esto es opcional : si quiero cambiar el host para entrar desde otra url a la web (por defecto será vm-nginx)
 # modifico el host para que la web se vea vía web simulando al dominio : pruebas.local
-hostnamectl set-hostname <HOST_SERVIDOR>
-vim /etc/hosts
-----------------------------------------------------------------------------
-127.0.0.1   localhost
-<IP_DEL_SERVIDOR_PRIVADA>   <HOST_SERVIDOR>
+# hostnamectl set-hostname <HOST_SERVIDOR>
+# vim /etc/hosts
+# ----------------------------------------------------------------------------
+# 127.0.0.1   localhost
+# <IP_DEL_SERVIDOR_PRIVADA>   <HOST_SERVIDOR>
 	
-# The following lines are desirable for IPv6 capable hosts
-::1     localhost ip6-localhost ip6-loopback
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
+# # The following lines are desirable for IPv6 capable hosts
+# ::1     localhost ip6-localhost ip6-loopback
+# ff02::1 ip6-allnodes
+# ff02::2 ip6-allrouters
 ----------------------------------------------------------------------------
 
-# compruebo el host modificado 
+# compruebo el host 
 hostname
 
 # Ejecuto la aplicación
@@ -154,6 +143,7 @@ cd /var/www/express
 npm run start
 
 # pruebo a entrar en http://<IP_DEL_SERVIDOR>:3000
+http://vm-nginx:3000
 # si consigo entrar vuelco el proyecto de express.js que quiero que muestre
 
 ## Configurar Nginx:
@@ -184,7 +174,7 @@ sudo ln -s /etc/nginx/sites-available/express /etc/nginx/sites-enabled/
 sudo systemctl restart nginx
 
 # Una vez llegados a este punto y visto que funciona Nginx con Express.js && Typescript, migro el proyecto que he desarrollado, en este mismo GitHub al servidor de desarrollo.
-# A partir de aora voy a crear un proyecto con Nginx con Express.js y con Typescript en una configuración cluster con tres puertos diferentes.
+# A partir de aora voy a crear un proyecto con Nginx con Express.js y con Typescript en una configuración cluster.
 
 #=========================================================================================================================
 [⛩️INSTALACIÓN DE PM2]:
@@ -208,43 +198,6 @@ cd /var/www/express
 cd /var/www/express
 vim ecosystem.config.js
 ----------------------------------------------------
-module.exports = {
-  apps: [
-    {
-      name: 'express',                                  // Nombre del proceso
-      script: 'node_modules/ts-node/dist/bin.js',       // Archivo principal del servidor, utilizo ts-node para ejecutar archivos TypeScript.
-      args: 'app/index.ts',                             // Ejecuto el archivo Typescript
-      instances: 3,                                     // Número de instancias para escalar la aplicación (clusters)
-      exec_mode: 'cluster',
-      autorestart: true,                                // Reiniciar automáticamente si el proceso falla
-      max_restarts: 3,                                  // Limitar a 3 reinicios seguidos, para no saturar la aplicación en caso de fallo
-      restart_delay: 2000,                              // Esperar 1 segundo entre reinicios
-      iwatch: ["app"],
-      gnore_watch: ["node_modules"],                   // ignoro archivos que no quiero que evalue si cambian
-      wait_ready: true,
-      listen_timeout: 3000,
-      watch_options: {
-         usePolling: true                               // Usar polling puede ayudar si tu sistema de archivos no detecta los cambios en tiempo real
-      },
-      env: {
-        NODE_ENV: 'production'                          // Puedo forzar una variable de entorno dentro del archivo .env para afirmar que cuando se ejecute pm2 sea en producción
-      }
-    }
-  ],
-
-  // # Puedo gestionar un repositorio git desde aquí
-  //deploy: {
-  //  production: {
-  //    user: 'deploy_user',
-  //    host: 'your.server.com',
-  //    ref: 'origin/master',
-  //    repo: 'git@github.com:yourrepo.git',
-  //    path: '/var/www/yourapp',
-  //    'post-deploy': 'npm install && pm2 reload ecosystem.config.js --env production',
-  //  }
-  //}
-};
-
 module.exports = {
 	apps: [
 	  {
@@ -289,16 +242,25 @@ pm2 logs express
 #=========================================================================================================================
 [⛩️INSTALACIÓN DE MONGODB]:
 # importar la clave pública de MongoDB
-wget -O mongodb. - https://www.mongodb.org/static/pgp/server-6.0.asc
+cd /KIRIBAKO
+apt install wget
 
-# añadir el repositorio de MongoDB
-echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/debian $(lsb_release -sc)/mongodb-org/6.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+# iumportar la clave pública
+sudo apt-get install gnupg curl
 
-# actualizo
-sudo apt update
+# clave GPG pública de MongoDB
+curl -fsSL https://www.mongodb.org/static/pgp/server-6.0.asc | \
+   sudo gpg -o /usr/share/keyrings/mongodb-server-6.0.gpg \
+   --dearmor
 
-# instalar mongodb
-sudo apt install -y mongodb-org
+# crea el archivo de lista (añado el repositorio 6.0 compatible con sistemas más antiguos...)
+echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg arch=amd64 ] https://repo.mongodb.org/apt/debian bookworm/mongodb-org/6.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+
+# recargar la base de datos
+sudo apt-get update
+
+# instalar MongoDB Community Server
+sudo apt-get install -y mongodb-org
 
 # iniciar servicio mongodb
 sudo systemctl start mongod
@@ -318,10 +280,10 @@ db.createUser({
   pwd: "contraseña_segura",
 // roles según sea necesario...
   roles: [
-    { role: "read", db: "nombre_de_base_de_datos" },           // Solo lectura
-    { role: "readWrite", db: "nombre_de_base_de_datos" },      // Lectura y escritura
-    { role: "dbAdmin", db: "nombre_de_base_de_datos" },        // Administración de la base de datos
-    { role: "dbOwner", db: "nombre_de_base_de_datos" },        // Propietario de la base de datos
+    { role: "read", db: "nombre_de_base_de_datos" },            // Solo lectura
+    { role: "readWrite", db: "nombre_de_base_de_datos" },       // Lectura y escritura
+    { role: "dbAdmin", db: "nombre_de_base_de_datos" },         // Administración de la base de datos
+    { role: "dbOwner", db: "nombre_de_base_de_datos" },         // Propietario de la base de datos
     { role: "clusterAdmin", db: "admin" },                      // Administración de clústeres (para MongoDB en clúster)
     { role: "backup", db: "admin" },                            // Permisos de respaldo
     { role: "restore", db: "admin" },                           // Permisos de restauración
@@ -395,6 +357,36 @@ pm2 start ecosystem.config.js
 
 # Finalmente puedo acceder desde un Windows al CLI (Command Line Interface) descargando MongoDB Compass
 https://www.mongodb.com/try/download/compass
+
+#=========================================================================================================================
+[⛩️COMPROBAR LA CONEXIÓN CON MONGOO]:
+# vuelvo a editar el archivo de configuración de express con una conexión simple de mongo
+cd /var/www/express/app
+vim index.ts
+-----------------------------------------------------------------------
+import express, { Request, Response } from 'express';
+import mongoose from 'mongoose';
+
+const app = express();
+const port = 3000;
+
+const mongoURI = 'mongodb://localhost:27017/tu_base_de_datos'; 
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log('👨‍💻 Connect to MongoDB');
+  })
+  .catch(err => {
+    console.error('Error:', err);
+  });
+
+app.get('/', (req: Request, res: Response) => {
+  res.send('Hello Ilerna, i can write TypeScript with Express.js!');
+});
+
+app.listen(port, () => {
+  console.log(`Server is running at http://localhost:${port}`);
+});
+-----------------------------------------------------------------------
 
 #=========================================================================================================================
 [⛩️INSTALAR CERTIFICADO]:
