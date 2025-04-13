@@ -1,8 +1,8 @@
 # 🧠 Apache es un servidor web de código abierto y altamente configurable, usado para alojar aplicaciones y sitios web.
 #=========================================================================================================================
 [⛩️WHITE WHALE]::
-# documentación no-oficial         : https://es.linux-console.net/?p=29687
-# documentación no-oficial         : https://www.php.net/manual/es/install.unix.debian.php
+# documentación no-oficial         		: https://es.linux-console.net/?p=29687
+# documentación no-oficial         		: https://www.php.net/manual/es/install.unix.debian.php
 # Documentación certificado 			: https://medium.com/@ali_97803/deploy-de-una-app-de-express-js-con-github-actions-usando-nginx-en-modo-https-855126f93164#82a4
 # Documentación oficial de SQL/Debian 		: https://wiki.debian.org/MySQL
 # Documentación oficial de mariaDB 		: https://mariadb.com/kb/en/documentation/
@@ -17,8 +17,8 @@
 apt update
 apt upgrade -y
 
-# entro en el volumen e instalo el script
-cd /docker-volume
+# creo una carpeta en el contenedor e instalo el script
+mkdir /KIRIBAKO && cd /KIRIBAKO
 apt install vim -y
 vim script-00.sh
 # i - (shift + botón derecho):
@@ -32,38 +32,70 @@ chmod +x script-00.sh
 source ~/.bashrc
 
 #=========================================================================================================================
-[⛩️SERVIDOR APACHE PHP]:
+[⛩️INSTALACIÓN DE XAMPP]:
+# instalo dependencias para xampp
+apt-get install apache2 libapache2-mod-php php php-mysql php-gmp php-intl php-gd php-snmp php-ldap php-mbstring php-simplexml php-xml php-zip mariadb-server mariadb-client
 
+# configuración principal de mariadb
+vim /etc/mysql/mariadb.conf.d/50-server.cnf
+--------------------------------------------------------------------------------------
+user                    = mysql
+pid-file                = /run/mysqld/mysqld.pid
+basedir                 = /usr
+datadir                 = /var/lib/mysql
+tmpdir                  = /tmp
+lc-messages-dir         = /usr/share/mysql
+lc-messages             = en_US
+skip-external-locking
 
+# dejar comentado el bind si quiero consultas fuera de localhost
+# bind-address            = 127.0.0.1
 
+# tenemos que agregar el mismo character que tiene nuestra db
+collation-server=utf8mb4_spanish_ci
+--------------------------------------------------------------------------------------
 
+# Habilitamos https
+cd ~ 
+a2enmod ssl
+a2ensite default-ssl
+a2enmod cgi cgid rewrite
+a2enmod headers
+systemctl restart apache2
 
+# Configuracion minima para mysql (buenas prácticas de mysql)
+mysql_secure_installation
 
+current password: *********
+all yes
 
+# Reiniciamos apache
+systemctl reload apache2
+systemctl restart mysql
 
+# inicia automáticamente cada vez que el sistema arranque
+systemctl enable apache2
+systemctl enable mysql
 
+# compruebo los servicios
+systemctl status apache2
+systemctl status mysql
 
 #=========================================================================================================================
 [⛩️INSTALACIÓN DE MARIADB]:
-# Compruebo que funciona todo bien
-
 # Como quiero que la base de datos permanezca en mi servidor y no en uno independiente voy a instalar mysql
-sudo apt update && sudo apt install -y mariadb-server
 sudo systemctl status mariadb
 sudo systemctl start mariadb
 sudo systemctl enable mariadb
-
-# Buenas prácticas para mantenimiento de una base de datos
-sudo mysql_secure_installation
 
 # entro a la base de datos
 sudo mysql -u root -p
 
 # creo la base de datos express_db con usuario express y privilegios root
-# CREATE DATABASE express_db;
+CREATE DATABASE express_db;
 # para crear un usuario con acceso localhost 
-CREATE USER 'root'@'localhost' IDENTIFIED BY 'Tutipoda&452';
-GRANT ALL PRIVILEGES ON express_db.* TO 'express'@'localhost';
+CREATE USER 'admin'@'localhost' IDENTIFIED BY 'Tutipoda&452';
+GRANT ALL PRIVILEGES ON express_db.* TO 'admin'@'localhost';
 FLUSH PRIVILEGES;
 
 ## es buena práctica utilizar varios usuarios para dar privilegios solo 
@@ -95,19 +127,17 @@ INSERT INTO usuarios (id, usuario, contraseña) VALUES
 SELECT * FROM usuarios;
 exit;
 
-# Configurar MySQL 
+# compruebo el tipo de conexión onfigurar MySQL 
 vim /etc/mysql/mariadb.conf.d/50-server.cnf
+--------------------------------------------------------------------------------------
 	# para conexiones locales
 	> bind-address = 127.0.0.1 
 	# para aceptar conexiones remotas
 	# > bind-address = 0.0.0.0
+--------------------------------------------------------------------------------------
 
 # Reinicio MySQL
 sudo systemctl restart mariadb
-
-# reinicio pm2
-cd /var/www/express
-pm2 start ecosystem.config.js
 
 #=========================================================================================================================
 [⛩️INSTALAR CERTIFICADO]:
