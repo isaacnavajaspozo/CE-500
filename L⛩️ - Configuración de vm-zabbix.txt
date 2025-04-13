@@ -1,5 +1,4 @@
 # 🧠 Zabbix es una herramienta de monitoreo integral y escalable para infraestructuras de TI, que ofrece visualización, alertas y gestión centralizada de servidores, redes y aplicaciones.
-
 #=========================================================================================================================
 [⛩️KIRIBAKO]::
 Documentación ofical zabbix                 : https://www.zabbix.com/download?os_distribution=debian
