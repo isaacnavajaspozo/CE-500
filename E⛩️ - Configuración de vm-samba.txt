@@ -25,12 +25,12 @@ chmod +x script-00.sh
 ./script-00.sh
 source ~/.bashrc
 
-# Instalación samba
-sudo apt install -y samba 
-# samba-common samba-common-bin
-
 #=========================================================================================================================
 [⛩️MODIFICAR RUTA DE SAMBA]::
+# Instalación samba
+sudo apt install -y samba 
+
+# samba-common samba-common-bin
 # creo carpetas para archivos
 mkdir /KIRIBAKO/samba/ && mkdir /KIRIBAKO/samba/datos
 
