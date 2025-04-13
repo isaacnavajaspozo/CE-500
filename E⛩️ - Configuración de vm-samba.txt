@@ -124,20 +124,6 @@ systemctl status smbd
 # Entro desde mi misma red
 \\<NOMBRE_DEL_HOST>
 
-
-#=========================================================================================================================
-[⛩️DEJO EN SEGUNDO PLANO ESTA MÁQUINA]::
-exit
-docker ps
-
-# Dejo habilitada la máquina docker si no aparece con docker ps
-_docker_manager
-Ingrese el número del contenedor: 1
-¿Quieres inicializar la máquina en segundo plano? (s/n): s
-
-# Compruebo que esté en segundo plano
-docker ps
-
 #=========================================================================================================================
 [⛩️INSTALO RESTIC]::
 # restic lo voy a utilizar en caso de querer rescatar archivos en vivo
