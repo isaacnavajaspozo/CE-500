@@ -11,7 +11,7 @@ Documentación oficial de restic            : https://restic.readthedocs.io/en/l
 apt update
 apt upgrade -y
 
-# entro en el volumen e instalo el script
+# creo una carpeta en el contenedor e instalo el script
 mkdir /KIRIBAKO && cd /KIRIBAKO
 apt install vim -y
 vim script-00.sh
@@ -26,60 +26,41 @@ chmod +x script-00.sh
 source ~/.bashrc
 
 # Instalación samba
-apt install -y samba 
-
-# Creo la carpeta samba dentro del volumen
-mkdir /docker-volume/samba
+sudo apt install -y samba samba-common samba-common-bin
 
 #=========================================================================================================================
 [⛩️MODIFICAR RUTA DE SAMBA]::
-# modificar ruta de servicio
-mv /etc/samba/smb.conf /etc/samba/_smb.conf
-cd /docker-volume
-touch smb.conf
+# creo carpetas para archivos
+mkdir /KIRIBAKO/samba/ && mkdir /KIRIBAKO/samba/datos
 
-# creo un enlace simbólico del archivo de configuración
-ln -s /docker-volume/samba/smb.conf /etc/samba/smb.conf
+# hago una copia del archivo principal
+mv /etc/samba/smb.conf /etc/samba/_smb.conf
 
 # voy agregar un solo usuario a la configuración Ilerna2, 
 # pero lo configuro dentro de un grupo por si en un futuro quiero agregar más usuarios con los mismos permisos
 vim /etc/samba/smb.conf
 --------------------------------------------------------------------------------------
 [global]
-   workgroup = WORKGROUP                                                   # Grupo de trabajo
-   server string = Samba Server                                            # Descripción
-   netbios name = samba                                                    # Nombre en la red
-   security = user                                                         # Modo de seguridad basado en usuarios
-   map to guest = Bad User                                                 # Usuario invitados no validos
-   dns proxy = no                                                          # Proxy para consultas DNS
-   passdb backend = tdbsam:/docker-volume/samba/samba_passdb.tdbrm         # Declaro la ubicación de la db de usuarios
+   workgroup = WORKGROUP                                         # Grupo de trabajo
+   server string = Samba Server                                  # Descripción
+   netbios name = samba                                          # Nombre en la red
+   security = user                                               # Modo de seguridad basado en usuarios
+   map to guest = Bad User                                       # Usuario invitados no validos
+   dns proxy = no                                                # Proxy para consultas DNS
+   passdb backend = tdbsam:/KIRIBAKO/samba/samba_passdb.tdb      # Declaro la ubicación de la db de usuarios
 
 [public]
-   path = /docker-volume/archivos_samba/                                    # Ruta de la carpeta
-   browsable = yes                                                          # Carpeta visible en red
-   writable = yes                                                           # Permite la escritura en la carpeta
-   guest ok = no                                                            # No permite usuarios invitados
-   read only = no                                                           # Permite la escritura
-   valid users = Ilerna2                                                    # Acceso a Ilerna2
-   force user = nobody                                                      # Archivos sean propiedad de nobody (por si quiero agregar más usuarios)                        
-   force group = smbIlerna                                                  # Archivos propiedad del grupo smbIlerna
-   create mask = 0770                                                       # Permisos para archivos creados,
-   directory mask = 0775                                                    # Permisos para directorios creados, 
+   path = /KIRIBAKO/samba/datos                                  # Ruta de la carpeta
+   browsable = yes                                               # Carpeta visible en red
+   writable = yes                                                # Permite la escritura en la carpeta
+   guest ok = no                                                 # No permite usuarios invitados
+   read only = no                                                # Permite la escritura
+   valid users = Ilerna2                                         # Acceso a Ilerna2
+   force user = nobody                                           # propiedad de nobody (para agregar más usuarios)
+   force group = smbIlerna                                       # Archivos propiedad del grupo smbIlerna
+   create mask = 0770                                            # Permisos para archivos creados
+   directory mask = 0775                                         # Permisos para directorios creados
 --------------------------------------------------------------------------------------
-
-# Reinicio el servicio
-systemctl daemon-reload
-systemctl restart smbd 
-systemctl enable smbd  
-systemctl status smbd  
-
-# Entro desde mi misma red
-\\<NOMBRE_DEL_HOST>
-
-# crear archivo de contraseñas de usuarios
-touch /docker-volume/samba/samba_passdb.tdbrm
-chown nobody:smbIlerna /docker-volume/samba/samba_passdb.tdbrm
-chmod 0660 /docker-volume/samba/samba_passdb.tdbrm
 
 # si todo va bien, creo un usuario
 sudo useradd -s /usr/sbin/nologin Ilerna2
@@ -93,10 +74,32 @@ pdbedit -L
 groupadd smbIlerna
 usermod -aG smbIlerna Ilerna2
 
-# creo carpeta para archivos samba y doy permisos a las carpetas
-mkdir /docker-volume/archivos_samba
-chown -R nobody:smbIlerna /docker-volume/archivos_samba/
-chmod -R 0770 /docker-volume/archivos_samba/
+# crear archivo de contraseñas de usuarios
+touch /KIRIBAKO/samba/samba_passdb.tdb
+chown nobody:smbIlerna /KIRIBAKO/samba/samba_passdb.tdb
+chmod 0660 /KIRIBAKO/samba/samba_passdb.tdb
+
+# doy permisos a las carpetas
+sudo chmod -R 770 /KIRIBAKO/samba/datos
+sudo chown -R nobody:smbIlerna /KIRIBAKO/samba/datos
+
+# desactivo el active directory
+systemctl disable samba-ad-dc
+apt-get remove samba-ad-dc
+
+systemctl restart smbd
+systemctl status smbd
+
+
+# Reinicio el servicio
+systemctl daemon-reload
+systemctl start smbd 
+systemctl enable smbd  
+systemctl status smbd  
+
+# Entro desde mi misma red
+\\<NOMBRE_DEL_HOST>
+
 
 #=========================================================================================================================
 [⛩️DEJO EN SEGUNDO PLANO ESTA MÁQUINA]::
