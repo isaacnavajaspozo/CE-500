@@ -76,7 +76,8 @@ systemctl enable zabbix-server zabbix-agent apache2
 #=========================================================================================================================
 [⛩️INTERFACE WEB]::
 # busco la web desde http
-http://<IP_HOST_VM-ZABBIX>/zabbix
+# http://<IP_HOST_VM-ZABBIX>/zabbix
+http://192.168.1.76/zabbix
 
 # configuración desde la interface web
 > Tipo de base de datos : MySQL
@@ -94,8 +95,45 @@ http://<IP_HOST_VM-ZABBIX>/zabbix
 Usuario: Admin
 Contraseña: zabbix
 
-# 
+# Lo siguiente que voy hacer es monitorizar los pc que tengo en mi red::
+# me dirijo a la siguiente pagina y me descargo el agente en el pc que quiero monitorizar 
+https://www.zabbix.com/download_agents
+    > Windows
+    > Any
+    > amd64
+    > 7.2
+    > OpenSSL
+    > MSI
+    > v7.2.5
+DOWNLOAD
 
+# ejecutop el instalador del agente desde el pc 
+    > Host Name                            : PC-personal
+    > Zabbix server ip/dns                 : <IP_DEL_SERVIDOR_ZABBIX>
+    > Server or proxy for active checks    : <IP_DEL_SERVIDOR_ZABBIX>
 
+# me dirijo al siguiente archivo y compruebo los siguientes datos ya que tienen que coindicir del lado de la configuración web, en mi caso son los siguientes:
+C:\Program Files\Zabbix Agent\zabbix_agentd.conf
+    > Server=192.168.1.76
+    > Hostname=WIN-PLFA3OEH6IF
 
+# Me dirijo a la web
+http://192.168.1.76/zabbix
+    > Recopilación de datos
+        > Equipos
+        > Crear Equipo
+            + Nombre de equipo      : PC-personal
+            + Nombre visible        : PC-personal
+            + Plantillas            : Windows by Zabbix agent
+            + Grupos de equipos     : Applications
+            + Interfaces   -  Agent : <IP_DEL_PC>
 
+# si me da un error de disponivilidad puede ser porque no le deja acceso desde el firewall
+# creo una regla desde Windows Firewall para permitir el paso
+Panle de control > Windows firewall > Configuración avanzada
+# creo dos reglas: una regla de entrada y otra regla de salida
+    + Puerto
+    + TCP - Puerto: 10050, 10051
+    + Permitir conexión
+    + Dominio, Privado, Público
+    + Regla (entrada/salida) para agente zabbix
