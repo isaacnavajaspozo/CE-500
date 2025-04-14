@@ -255,6 +255,32 @@ sudo a2ensite default-ssl.conf
 # reinicio los servicios
 sudo systemctl reload apache2
 sudo systemctl restart apache2
+#=========================================================================================================================
+[⛩️INSTALACIÓN DESPLIEGUE GIT]::
+# creo la carpeta de repositorio git
+mkdir /KIRIBAKO/git
+
+# dentro de la ruta del repositorio del servidor tengo que agregar una carpeta /hooks con el archivo post-receive
+cd /ruta/a/tu/repositorio.git/hooks
+vim post-receive
+--------------------------------------------------------------------------------------
+#!/bin/bash
+
+REPO_DIR="/KIRIBAKO/git"
+DEPLOY_DIR="/var/www/php"
+# EMAIL="isaacnavajas@ilerna.com"
+
+# Cambiar al directorio del repositorio
+cd $REPO_DIR || exit
+
+# Actualizar el contenido en el directorio de despliegue
+GIT_WORK_TREE=$DEPLOY_DIR git checkout -f master
+
+# Enviar un correo electrónico
+# echo "Se ha realizado un push al repositorio y se ha actualizado el directorio de despliegue." | mail -s "Notificación de Push" $EMAIL
+--------------------------------------------------------------------------------------
+
+# el archivo post-receive lo que va hacer es mandar directamente la rama master a producción para que los cambios sean inminentes
 
 #=========================================================================================================================
 [⛩️MATO PROCESOS SI HAY FALLO]:
