@@ -160,3 +160,40 @@ restic restore <snapshot_id> --target /ruta/a/la/carpeta/de/recuperacion
 
 # eliminar snapshot
 restic forget <snapshot_id>
+
+#=========================================================================================================================
+[⛩️INSTALO ANACRON]::
+# es ideal para sistemas que no están siempre encendidos (como un portátil). Ejecuta tareas periódicas aunque el equipo esté apagado en el momento programado
+
+# instalo
+sudo apt install anacron -y
+
+vim /etc/cron.daily/restic-backup
+-----------------------------------------------------------------------------
+# /etc/anacrontab
+# formato: periodo  delay identificador  comando
+# Example of job definition:
+# .---------------------- period in days (1 = daily, 7 = weekly, etc)
+# | .-------------------- delay in minutes after boot
+# | |      .------------- job identifier (used for logs & state tracking)
+# | |      |        .---- command to be executed
+# | |      |        |
+1 5 restic.daily nice /etc/cron.daily/restic-backup
+-----------------------------------------------------------------------------
+sudo chmod +x /etc/cron.daily/restic-backup
+
+mv /etc/anacrontab /etc/_anacrontab
+vim /etc/anacrontab
+-----------------------------------------------------------------------------
+# /etc/anacrontab
+# formato: periodo  delay identificador  comando
+1 5 restic.daily nice /etc/cron.daily/restic-backup
+
+# 1 → Ejecutar cada 1 día
+# 5 → El backup correrá 5 minutos después del arranque
+# restic.daily → Identificador único
+# comando → Ruta al script
+-----------------------------------------------------------------------------
+
+# anacron se ejecuta normalmente vía systemd (anacron.timer) o desde /etc/init.d/anacron
+# Logs: /var/log/syslog o journalctl -u anacron
