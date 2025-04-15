@@ -255,6 +255,7 @@ sudo a2ensite default-ssl.conf
 # reinicio los servicios
 sudo systemctl reload apache2
 sudo systemctl restart apache2
+
 #=========================================================================================================================
 [⛩️INSTALACIÓN DESPLIEGUE GIT]::
 # creo la carpeta de repositorio git
