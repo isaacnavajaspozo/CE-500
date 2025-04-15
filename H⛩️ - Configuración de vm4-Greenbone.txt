@@ -4,12 +4,13 @@
 
 #=========================================================================================================================
 [⛩️INSTALACIONES]::
+
 # instalaciones 
 apt update
 apt upgrade -y
 
-# entro en el volumen e instalo el script
-cd /docker-volume
+# creo una carpeta en el contenedor e instalo el script
+mkdir /KIRIBAKO && cd /KIRIBAKO
 apt install vim -y
 vim script-00.sh
 # i - (shift + botón derecho):
