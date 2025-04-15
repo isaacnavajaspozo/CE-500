@@ -23,8 +23,12 @@ chmod +x script-00.sh
 ./script-00.sh
 source ~/.bashrc
 
-==================================================================================================================================================
-==========[ 20/02/2025 · GREENBONE ]==============================================================================================================
+#=========================================================================================================================
+[⛩️INSTALACIÓN GREENBONE]::
+
+	##.🧑‍🎓 Documentación oficial:
+	https://greenbone.github.io/docs/latest/22.4/source-build/index.html
+
 	##.🧑‍🎓 Explicación de componentes OpenVass:
 		gvm-libs:		Biblioteca C utilizadas en openvas-scanner , gvmd , gsad y pg-gvm.
 		gvmd:			Servicio principal, utiliza PostgreSQL y realiza autenticación, gestión de escaneos, la información sobre vulnerabilidades y mucho más
@@ -74,11 +78,10 @@ source ~/.bashrc
 # *********************************************************************
 	# Greenbone debe ejecutarse como un usuario y un grupo dedicado (no le doy acceso a terminal)
 	useradd -r -M -U -G sudo -s /usr/sbin/nologin gvm
-
-	## en local tendría que crear un usuario para Greenbone pero en mi caso de docker trabajo directamente
+	
 	# permitir que el usuario actual ejecute gvmd
-	# usermod -aG gvm "nombre de usuario Linux"
-	# su "nombre de usuario Linux"
+	usermod -aG gvm "nombre de usuario Linux"
+	su "nombre de usuario Linux"
 # *********************************************************************
 
 # 03.📌 Instalaciones
@@ -272,8 +275,8 @@ source ~/.bashrc
 	tar -C $SOURCE_DIR/gsa-$GSA_VERSION -xvzf $SOURCE_DIR/gsa-$GSA_VERSION.tar.gz
 	
 	# Instalación de GSA 
-	mkdir -p $INSTALL_PREFIX/share/gvm/gsad/web/
-	cp -rv $SOURCE_DIR/gsa-$GSA_VERSION/* $INSTALL_PREFIX/share/gvm/gsad/web/
+	sudo mkdir -p $INSTALL_PREFIX/share/gvm/gsad/web/
+	sudo cp -rv $SOURCE_DIR/gsa-$GSA_VERSION/* $INSTALL_PREFIX/share/gvm/gsad/web/
 # *********************************************************************
 
 # 🔥 gsad
@@ -338,7 +341,7 @@ source ~/.bashrc
 
 	make DESTDIR=$INSTALL_DIR/openvas-smb install
 
-	cp -rv $INSTALL_DIR/openvas-smb/* /
+	sudo cp -rv $INSTALL_DIR/openvas-smb/* /
 
 # *********************************************************************
 
@@ -397,7 +400,7 @@ source ~/.bashrc
 
 	python3 -m pip install --root=$INSTALL_DIR/ospd-openvas --no-warn-script-location .
 
-	cp -rv $INSTALL_DIR/ospd-openvas/* /
+	sudo cp -rv $INSTALL_DIR/ospd-openvas/* /
 
 # *********************************************************************
 
@@ -422,11 +425,10 @@ source ~/.bashrc
 	cargo build --release
 
 	# copia de binarios
-	cp -v ../../target/release/openvasd $INSTALL_DIR/openvasd/usr/local/bin/
-	cp -v ../../target/release/scannerctl $INSTALL_DIR/openvasd/usr/local/bin/
-	cp -rv $INSTALL_DIR/openvasd/* /
+	sudo cp -v ../../target/release/openvasd $INSTALL_DIR/openvasd/usr/local/bin/
+	sudo cp -v ../../target/release/scannerctl $INSTALL_DIR/openvasd/usr/local/bin/
+	sudo cp -rv $INSTALL_DIR/openvasd/* /
 
-# me quedo aqui...
 # *********************************************************************
 
 # 🔥 greenbone-feed-sync
@@ -437,7 +439,7 @@ source ~/.bashrc
 
 	python3 -m pip install --root=$INSTALL_DIR/greenbone-feed-sync --no-warn-script-location greenbone-feed-sync
 
-	cp -rv $INSTALL_DIR/greenbone-feed-sync/* /
+	sudo cp -rv $INSTALL_DIR/greenbone-feed-sync/* /
 # *********************************************************************
 
 # 🔥 gvm-tools
@@ -448,20 +450,20 @@ source ~/.bashrc
 
 	python3 -m pip install --root=$INSTALL_DIR/gvm-tools --no-warn-script-location gvm-tools
 
-	cp -rv $INSTALL_DIR/gvm-tools/* /
+	sudo cp -rv $INSTALL_DIR/gvm-tools/* /
 # *********************************************************************
 
 # 🔥 servidor Redis
 # 🧑‍🎓 Utilizado por el escáner (openvas-scanner y ospd-openvas) para manejar la información de VT 
 # *********************************************************************
 	# Agregar configuración para ejecutar el servidor Redis para el escáner
-	cp $SOURCE_DIR/openvas-scanner-$OPENVAS_SCANNER_VERSION/config/redis-openvas.conf /etc/redis/
-	chown redis:redis /etc/redis/redis-openvas.conf
+	sudo cp $SOURCE_DIR/openvas-scanner-$OPENVAS_SCANNER_VERSION/config/redis-openvas.conf /etc/redis/
+	sudo chown redis:redis /etc/redis/redis-openvas.conf
 	echo "db_address = /run/redis-openvas/redis.sock" | sudo tee -a /etc/openvas/openvas.conf
 
 	# inicio redis con la configuración de openvas
-	systemctl start redis-server@openvas.service
-	systemctl enable redis-server@openvas.service
+	sudo systemctl start redis-server@openvas.service
+	sudo systemctl enable redis-server@openvas.service
 
 	# el usuario gvm debe poder acceder al socket Unix redis en /run/redis-openvas/redis.sock
 	sudo usermod -aG redis gvm
@@ -469,22 +471,22 @@ source ~/.bashrc
 
 # 08.📌 Ajustes de permisos
 # *********************************************************************
-	mkdir -p /var/lib/notus
-	mkdir -p /run/gvmd
+	sudo mkdir -p /var/lib/notus
+	sudo mkdir -p /run/gvmd
 
-	chown -R gvm:gvm /var/lib/gvm
-	chown -R gvm:gvm /var/lib/openvas
-	chown -R gvm:gvm /var/lib/notus
-	chown -R gvm:gvm /var/log/gvm
-	chown -R gvm:gvm /run/gvmd
+	sudo chown -R gvm:gvm /var/lib/gvm
+	sudo chown -R gvm:gvm /var/lib/openvas
+	sudo chown -R gvm:gvm /var/lib/notus
+	sudo chown -R gvm:gvm /var/log/gvm
+	sudo chown -R gvm:gvm /run/gvmd
 
-	chmod -R g+srw /var/lib/gvm
-	chmod -R g+srw /var/lib/openvas
-	chmod -R g+srw /var/log/gvm
+	sudo chmod -R g+srw /var/lib/gvm
+	sudo chmod -R g+srw /var/lib/openvas
+	sudo chmod -R g+srw /var/log/gvm
 
 	# Ajuste de permisos de gvmd
-	chown gvm:gvm /usr/local/sbin/gvmd
-	chmod 6750 /usr/local/sbin/gvmd
+	sudo chown gvm:gvm /usr/local/sbin/gvmd
+	sudo chmod 6750 /usr/local/sbin/gvmd
 # *********************************************************************
 
 # 09.📌 Validaciones de feeds
@@ -497,9 +499,9 @@ source ~/.bashrc
 	echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" | gpg --import-ownertrust
 
 	# Creación de un llavero GPG para la validación del contenido de los feeds
-	mkdir -p $OPENVAS_GNUPG_HOME
-	cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/
-	chown -R gvm:gvm $OPENVAS_GNUPG_HOME
+	sudo mkdir -p $OPENVAS_GNUPG_HOME
+	sudo cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/
+	sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME
 # *********************************************************************
 
 # 10.📌 Configuración de sudo para escanear 
@@ -510,9 +512,9 @@ source ~/.bashrc
 
 # 11.📌 Configuración de PostgreSQL
 # *********************************************************************
-	apt install -y postgresql
+	sudo apt install -y postgresql
 	
-	systemctl start postgresql@15-main
+	sudo systemctl start postgresql@15-main
 	
 	sudo -u postgres bash
 		> cd
@@ -529,11 +531,10 @@ source ~/.bashrc
 
 	# esto son cosas mias que he agregado
 	# ldconfig -p | grep libgvm_base
-	# sudo ldconfig
+	sudo ldconfig
 	/usr/local/sbin/gvmd --create-user=admin --password='admin'
 	vim /var/log/gvm/gvmd.log	
-	# sudo -u gvm greenbone-feed-sync --type all:q!
-
+	# sudo -u gvm greenbone-feed-sync --type all
 
 	# Configuración del propietario de la importación de feeds
 	/usr/local/sbin/gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value `/usr/local/sbin/gvmd --get-users --verbose | grep admin | awk '{print $2}'`
@@ -569,7 +570,7 @@ RestartSec=60
 WantedBy=multi-user.target
 EOF
 
-cp -v $BUILD_DIR/ospd-openvas.service /etc/systemd/system/
+sudo cp -v $BUILD_DIR/ospd-openvas.service /etc/systemd/system/
 # *********************************************************************
 
 # 🔥 Archivo de servicio systemd para gvmd
@@ -597,7 +598,7 @@ TimeoutStopSec=10
 WantedBy=multi-user.target
 EOF
 
-cp -v $BUILD_DIR/gvmd.service /etc/systemd/system/
+sudo cp -v $BUILD_DIR/gvmd.service /etc/systemd/system/
 # *********************************************************************
 
 # 🔥 Archivo de servicio systemd para gsad
@@ -692,7 +693,7 @@ xdg-open "http://<IP_DEL_SERVIDOR>:9392" 2>/dev/null >/dev/null &
 
 # Para abrir la aplicación web, es a través de la IP y el puerto
 http://<IP_DEL_SERVIDOR>:9392/
-
+admin:admin
 
 ==================================================================================================================================================
 ==========[Entorno WEB]===========================================================================================================================
