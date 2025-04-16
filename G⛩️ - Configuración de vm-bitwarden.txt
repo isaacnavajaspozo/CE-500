@@ -51,7 +51,7 @@ rmdir /opt/vaultwarden/vaultwarden-1.33.2
 # sudo -u vaultwarden cp .env.template .env
 cp .env.template .env
 vim /opt/vaultwarden/.env
-    > DOMAIN=https://vm3-bitwarden.whitewhale.local
+    > DOMAIN=https://<IP_SERVIDOR>
     > SIGNUPS_ALLOWED=false                                # en false no permite registros 
     > DATABASE_URL=data/db.sqlite3
 
