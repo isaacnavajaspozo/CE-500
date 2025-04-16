@@ -43,12 +43,21 @@ dns-nameservers 8.8.8.8 1.1.1.1
 # modifico la configuración de red de LXC para asociar el bridge
 vim /etc/lxc/default.conf
 --------------------------------------------------------------------------------------------------------------------------
+# crea una interfaz virtual tipo veth y la conecta al bridge br0
 lxc.net.0.type = veth
 lxc.net.0.link = br0
 lxc.net.0.flags = up
 
+# permite perfiles AppArmor y anidamiento de contenedores
 lxc.apparmor.profile = generated
 lxc.apparmor.allow_nesting = 1
+
+# Usar systemd como PID 1
+lxc.init.cmd = /lib/systemd/systemd
+
+# Montar cgroups y sistemas necesarios
+lxc.mount.auto = proc sys cgroup
+lxc.mount.entry = /dev/fuse dev/fuse none bind,create=file 0 0
 --------------------------------------------------------------------------------------------------------------------------
 
 # reinicio el servicio de la red y reinicio
