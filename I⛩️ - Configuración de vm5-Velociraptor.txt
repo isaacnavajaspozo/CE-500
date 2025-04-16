@@ -90,6 +90,25 @@ sudo ss -tuln | grep 8889
 # pruebo en navegador
 https://<IP_SERVIDOR_LINUX>:8889
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #===========================================================================================================================
 [⛩️INSTALACIÓN AGENTE-VELOCIRAPTOR EN WINDOWS]:
 # 📦 Desde Linux genero el agente (generará un .exe)
