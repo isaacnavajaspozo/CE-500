@@ -54,9 +54,8 @@ velociraptor config generate -i
   # Guarda el archivo final como server.config.yaml
 # genera el archivo server.config.yaml
 velociraptor --config server.config.yaml debian server
-
-# Ejecutar el servidor
-velociraptor --config /opt/velociraptor/config/server.config.yaml frontend
+# Genera la configuración del cliente a partir de la configuración del servidor y la guarda en client.config.yaml
+velociraptor --config server.config.yaml config client > client.config.yaml
 
 # (Opcional) Ejecutarlo como servicio systemd
 vim /etc/systemd/system/velociraptor.service
@@ -66,7 +65,7 @@ Description=Velociraptor Server
 After=network.target
 
 [Service]
-ExecStart=/usr/local/bin/velociraptor --config /opt/velociraptor/config/server.config.yaml frontend
+ExecStart=/usr/local/bin/velociraptor --config /KIRIBAKO/server.config.yaml frontend
 Restart=always
 User=root
 
@@ -74,9 +73,22 @@ User=root
 WantedBy=multi-user.target
 -------------------------------------------------------------------
 
+# modifico el archivo 
+vim /KIRIBAKO/server.config.yaml
+-------------------------------------------------------------------
+# dentro de larchivo busco los 127.0.0.1 y los cambio por 0.0.0.0
+# esto hace que se pueda escucha fuera de la máquina (dentro del mismo host)
+-------------------------------------------------------------------
+
 # activar
 sudo systemctl daemon-reexec
 sudo systemctl enable --now velociraptor
+
+# comprobar si escucha el puerto
+sudo ss -tuln | grep 8889 
+
+# pruebo en navegador
+https://<IP_SERVIDOR_LINUX>:8889
 
 #===========================================================================================================================
 [⛩️INSTALACIÓN AGENTE-VELOCIRAPTOR EN WINDOWS]:
