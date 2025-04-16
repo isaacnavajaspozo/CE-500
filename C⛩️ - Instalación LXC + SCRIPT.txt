@@ -146,7 +146,7 @@ chmod +x lxc-manager.sh
 
 #=========================================================================================================================
 [⚠️SOLUCIONES]:
-- ⚠️ systemctl
+- ⚠️ systemctl (error PID 1)
 # si en algún momento me da un error en los contenedores con systemctl agrego lo siguiente
 /var/lib/lxc/<nombre>/config
 Y asegúrate de tener lo siguiente:
