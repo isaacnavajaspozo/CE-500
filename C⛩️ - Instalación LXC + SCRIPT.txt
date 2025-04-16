@@ -143,3 +143,17 @@ chmod +x lxc-manager.sh
 
 # ejecuto el script
 ./lxc-manager.sh
+
+#=========================================================================================================================
+[⚠️SOLUCIONES]:
+- ⚠️ systemctl
+# si en algún momento me da un error en los contenedores con systemctl agrego lo siguiente
+/var/lib/lxc/<nombre>/config
+Y asegúrate de tener lo siguiente:
+
+# Usar systemd como PID 1
+lxc.init.cmd = /lib/systemd/systemd
+# Montar cgroups y sistemas necesarios
+lxc.mount.auto = proc sys cgroup
+lxc.mount.entry = /dev/fuse dev/fuse none bind,create=file 0 0
+-
