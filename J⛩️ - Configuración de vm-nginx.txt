@@ -335,7 +335,6 @@ systemctl restart mongod
 mongo -u nombre_usuario -p contraseña_segura --authenticationDatabase nombre_de_base_de_datos
 
 
-
 ## otras configuraciones de seguridad
 # encriptación en reposo: MongoDB Enterprise ofrece encriptación de datos en reposo, lo cual cifra los datos almacenados en disco. Si usas la versión comunitaria, puedes usar una solución externa de cifrado.
 # encriptación en tránsito: Configura TLS/SSL para cifrar el tráfico de la base de datos entre los clientes y el servidor MongoDB.
@@ -602,7 +601,7 @@ app.listen(port, () => {
 -----------------------------------------------------------------------
 
 
-# 🐝 honeypot para scanners (falsificar archivos de configuración)
+# 🐝 honeypot para decoys :: scanners (falsificar archivos de configuración)
 # agrego archivos falsos de posibles ataques y les asocio un tamaño 
 echo "Backup falso" > /var/www/express/app/db_backup.bson && truncate -s 1455M /var/www/express/app/db_backup.bson
 echo "Backup falso" > /var/www/express/app/access.log && truncate -s 321M /var/www/express/app/access.log
@@ -648,7 +647,8 @@ sudo /KIRIBAKO/honypot-monitor.sh &
 ps aux | grep monitor.sh
 
 
-# 🐝 honeypot para decoys (archivos trampa) 
+# 🐝 honeypot para PM2
+pm2 start /var/www/express/ecosystem.config.js --name "honeypot-app" --watch
 
 
 
@@ -660,101 +660,33 @@ ps aux | grep monitor.sh
 
 
 
+# 🐝 honeypot para mongodb
+const honeypotCollection = mongoose.model('HoneypotInteraction', new mongoose.Schema({
+  ipAddress: String,
+  action: String,
+  timestamp: { type: Date, default: Date.now }
+}));
 
-# Dionaea
-# honeypot que simula vulnerabilidades en varios protocolos
-# sudo apt-get update
-#sudo apt-get install build-essential cmake libboost-all-dev libssl-dev libpcap-dev
-#sudo apt-get install libsqlite3-dev libzmq3-dev libcurl4-openssl-dev
-# cd /KIRIBAKO
-# git clone https://github.com/DinoTools/dionaea.git
-# cd dionaea
-# compilar
-# ./autogen.sh
-# ./configure
-# make
-# sudo make install
+// Registrar interacción en MongoDB
+const recordHoneypotInteraction = async (ip: string, action: string) => {
+  const interaction = new honeypotCollection({ ipAddress: ip, action });
+  await interaction.save();
+};
 
-# instalación
-sudo apt update
-sudo apt install dionaea
+app.post('/fake-api', (req, res) => {
+  console.log(`[Honeypot] Interacción sospechosa en /fake-api desde ${req.ip}`);
+  recordHoneypotInteraction(req.ip, '/fake-api');
+  res.status(200).send('Acción no válida.');
+});
 
-# desarrollo archivo de configuación
-vim /etc/dionaea/dionaea.conf
-----------------------------------------------------
-# Archivo de configuración de Dionaea
 
-# Logging
-log_file = "/KIRIBAKO/log/dionaea.log"  # Logs generales de Dionaea
-log_level = "INFO"
-log_console = false  # No enviar logs a la consola
-log_stdout = false  # No mostrar logs en stdout
 
-# Habilitar el servicio principal de Dionaea
-[core]
-enabled = true
-bind = "0.0.0.0"  # Escuchar en todas las interfaces
 
-# Habilitar servicios específicos que Dionaea escuchará
-enabled_services = [
-    "ftp",      # Protocolo FTP
-    "http",     # Protocolo HTTP
-    "smb",      # Protocolo SMB
-    "telnet",   # Protocolo Telnet
-    "ssh",      # Protocolo SSH
-    "smtp",     # Protocolo SMTP
-    "smtps"     # Protocolo SMTPS
-]
 
-# Configuración de FTP
-[ftp]
-enabled = true
-port = 21
 
-# Configuración de HTTP
-[http]
-enabled = true
-port = 80
 
-# Configuración de SMB
-[smb]
-enabled = true
-port = 445
 
-# Configuración de Telnet
-[telnet]
-enabled = true
-port = 23
 
-# Configuración de SSH
-[ssh]
-enabled = true
-port = 22
-
-# Configuración de correo (SMTP y SMTPS)
-[smtp]
-enabled = true
-port = 25  # SMTP
-port_smtps = 465  # SMTPS
-
-# Configuración adicional
-bind_address = "0.0.0.0"  # Dirección para escuchar conexiones entrantes
-bind_ports = [21, 80, 445, 23, 22, 25, 465]
-
-# Guardar eventos de intrusión en un archivo de log separado en vez de una db porque ya estoy simulando un mongodb
-[logging]
-enabled = true
-intrusion_log_file = "/KIRIBAKO/log/dionaea_intrusion_activity.log"  # Log separado para eventos de intrusión
-----------------------------------------------------
-
-# inicializar
-# sudo dionaea-control start
-
-# habilit servicio
-sudo systemctl restart dionaea
-
-# coprobar su funcionamiento
-sudo ss -tulnp | grep dionaea
 
 
 #=========================================================================================================================
