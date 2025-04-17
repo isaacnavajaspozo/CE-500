@@ -91,26 +91,26 @@ sudo systemctl enable mariadb
 # entro a la base de datos
 sudo mysql -u root -p
 
-# creo la base de datos express_db con usuario express y privilegios root
-CREATE DATABASE express_db;
+# creo la base de datos mysql_db con usuario express y privilegios root
+CREATE DATABASE mysql_db;
 # para crear un usuario con acceso localhost 
 CREATE USER 'admin'@'localhost' IDENTIFIED BY 'Tutipoda&452';
-GRANT ALL PRIVILEGES ON express_db.* TO 'admin'@'localhost';
+GRANT ALL PRIVILEGES ON mysql_db.* TO 'admin'@'localhost';
 FLUSH PRIVILEGES;
 
 ## es buena práctica utilizar varios usuarios para dar privilegios solo 
 # este es el usuario con el que me voy a registrar desde .env de node para limitar 
 CREATE USER 'express'@'localhost' IDENTIFIED BY 'Wupotoge&888';
-GRANT SELECT, INSERT, UPDATE, DELETE ON express_db.* TO 'express'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON mysql_db.* TO 'express'@'localhost';
 FLUSH PRIVILEGES;
 
 # este caso seria para crear un usuario fuera del servidor
 # CREATE USER 'root'@'%' IDENTIFIED BY 'toor';
-# GRANT ALL PRIVILEGES ON express_db.* TO 'express'@'%';
+# GRANT ALL PRIVILEGES ON mysql_db.* TO 'express'@'%';
 # FLUSH PRIVILEGES;
 
 # entro a la base de datos
-USE express_db;
+USE mysql_db;
 
 # Creo la tabla necesaria para el proyecto
 CREATE TABLE usuarios (
@@ -151,7 +151,7 @@ cd php && vim index.php
 	<?php
 	// Configuración de la conexión
 	$host = '127.0.0.1'; // o localhost
-	$db   = 'express_db';
+	$db   = 'mysql_db';
 	$user = 'admin'; // usuario con acceso a la base de datos
 	$pass = 'Tutipoda&452';
 	$charset = 'utf8mb4';
@@ -298,11 +298,17 @@ vim index.php
 --------------------------------------------------------------------------------------
 <?php
 // 🍯 honeypot
-include("admin.php");
+$ip = $_SERVER['REMOTE_ADDR'];
+$uri = $_SERVER['REQUEST_URI'];
+$userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'N/A';
+$log = "[" . date("Y-m-d H:i:s") . "] IP: $ip | URI: $uri | Agente: $userAgent\n";
+
+// Guardamos el intento en un archivo de log
+file_put_contents("/var/log/honeypot_activity.log", $log, FILE_APPEND);
 
 // Configuración de la conexión
 $host = '127.0.0.1'; // o localhost
-$db   = 'express_db';
+$db   = 'mysql_db';
 $user = 'admin'; // usuario con acceso a la base de datos
 $pass = 'Tutipoda&452';
 $charset = 'utf8mb4';
