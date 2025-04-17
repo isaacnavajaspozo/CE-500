@@ -270,7 +270,7 @@ vim post-receive
 
 REPO_DIR="/etc/git"
 DEPLOY_DIR="/var/www/php"
-# EMAIL="isaacnavajas@ilerna.com"
+# EMAIL="<CORREO_GMAIL>"
 
 # Cambiar al directorio del repositorio
 cd $REPO_DIR || exit
@@ -442,7 +442,7 @@ vim post-receive
 
 REPO_DIR="/etc/git"
 DEPLOY_DIR="/var/www/php"
-# EMAIL="isaacnavajas@ilerna.com"
+# EMAIL="<CORREO_GMAIL>"
 
 # Cambiar al directorio del repositorio
 cd $REPO_DIR || exit
@@ -484,7 +484,7 @@ tail -F "$LOG" | grep --line-buffered "Connect" | while read linea; do
     echo "[$FECHA] ALERTA: Nueva conexión a MySQL → $linea" | tee -a "$ALERTA_LOG"
 
     # enviar correo
-    echo "Acceso sospechoso a MySQL: $linea" | mail -s "🚨 Alerta MySQL" isaacnavajas@gmail.com
+    echo "Acceso sospechoso a MySQL: $linea" | mail -s "🚨 Alerta MySQL" <CORREO>
 
 done
 --------------------------------------------------------------------------------------
@@ -535,7 +535,25 @@ https://myaccount.google.com/apppasswords
 systemctl restart postfix
 
 # pruebo postfix
-echo "Esto es un mensaje de prueba" | mail -s "Asunto de prueba" isaacnavajas@gmail.com
+echo "Esto es un mensaje de prueba" | mail -s "Asunto de prueba" <CORREO_GMAIL>
+
+## 🚨 permito que mysql recoja logs
+mysql -u root -p
+> ****
+	> SET GLOBAL general_log = 'ON';
+	> SET GLOBAL log_output = 'FILE';
+
+	> SHOW VARIABLES LIKE 'general_log_file';
+	> SHOW VARIABLES LIKE 'general_log';
+
+# para que se mantenga después de reiniciar
+vim /etc/mysql/mariadb.conf.d/50-server.cnf
+--------------------------------------------------------------------------------------
+general_log_file       = /var/log/mysql/mysql.log
+general_log            = 1
+log_output = FILE
+--------------------------------------------------------------------------------------
+
 # pruebo el script y compruebo mi correo la alerta
 mysql -u root -p
 
