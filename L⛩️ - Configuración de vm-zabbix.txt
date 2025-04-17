@@ -291,7 +291,19 @@ Alertas > Acciones <CREO_UNA_ACCION>
   > Tipo: Grupo de equipo
   > Operador: Igual a
   > Selecciona: Linux servers
+# activo la acción con los dos tipos de alertas
+  > Activado [x]
 
-
-
+# defino por rol de usuario donde mandar las alertas
+  > Tipo: Email
+  > Enviar a: <CORREO_AL_QUE_QUIERO_RECIBIR_LAS_ALERTAS>
+  > Cuándo está activo: 1-7,00:00-24:00
+  > Utilizar si la gravedad
+    > No clasificada
+    > Informativa
+    > Advertencia
+    > Promedio
+    > Alta
+    > Crítica
+  > activado [x]
 
