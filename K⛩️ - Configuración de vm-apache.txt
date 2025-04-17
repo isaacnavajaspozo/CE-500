@@ -397,7 +397,7 @@ $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'N/A';
 $log = "[" . date("Y-m-d H:i:s") . "] IP: $ip | Agente: $userAgent\n";
 
 // Guardamos en el archivo de log
-file_put_contents("/var/log/honeypot_login.log", $log, FILE_APPEND);
+file_put_contents("/KIRIBAKO/log/honeypot_login.log", $log, FILE_APPEND);
 
 // Simulamos fallo de login
 $mensaje = "Usuario o contraseña incorrecta.";
