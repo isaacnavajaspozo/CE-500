@@ -257,14 +257,27 @@ Recopilación de datos > Descubrimiento
 
 #=========================================================================================================================
 [⛩️INTERFACE WEB - ALERTAS]::
-# activo las alertas 
+# lo primero que voy hacer va a ser crear una contraseña alternativa desde gmail 
+https://myaccount.google.com/
+seguridad
+# busco por : Contraseñas de aplicacion
+zabbix
+**************
+
+# activo las alertas desde la interface web de zabbix 
 alertas > tipos de alertas > email (click) > [x] activado 
-    > Tipo: correo electrónico
-    > Proveedor de correo electrónico: gmail
-    > correo electrónico: *********@gmail.com
-    > contraseña: ***********
-    > Formato: HTML
-    > activado [x]
+  > Nombre: Email
+  > Tipo: Correo electrónico
+  > Proveedor de correo electrónico: Generic SMTP
+  > Servidor SMTP: smtp.gmail.com
+  > Puerto del servidor SMTP: 465
+  > Correo electrónico: <EL_MISMO_CORREO_DE_CONTRASEÑA_DE_APLICACIÓN>
+  > SMTP helo: gmail.com
+  > Autenticación: Usuario y contraseña
+  > Usuario: <EL_MISMO_CORREO_DE_CONTRASEÑA_DE_APLICACIÓN>
+  > Contraseña: <CONTRASEÑA_DE_APLICACIÓN>
+  > Formato de mensaje: HTML
+  > activado [x]
 aplicar
 
 
