@@ -486,6 +486,104 @@ sudo vim /etc/nginx/sites-available/express
 openssl x509 -in /var/www/express/letsencrypt/pruebas.local.crt -text -noout
 
 #=========================================================================================================================
+[⛩️CONFIGURACIÓN HONEYPOT]::
+# Dionaea
+# honeypot que simula vulnerabilidades en varios protocolos
+# sudo apt-get update
+#sudo apt-get install build-essential cmake libboost-all-dev libssl-dev libpcap-dev
+#sudo apt-get install libsqlite3-dev libzmq3-dev libcurl4-openssl-dev
+# cd /KIRIBAKO
+# git clone https://github.com/DinoTools/dionaea.git
+# cd dionaea
+# compilar
+# ./autogen.sh
+# ./configure
+# make
+# sudo make install
+
+# instalación
+sudo apt update
+sudo apt install dionaea
+
+# desarrollo archivo de configuación
+vim /etc/dionaea/dionaea.conf
+----------------------------------------------------
+# Archivo de configuración de Dionaea
+
+# Logging
+log_file = "/KIRIBAKO/log/dionaea.log"  # Logs generales de Dionaea
+log_level = "INFO"
+log_console = false  # No enviar logs a la consola
+log_stdout = false  # No mostrar logs en stdout
+
+# Habilitar el servicio principal de Dionaea
+[core]
+enabled = true
+bind = "0.0.0.0"  # Escuchar en todas las interfaces
+
+# Habilitar servicios específicos que Dionaea escuchará
+enabled_services = [
+    "ftp",      # Protocolo FTP
+    "http",     # Protocolo HTTP
+    "smb",      # Protocolo SMB
+    "telnet",   # Protocolo Telnet
+    "ssh",      # Protocolo SSH
+    "smtp",     # Protocolo SMTP
+    "smtps"     # Protocolo SMTPS
+]
+
+# Configuración de FTP
+[ftp]
+enabled = true
+port = 21
+
+# Configuración de HTTP
+[http]
+enabled = true
+port = 80
+
+# Configuración de SMB
+[smb]
+enabled = true
+port = 445
+
+# Configuración de Telnet
+[telnet]
+enabled = true
+port = 23
+
+# Configuración de SSH
+[ssh]
+enabled = true
+port = 22
+
+# Configuración de correo (SMTP y SMTPS)
+[smtp]
+enabled = true
+port = 25  # SMTP
+port_smtps = 465  # SMTPS
+
+# Configuración adicional
+bind_address = "0.0.0.0"  # Dirección para escuchar conexiones entrantes
+bind_ports = [21, 80, 445, 23, 22, 25, 465]
+
+# Guardar eventos de intrusión en un archivo de log separado en vez de una db porque ya estoy simulando un mongodb
+[logging]
+enabled = true
+intrusion_log_file = "/KIRIBAKO/log/dionaea_intrusion_activity.log"  # Log separado para eventos de intrusión
+----------------------------------------------------
+
+# inicializar
+# sudo dionaea-control start
+
+# habilit servicio
+sudo systemctl restart dionaea
+
+# coprobar su funcionamiento
+sudo ss -tulnp | grep dionaea
+
+
+#=========================================================================================================================
 [⛩️MATO PROCESOS SI HAY FALLO]:
 # compruebo los procesos en mi puerto
 lsof -i :3000
