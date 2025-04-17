@@ -481,7 +481,7 @@ tail -F "$LOG" | grep --line-buffered "Connect" | while read linea; do
     echo "[$FECHA] ALERTA: Nueva conexión a MySQL → $linea" | tee -a "$ALERTA_LOG"
 
     # Opcional: enviar correo (requiere configurar `mailutils`)
-    # echo "Acceso sospechoso a MySQL: $linea" | mail -s "🚨 Alerta MySQL" ******@gmail.com
+    # echo "Acceso sospechoso a MySQL: $linea" | mail -s "🚨 Alerta MySQL" isaacnavajas@ilerna.com
 
     # Opcional: alerta en Telegram, Discord, etc. (puedo ayudarte con eso también)
 done
