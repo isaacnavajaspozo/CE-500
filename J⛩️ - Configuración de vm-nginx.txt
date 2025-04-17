@@ -176,6 +176,17 @@ sudo systemctl restart nginx
 # Una vez llegados a este punto y visto que funciona Nginx con Express.js && Typescript, migro el proyecto que he desarrollado, en este mismo GitHub al servidor de desarrollo.
 # A partir de aora voy a crear un proyecto con Nginx con Express.js y con Typescript en una configuración cluster.
 
+#  ⚠️ es buena práctica, si no voy a utilizar ipv6, comentar la siguiente línea o a la larga me creará un error
+# error : "nginx: [emerg] socket() [::]:80 failed (97: Address family not supported by pro..."
+vim /etc/nginx/sites-enabled/default
+----------------------------------------------------
+...
+# listen [::]:80;
+...
+----------------------------------------------------
+systemctl restart nginx
+systemctl status nginx
+
 #=========================================================================================================================
 [⛩️INSTALACIÓN DE PM2]:
 # PM2 no solo es útil para gestionar procesos en producción, sino que también es muy eficaz para gestionar el ciclo de vida de la aplicación, incluyendo el despliegue (deploy), la gestión de procesos, y la configuración de producción.
@@ -355,6 +366,9 @@ const mongoURI = 'mongodb://localhost:27017/nombre_de_base_de_datos';
 cd /var/www/express
 pm2 start ecosystem.config.js
 
+# guardo la configuración
+pm2 save
+
 # Finalmente puedo acceder desde un Windows al CLI (Command Line Interface) descargando MongoDB Compass
 https://www.mongodb.com/try/download/compass
 
@@ -487,6 +501,166 @@ openssl x509 -in /var/www/express/letsencrypt/pruebas.local.crt -text -noout
 
 #=========================================================================================================================
 [⛩️CONFIGURACIÓN HONEYPOT]::
+# configuro nuevas rutas que sean trampas
+# 🐝 honeypot rutas 
+vim /var/www/express/app/index.ts
+-----------------------------------------------------------------------
+import express, { Request, Response, NextFunction } from 'express';
+import fs from 'fs';
+import path from 'path';
+
+const app = express();
+const port = 3000;
+const mongoURI = 'mongodb://localhost:27017/tu_base_de_datos'; 
+
+// ruta del log
+const logPath = '/KIRIBAKO/log/express_access.log';
+
+// registro de accesos
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const timestamp = new Date().toISOString();
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  const userAgent = req.headers['user-agent'] || 'N/A';
+  const log = `[${timestamp}] ${ip} → ${req.method} ${req.url} | UA: ${userAgent}\n`;
+
+  // directorio existente
+  const logDir = path.dirname(logPath);
+  if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir, { recursive: true });
+  }
+
+  fs.appendFileSync(logPath, log);
+  console.log(log.trim());
+  next();
+});
+
+// rutas
+app.get('/', (req: Request, res: Response) => {
+  res.send('Hello Ilerna, I can write TypeScript with Express.js!');
+});
+
+// simulando una web ghost (blogger)
+app.get('/ghost', (req: Request, res: Response) => {
+  res.send(`
+    <html>
+      <head>
+        <title>Ghost</title>
+      </head>
+      <body>
+        <h1>Ghost</h1>
+        <form action="/login" method="post">
+          <label>Email:</label>
+          <input type="email" name="email" required>
+          <br>
+          <label>Password:</label>
+          <input type="password" name="password" required>
+          <br>
+          <button type="signin">Sign in</button>
+        </form>
+      </body>
+    </html>
+  `);
+});
+
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+  res.send('Inicio de sesión exitoso!');
+});
+
+
+app.get('/.git', (req: Request, res: Response) => {
+  res.send('User without permissions');
+});
+
+app.get('/datos-sensibles', (req: Request, res: Response) => {
+  res.send('User without permissions');
+});
+
+// latencia simulada
+app.get('/config.bak', async (req, res) => {
+  await new Promise(resolve => setTimeout(resolve, 30000)); 
+  res.status(200).send('Configuration backup file');
+});
+
+// falsa API
+app.get('/api/v1/internal/debug', (req, res) => {
+  res.json({ debug: true, verbose: true, token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJyb2xlIjoiYXBpX2tleSIsImlhdCI6MTY5OTk5OTk5OSwiZXhwIjoxNzAwMDAzNTk5fQ.kG5jVslP1ZwqT-7IFBzvMZ8F9KHtrQzYxh2v_m6k4v4' });
+});
+
+// imprimo por consola la conexión
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log('👨‍💻 Connect to MongoDB');
+  })
+  .catch(err => {
+    console.error('Error:', err);
+  });
+
+app.listen(port, () => {
+  console.log(`🚀 Server is running at http://localhost:${port}`);
+});
+-----------------------------------------------------------------------
+
+
+# 🐝 honeypot para scanners (falsificar archivos de configuración)
+# agrego archivos falsos de posibles ataques y les asocio un tamaño 
+echo "Backup falso" > /var/www/express/app/db_backup.bson && truncate -s 1455M /var/www/express/app/db_backup.bson
+echo "Backup falso" > /var/www/express/app/access.log && truncate -s 321M /var/www/express/app/access.log
+
+# instalo inotify para escuchar en vivo si el archivo se abierto
+sudo apt install inotify-tools
+
+# creo script para evaluar con inotify
+mkdir /KIRIBAKO/log/
+touch /KIRIBAKO/log/honypot-monitor.txt
+honypot-monitor.sh
+-----------------------------------------------------------------------
+#!/bin/bash
+
+# Lista de archivos a monitorear (separados por espacios)
+archivos_a_monitorear=(
+  "/var/www/express/app/db_backup.bson"
+  "/var/www/express/app/access.log"
+)
+
+log="/KIRIBAKO/log/honypot-monitor.txt"
+
+# Verifica que todos los archivos existan
+for archivo in "${archivos_a_monitorear[@]}"; do
+  if [ ! -f "$archivo" ]; then
+    echo "❌ El archivo no existe: $archivo"
+    exit 1
+  fi
+done
+
+# Ejecuta inotifywait sobre todos los archivos
+inotifywait -m -e open "${archivos_a_monitorear[@]}" | while read path action file; do
+  echo "$(date '+%Y-%m-%d %H:%M:%S') - Se abrió: $path$file" >> "$log"
+done
+-----------------------------------------------------------------------
+chmod +x honypot-monitor.sh
+
+# para que no se vea como un systemctl y dejarlo ejecutado en segundo plano 
+# lo malo de este método es que cada vez que se reinicia el servidor hay que pasar este comando
+sudo /KIRIBAKO/honypot-monitor.sh &
+
+# para comprobar que se esta ejecutando
+ps aux | grep monitor.sh
+
+
+# 🐝 honeypot para decoys (archivos trampa) 
+
+
+
+
+
+
+
+
+
+
+
+
 # Dionaea
 # honeypot que simula vulnerabilidades en varios protocolos
 # sudo apt-get update
