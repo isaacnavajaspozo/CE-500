@@ -262,12 +262,13 @@ sudo systemctl restart apache2
 mkdir /KIRIBAKO/git
 
 # dentro de la ruta del repositorio del servidor tengo que agregar una carpeta /hooks con el archivo post-receive
-cd /ruta/a/tu/repositorio.git/hooks
+# /ruta/a/tu/repositorio.git/hooks
+mkdir /etc/git && mkdir /etc/git/hooks && cd /etc/git/hooks
 vim post-receive
 --------------------------------------------------------------------------------------
 #!/bin/bash
 
-REPO_DIR="/KIRIBAKO/git"
+REPO_DIR="/etc/git"
 DEPLOY_DIR="/var/www/php"
 # EMAIL="isaacnavajas@ilerna.com"
 
@@ -282,6 +283,208 @@ GIT_WORK_TREE=$DEPLOY_DIR git checkout -f master
 --------------------------------------------------------------------------------------
 
 # el archivo post-receive lo que va hacer es mandar directamente la rama master a producción para que los cambios sean inminentes
+
+#=========================================================================================================================
+[⛩️HONEYPOT]::
+# 🔔 agrego trampas en el espacio web (por si intentan atacar por peticiones web)
+touch /var/log/honeypot_activity.log
+sudo touch /var/log/honeypot_login.log
+sudo chmod 666 /var/log/honeypot_login.log
+
+# creo nuevas rutas conntrolados por logs
+cd /var/www/php
+vim index.php
+--------------------------------------------------------------------------------------
+<?php
+// 🍯 honeypot
+include("admin.php");
+
+// Configuración de la conexión
+$host = '127.0.0.1'; // o localhost
+$db   = 'express_db';
+$user = 'admin'; // usuario con acceso a la base de datos
+$pass = 'Tutipoda&452';
+$charset = 'utf8mb4';
+
+// Configuración de PDO y manejo de errores
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, // Muestra excepciones en errores
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,       // Obtención en forma de array asocia    tivo
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+
+try {
+    // Creando la conexión a la base de datos
+    $pdo = new PDO($dsn, $user, $pass, $options);
+    echo "¡Conexión a la base de datos '$db' exitosa!<br><br>";
+
+    // Realizamos una consulta simple para comprobar la tabla 'usuarios'
+    $stmt = $pdo->query("SELECT * FROM usuarios");
+
+    // Mostramos los resultados
+    $usuarios = $stmt->fetchAll();
+    if($usuarios) {
+        echo "<strong>Usuarios encontrados:</strong><br>";
+        foreach ($usuarios as $usuario) {
+           echo "ID: " . $usuario['id'] . " - Usuario: " . $usuario['usuario'] . " - Contraseña:     " . $usuario['contraseña'] . "<br>";
+        }
+    } else {
+        echo "La tabla 'usuarios' no tiene registros o no se encontró.";
+    }
+
+} catch (\PDOException $e) {
+    // En caso de error, se muestra un mensaje y se detiene la ejecución
+    throw new \PDOException($e->getMessage(), (int)$e->getCode());
+}
+?>
+--------------------------------------------------------------------------------------
+
+vim admin.php
+--------------------------------------------------------------------------------------
+<?php
+// 🍯 honeypot
+$ip = $_SERVER['REMOTE_ADDR'];
+$uri = $_SERVER['REQUEST_URI'];
+$userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'N/A';
+$log = "[" . date("Y-m-d H:i:s") . "] IP: $ip | URI: $uri | Agente: $userAgent\n";
+
+// Guardamos el intento en un archivo de log
+file_put_contents("/var/log/honeypot_activity.log", $log, FILE_APPEND);
+
+// Mensaje falso
+http_response_code(404);
+echo "404: Necesitas estar registrado";
+?>
+--------------------------------------------------------------------------------------
+
+vim 404.php
+--------------------------------------------------------------------------------------
+<?php
+// 🍯 honeypot
+include("admin.php");
+
+// Mensaje falso
+http_response_code(404);
+echo "404";
+?>
+--------------------------------------------------------------------------------------
+
+vim login.php
+--------------------------------------------------------------------------------------
+<?php
+// 🍯 honeypot
+$ip = $_SERVER['REMOTE_ADDR'];
+$userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'N/A';
+$usuario = $_POST['usuario'] ?? 'N/A';
+$contrasena = $_POST['contrasena'] ?? 'N/A';
+$log = "[" . date("Y-m-d H:i:s") . "] IP: $ip | Usuario: $usuario | Contraseña: $contrasena | Agente: $userAgent\n";
+
+// Guardamos en el archivo de log
+file_put_contents("/var/log/honeypot_login.log", $log, FILE_APPEND);
+
+// Simulamos fallo de login
+$mensaje = "Usuario o contraseña incorrecta.";
+?>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <style>
+        body { font-family: Arial; background-color: #f2f2f2; text-align: center; margin-top: 100px; }
+        form { background: #fff; padding: 20px; display: inline-block; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input { margin: 10px 0; padding: 10px; width: 100%; border: 1px solid #ccc; border-radius: 5px; }
+        .error { color: red; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <form method="POST" action="">
+        <h2>Iniciar sesión</h2>
+        <input type="text" name="usuario" placeholder="Usuario" required>
+        <input type="password" name="contrasena" placeholder="Contraseña" required>
+        <input type="submit" value="Entrar">
+        <?php if ($_SERVER['REQUEST_METHOD'] === 'POST') echo "<div class='error'>$mensaje</div>"; ?>
+    </form>
+
+</body>
+</html>
+--------------------------------------------------------------------------------------
+
+# 🔔 hago lo mismo con .git, agrego un honeypot en el git anteriormente creado
+touch /var/log/git-honeypot.log
+cd /etc/git/hooks
+vim post-receive
+--------------------------------------------------------------------------------------
+#!/bin/bash
+
+REPO_DIR="/etc/git"
+DEPLOY_DIR="/var/www/php"
+# EMAIL="isaacnavajas@ilerna.com"
+
+# Cambiar al directorio del repositorio
+cd $REPO_DIR || exit
+
+# Actualizar el contenido en el directorio de despliegue
+GIT_WORK_TREE=$DEPLOY_DIR git checkout -f master
+
+# Enviar un correo electrónico
+# echo "Se ha realizado un push al repositorio y se ha actualizado el directorio de despliegue." | mail -s "Notificación de Push" $EMAIL
+
+# 🍯 agrego el honeypot 
+IP=$(who | grep pts | awk '{print $5}' | tr -d '()')
+USER=$(whoami)
+TIME=$(date "+%Y-%m-%d %H:%M:%S")
+
+echo "[$TIME] Acceso Git al honeypot desde IP: $IP | Usuario: $USER" >> /var/log/git-honeypot.log
+--------------------------------------------------------------------------------------
+
+# 🔔 agrego prácticas de honeypot en mysql
+# habilito el archivo de logs
+mkdir /var/log/mysql
+touch /var/log/mysql/mysql.log
+vim /etc/mysql/mariadb.conf.d/50-server.cnf
+--------------------------------------------------------------------------------------
+general_log = 1
+general_log_file = /var/log/mysql/mysql.log
+log_output = FILE
+--------------------------------------------------------------------------------------
+systemctl restart mariadb
+
+# creo un script para escuchar si alguien accede a la base de datos
+cd /KIRIBAKO
+vim mysql-honeypot-alerta.sh
+--------------------------------------------------------------------------------------
+#!/bin/bash
+
+# Ruta al log de MySQL
+LOG="/var/log/mysql/mysql.log"
+# Ruta del log interno de alertas
+ALERTA_LOG="/var/log/mysql/honeypot-alertas.log"
+
+# Filtrar conexiones nuevas y evitar duplicados
+tail -F "$LOG" | grep --line-buffered "Connect" | while read linea; do
+    FECHA=$(date "+%Y-%m-%d %H:%M:%S")
+    echo "[$FECHA] ALERTA: Nueva conexión a MySQL → $linea" | tee -a "$ALERTA_LOG"
+
+    # Opcional: enviar correo (requiere configurar `mailutils`)
+    # echo "Acceso sospechoso a MySQL: $linea" | mail -s "🚨 Alerta MySQL" tu-email@dominio.com
+
+    # Opcional: alerta en Telegram, Discord, etc. (puedo ayudarte con eso también)
+done
+--------------------------------------------------------------------------------------
+chmod +x mysql-honeypot-alerta.sh
+
+# lo agrego al bashrc para que cada vez que añada una sesión por ssh esté escuchando por debajo ininterrumpidamente
+vim ~/.bashrc
+--------------------------------------------------------------------------------------
+...
+/KIRIBAKO/mysql-honeypot-alerta.sh
+...
+--------------------------------------------------------------------------------------
+source ~/.bashrc
 
 #=========================================================================================================================
 [⛩️MATO PROCESOS SI HAY FALLO]:
