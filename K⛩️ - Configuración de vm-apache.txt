@@ -429,6 +429,8 @@ $mensaje = "Usuario o contraseña incorrecta.";
 </html>
 --------------------------------------------------------------------------------------
 
+systemctl reload apache2
+
 # 🔔 hago lo mismo con .git, agrego un honeypot en el git anteriormente creado
 touch /KIRIBAKO/log/git-honeypot.log
 cd /etc/git/hooks
@@ -463,6 +465,7 @@ echo "[$TIME] Acceso Git al honeypot desde IP: $IP | Usuario: $USER" >> /KIRIBAK
 # habilito el archivo de logs
 systemctl restart mariadb
 touch /KIRIBAKO/log/honeypot-alertas.log
+chmod +x /KIRIBAKO/log/honeypot-alertas.log
 
 # creo un script para escuchar si alguien accede a la base de datos
 cd /KIRIBAKO
@@ -480,23 +483,61 @@ tail -F "$LOG" | grep --line-buffered "Connect" | while read linea; do
     FECHA=$(date "+%Y-%m-%d %H:%M:%S")
     echo "[$FECHA] ALERTA: Nueva conexión a MySQL → $linea" | tee -a "$ALERTA_LOG"
 
-    # Opcional: enviar correo (requiere configurar `mailutils`)
-    # echo "Acceso sospechoso a MySQL: $linea" | mail -s "🚨 Alerta MySQL" isaacnavajas@ilerna.com
+    # enviar correo
+    echo "Acceso sospechoso a MySQL: $linea" | mail -s "🚨 Alerta MySQL" isaacnavajas@gmail.com
 
-    # Opcional: alerta en Telegram, Discord, etc. (puedo ayudarte con eso también)
 done
 --------------------------------------------------------------------------------------
-chmod +x mysql-honeypot-alerta.sh
 
-# lo agrego al bashrc para que cada vez que añada una sesión por ssh esté escuchando por debajo ininterrumpidamente
-vim ~/.bashrc
+# creo un servicio para que lo lea de forma automática 
+vim /etc/systemd/system/mysql-honeypot.service
 --------------------------------------------------------------------------------------
-...
-/KIRIBAKO/mysql-honeypot-alerta.sh
-...
---------------------------------------------------------------------------------------
-source ~/.bashrc
+[Unit]
+Description=Honeypot para detectar accesos MySQL
+After=network.target mysql.service
 
+[Service]
+ExecStart=/KIRIBAKO/mysql-honeypot-alerta.sh
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
+--------------------------------------------------------------------------------------
+
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
+sudo systemctl enable mysql-honeypot
+sudo systemctl start mysql-honeypot
+sudo systemctl status mysql-honeypot
+
+## 🚨 para que funcione mail tengo qeue configurarlo y elijo hacerlo con postfix
+# instalo postfix
+sudo apt-get install postfix mailutils -y
+> Sin configuración
+
+vim /etc/postfix/main.cf
+--------------------------------------------------------------------------------------
+Configuración de Gmail como servidor SMTP
+relayhost = [smtp.gmail.com]:587
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = static:<CORREO_GMAIL>:<PASSWORD_GMAIL_APLICACIÓN>
+smtp_sasl_security_options = noanonymous
+smtp_tls_security_level = may
+header_size_limit = 4096000
+--------------------------------------------------------------------------------------
+
+# las contraseñas aplicación de gmail se sacan desde 
+https://myaccount.google.com/apppasswords
+# aunque la contraseña la entregue con separaciones hay que declararla sin espacios
+
+# reinicio servicio
+systemctl restart postfix
+
+# pruebo postfix
+echo "Esto es un mensaje de prueba" | mail -s "Asunto de prueba" isaacnavajas@gmail.com
+# pruebo el script y compruebo mi correo
+mysql -u TU_USUARIO -p
 
 # compruebo los servicios
 systemctl reload apache2
