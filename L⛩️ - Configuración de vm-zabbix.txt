@@ -121,17 +121,6 @@ C:\Program Files\Zabbix Agent\zabbix_agentd.conf
     > Server=192.168.1.76
     > Hostname=WIN-PLFA3OEH6IF
 
-# Me dirijo a la web
-http://192.168.1.76/zabbix
-    > Recopilación de datos
-        > Equipos
-        > Crear Equipo
-            + Nombre de equipo      : PC-personal
-            + Nombre visible        : PC-personal
-            + Plantillas            : Windows by Zabbix agent
-            + Grupos de equipos     : Applications
-            + Interfaces   -  Agent : <IP_DEL_PC>
-
 # si me da un error de disponivilidad puede ser porque no le deja acceso desde el firewall
 # creo una regla desde Windows Firewall para permitir el paso
 Panle de control > Windows firewall > Configuración avanzada
@@ -189,8 +178,18 @@ systemctl enable zabbix-server zabbix-agent apache2
 systemctl status zabbix-server zabbix-agent apache2
 --------------------------------------------------------------------------------------
 
-# 🔁 asi repito con cada uno de los disposisitivos
+# Me dirijo a la web para agregar el dispositivo a zabbix
+http://<IP_SERVIDOR_ZABBIX>/zabbix
+    > Recopilación de datos
+        > Equipos
+        > Crear Equipo
+            + Nombre de equipo      : PC-personal
+            + Nombre visible        : PC-personal
+            + Plantillas            : Windows by Zabbix agent
+            + Grupos de equipos     : Applications
+            + Interfaces   -  Agent : <IP_DEL_PC>
 
+# 🔁 asi repito con cada uno de los disposisitivos
 
 #=========================================================================================================================
 [⛩️INTERFACE WEB - SNMP]::
@@ -219,6 +218,24 @@ syscontact  "La caja del mal: <******@gmail.com>"
 sudo systemctl restart snmpd
 sudo systemctl enable snmpd
 sudo systemctl status snmpd
+
+# Me dirijo a la web para agregar el servidor de linux anteriormente gestionado al servidor zabbix
+http://<IP_SERVIDOR_ZABBIX>/zabbix
+    > Recopilación de datos
+        > Equipos
+        > Crear Equipo
+            + Nombre de equipo      : mv-samba
+            + Nombre visible        : mv-samba
+            + Plantillas            : Linux by SNMP
+            + Interfaces
+              - Tipo : SNMP
+              - Dirección IP: <IP_SERVIDOR_A_MONITORIZAR>
+              - Nombre DNS: (si he agregado la ip puedo dejar este campo vacío)
+              - Conectado a: IP
+              - Puerto: 161
+              - Por defecto: [x]
+            + Monitorizado por: Servidor
+            + Activado: [x]
 
 # 🔁 asi repito con cada uno de los servidores linux
 
