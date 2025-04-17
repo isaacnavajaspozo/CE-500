@@ -746,13 +746,14 @@ sudo systemctl stop openvasd
 
 #=========================================================================================================================
 [⛩️ENTORNO WEB CON NVT CERT GVMD_DATA SCAP CARGADOS]::
-Configuration > Target > New Target > 192.168.0.1/24 
+Configuration > Target > New Target > 192.168.1.1/24 
 
 SCANS > Task > New Task
-	Name: --
+	Name: Host-local
 	Scan Target: (El que hemos creado anteriormente...) ⬆️
 	Min QoD: 70
 	Maximum concurrently executed NVTs per host: 4
 	Maximum concurrently scanned hosts: 254
+# una vez creado pulso "start" para inicializar el escaneo
 
 # esto puede tardar una estimación de 10 horas 
