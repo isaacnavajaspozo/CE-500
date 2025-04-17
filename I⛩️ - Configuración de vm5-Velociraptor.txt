@@ -95,6 +95,28 @@ sudo ss -tuln | grep 8889
 # pruebo en navegador
 https://<IP_SERVIDOR_LINUX>:8889
 
+#===========================================================================================================================
+[⛩️CONFIGURACIÓN INTERFACE WEB]:
+# 🦖 velociraptor es una herramienta de ciberseguridad que se usa principalmente para cuando pasa algo sospechoso o grave (como un ataque)
+# permitir ver los mapeos de memoria de procesos en Linux
+Hunt manager > New Hunt 
+    > Tag: Linux-memoria
+    > Orgs: <USUARIO_ADMIN>
+    > Start Hunt Immediately
+> Select Artifacts
+    > Linux.Sys.Maps
+> Configure parameters
+    > processRegex: .*                                     # filtra todos los procesos por su ruta de ejecución
+> Specify Resources
+    > CPU Limit Percent: 25                                # suficiente para no saturar el sistema
+    > IOps/Sec: 50                                         # o más si el host es potente
+    > Max Execution Time in Seconds: 300                   # (5 minutos) es un valor razonable
+    > Max Idle Time in Seconds: 60                         # 60 o 120 segundos
+    > Max Rows: 10000                                      # puedes ajustar según tus necesidades
+    > Max Logs: 10000
+    > Max MB uploaded: 50                                  # 50 o 100 (depende de cuánto esperes obtener)
+    > Trace Frequency Seconds: 10
+    > Urgent: [x] Skip queues and run query urgently       # omitir colas y ejecutar consultas con urgencia
 
 
 
