@@ -280,5 +280,18 @@ alertas > tipos de alertas > email (click) > [x] activado
   > activado [x]
 aplicar
 
+# una vez configurado el correo defino las acciones
+Alertas > Acciones <CREO_UNA_ACCION>
+<ACCION_CREADA> > Agregar 
+# alerto de pc personales (Agent)
+  > Tipo: Equipo
+  > Operador: Igual a
+  > Selecciona: PC-personal
+# alerto de servidores linux (SNMP)
+  > Tipo: Grupo de equipo
+  > Operador: Igual a
+  > Selecciona: Linux servers
 
- 
+
+
+
