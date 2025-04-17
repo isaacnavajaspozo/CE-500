@@ -536,8 +536,8 @@ systemctl restart postfix
 
 # pruebo postfix
 echo "Esto es un mensaje de prueba" | mail -s "Asunto de prueba" isaacnavajas@gmail.com
-# pruebo el script y compruebo mi correo
-mysql -u TU_USUARIO -p
+# pruebo el script y compruebo mi correo la alerta
+mysql -u root -p
 
 # compruebo los servicios
 systemctl reload apache2
