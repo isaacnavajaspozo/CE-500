@@ -2,6 +2,8 @@
 #=========================================================================================================================
 [⛩️KIRIBAKO]::
 Documentación ofical zabbix                 : https://www.zabbix.com/download?os_distribution=debian
+                                            : https://www.zabbix.com/download
+                                            : https://www.zabbix.com/download?zabbix=7.2&os_distribution=debian&os_version=12&components=server_frontend_agent&db=mysql&ws=apache
 
 #=========================================================================================================================
 [⛩️INSTALACIONES]::
@@ -74,10 +76,9 @@ systemctl restart zabbix-server zabbix-agent apache2
 systemctl enable zabbix-server zabbix-agent apache2
 
 #=========================================================================================================================
-[⛩️INTERFACE WEB]::
+[⛩️INTERFACE WEB - MONITORIZO DISPOSITIVO CON AGENTE]::
 # busco la web desde http
-# http://<IP_HOST_VM-ZABBIX>/zabbix
-http://192.168.1.76/zabbix
+http://<IP_HOST_VM-ZABBIX>/zabbix
 
 # configuración desde la interface web
 > Tipo de base de datos : MySQL
@@ -95,7 +96,10 @@ http://192.168.1.76/zabbix
 Usuario: Admin
 Contraseña: zabbix
 
-# Lo siguiente que voy hacer es monitorizar los pc que tengo en mi red::
+## Lo siguiente que voy hacer es monitorizar los pc que tengo en mi red::
+
+# 🪟 para un dispositivo windows:
+--------------------------------------------------------------------------------------
 # me dirijo a la siguiente pagina y me descargo el agente en el pc que quiero monitorizar 
 https://www.zabbix.com/download_agents
     > Windows
@@ -137,3 +141,112 @@ Panle de control > Windows firewall > Configuración avanzada
     + Permitir conexión
     + Dominio, Privado, Público
     + Regla (entrada/salida) para agente zabbix
+--------------------------------------------------------------------------------------
+
+# 🐧 para un dispositivo linux:
+# en el caso de linux es mejor monitorizarlo a través de SNMP pero por agente se realiza de la siguiente manera:
+--------------------------------------------------------------------------------------
+# instalo zabbix
+wget https://repo.zabbix.com/zabbix/7.2/release/debian/pool/main/z/zabbix-release/zabbix-release_latest_7.2+debian12_all.deb
+dpkg -i zabbix-release_latest_7.2+debian12_all.deb
+apt update
+
+# instalo zabbix server, frontend, agent
+apt install zabbix-server-mysql zabbix-frontend-php zabbix-apache-conf zabbix-sql-scripts zabbix-agent
+
+# creo la base de datos inicial
+mysql -uroot -p
+password: ***********
+    > create database zabbix character set utf8mb4 collate utf8mb4_bin;
+    > create user zabbix@localhost identified by 'password';
+    > grant all privileges on zabbix.* to zabbix@localhost;
+    > set global log_bin_trust_function_creators = 1;
+    > quit;
+
+# desde el host del servidor Zabbix, importe el esquema y los datos iniciales
+zcat /usr/share/zabbix/sql-scripts/mysql/server.sql.gz | mysql --default-character-set=utf8mb4 -uzabbix -p zabbix
+
+# deshabilite la opción log_bin_trust_function_creators después de importar el esquema de la base de datos
+mysql -uroot -p
+password: ***********
+    > set global log_bin_trust_function_creators = 0;
+    > quit;
+
+# configuro la base de datos del servidor zabbix
+vim /etc/zabbix/zabbix_server.conf
+-
+DBPassword=password
+-
+
+# reinicio servicio en el servidor zabbix
+systemctl reload zabbix-server zabbix-agent apache2
+systemctl enable zabbix-server zabbix-agent apache2
+systemctl status zabbix-server zabbix-agent apache2
+
+# reinicio servicio en el agente zabbix
+systemctl restart zabbix-server zabbix-agent apache2
+systemctl enable zabbix-server zabbix-agent apache2
+systemctl status zabbix-server zabbix-agent apache2
+--------------------------------------------------------------------------------------
+
+# 🔁 asi repito con cada uno de los disposisitivos
+
+
+#=========================================================================================================================
+[⛩️INTERFACE WEB - SNMP]::
+# 🐧 para un dispositivo linux por SNMP:
+apt install snmp snmpd -y
+
+# configuro nmpd
+cp -ar /etc/snmp/snmpd.conf /etc/snmp/snmpd.ori
+rm /etc/snmp/snmpd.conf
+vim /etc/snmp/snmpd.conf
+--------------------------------------------------------------------------------------
+agentaddress 0.0.0.0
+      
+rocommunity MaltLiquor_13 localhost
+rocommunity MaltLiquor_13 192.168.0/24
+
+syslocation "KIRIBAKO"
+syscontact  "La caja del mal: <******@gmail.com>"
+
+# Ramas personalizadas
+#extend test1 /bin/echo "Hello world"
+#exec 1.3.6.1.4.1.2021.8 /bin/echo "Hello world"
+--------------------------------------------------------------------------------------
+
+# reinicio servicios
+sudo systemctl restart snmpd
+sudo systemctl enable snmpd
+sudo systemctl status snmpd
+
+
+#=========================================================================================================================
+[⛩️INTERFACE WEB - DESCUBRIR EL HOST]::
+# descubro toda mi red a traves de pings
+Recopilación de datos > Descubrimiento
+    > Name:
+    > Rango IP: 192.168.0.1-254
+    > Intervalo de actualización: 1h
+    > Comprobaciones:
+        Agente Zabbix "system.uname"            # se crea automáticamente por el agente que he instalado anteriormente
+        Ping ICMP                               # lo agrego para que me monitorice los ping de todos los dispositivos
+    > Criterio de unicidad de dispositivo: IP
+    > Nombre de equipo: DNS 
+    > Nombre visible: Nombre del equipo
+    > Activado: [x]
+
+#=========================================================================================================================
+[⛩️INTERFACE WEB - ALERTAS]::
+# activo las alertas 
+alertas > tipos de alertas > email (click) > [x] activado 
+    > Tipo: correo electrónico
+    > Proveedor de correo electrónico: gmail
+    > correo electrónico: *********@gmail.com
+    > contraseña: ***********
+    > Formato: HTML
+    > activado [x]
+aplicar
+
+
+ 
