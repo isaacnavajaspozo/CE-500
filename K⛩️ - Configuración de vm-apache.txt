@@ -288,23 +288,27 @@ GIT_WORK_TREE=$DEPLOY_DIR git checkout -f master
 #=========================================================================================================================
 [⛩️HONEYPOT]::
 # 🔔 agrego trampas en el espacio web (por si intentan atacar por peticiones web)
-touch /var/log/honeypot_activity.log
-sudo touch /var/log/honeypot_login.log
-sudo chmod 666 /var/log/honeypot_login.log
+mkdir /KIRIBAKO/log
+touch /KIRIBAKO/log/honeypot_activity.log
+touch /KIRIBAKO/log/honeypot_login.log
+chmod 666 /KIRIBAKO/log/honeypot_login.log
+chmod 666 /KIRIBAKO/log/honeypot_activity.log
 
 # creo nuevas rutas conntrolados por logs
 cd /var/www/php
+
+# 🍯 honeypot
 vim index.php
 --------------------------------------------------------------------------------------
 <?php
-// 🍯 honeypot
+// honeypot
 $ip = $_SERVER['REMOTE_ADDR'];
 $uri = $_SERVER['REQUEST_URI'];
 $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'N/A';
 $log = "[" . date("Y-m-d H:i:s") . "] IP: $ip | URI: $uri | Agente: $userAgent\n";
 
 // Guardamos el intento en un archivo de log
-file_put_contents("/var/log/honeypot_activity.log", $log, FILE_APPEND);
+file_put_contents("/KIRIBAKO/log/honeypot_activity.log", $log, FILE_APPEND);
 
 // Configuración de la conexión
 $host = '127.0.0.1'; // o localhost
@@ -347,17 +351,17 @@ try {
 ?>
 --------------------------------------------------------------------------------------
 
+# 🍯 honeypot
 vim admin.php
 --------------------------------------------------------------------------------------
 <?php
-// 🍯 honeypot
+// honeypot
 $ip = $_SERVER['REMOTE_ADDR'];
 $uri = $_SERVER['REQUEST_URI'];
 $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'N/A';
 $log = "[" . date("Y-m-d H:i:s") . "] IP: $ip | URI: $uri | Agente: $userAgent\n";
 
-// Guardamos el intento en un archivo de log
-file_put_contents("/var/log/honeypot_activity.log", $log, FILE_APPEND);
+file_put_contents("/KIRIBAKO/log/honeypot_activity.log", $log, FILE_APPEND);
 
 // Mensaje falso
 http_response_code(404);
@@ -365,11 +369,17 @@ echo "404: Necesitas estar registrado";
 ?>
 --------------------------------------------------------------------------------------
 
+# 🍯 honeypot
 vim 404.php
 --------------------------------------------------------------------------------------
 <?php
-// 🍯 honeypot
-include("admin.php");
+// honeypot
+$ip = $_SERVER['REMOTE_ADDR'];
+$uri = $_SERVER['REQUEST_URI'];
+$userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'N/A';
+$log = "[" . date("Y-m-d H:i:s") . "] IP: $ip | URI: $uri | Agente: $userAgent\n";
+
+file_put_contents("/KIRIBAKO/log/honeypot_activity.log", $log, FILE_APPEND);
 
 // Mensaje falso
 http_response_code(404);
@@ -377,15 +387,14 @@ echo "404";
 ?>
 --------------------------------------------------------------------------------------
 
+# 🍯 honeypot
 vim login.php
 --------------------------------------------------------------------------------------
 <?php
-// 🍯 honeypot
+// honeypot
 $ip = $_SERVER['REMOTE_ADDR'];
 $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'N/A';
-$usuario = $_POST['usuario'] ?? 'N/A';
-$contrasena = $_POST['contrasena'] ?? 'N/A';
-$log = "[" . date("Y-m-d H:i:s") . "] IP: $ip | Usuario: $usuario | Contraseña: $contrasena | Agente: $userAgent\n";
+$log = "[" . date("Y-m-d H:i:s") . "] IP: $ip | Agente: $userAgent\n";
 
 // Guardamos en el archivo de log
 file_put_contents("/var/log/honeypot_login.log", $log, FILE_APPEND);
@@ -421,8 +430,10 @@ $mensaje = "Usuario o contraseña incorrecta.";
 --------------------------------------------------------------------------------------
 
 # 🔔 hago lo mismo con .git, agrego un honeypot en el git anteriormente creado
-touch /var/log/git-honeypot.log
+touch /KIRIBAKO/log/git-honeypot.log
 cd /etc/git/hooks
+
+# 🍯 honeypot
 vim post-receive
 --------------------------------------------------------------------------------------
 #!/bin/bash
@@ -440,25 +451,18 @@ GIT_WORK_TREE=$DEPLOY_DIR git checkout -f master
 # Enviar un correo electrónico
 # echo "Se ha realizado un push al repositorio y se ha actualizado el directorio de despliegue." | mail -s "Notificación de Push" $EMAIL
 
-# 🍯 agrego el honeypot 
+# agrego el honeypot 
 IP=$(who | grep pts | awk '{print $5}' | tr -d '()')
 USER=$(whoami)
 TIME=$(date "+%Y-%m-%d %H:%M:%S")
 
-echo "[$TIME] Acceso Git al honeypot desde IP: $IP | Usuario: $USER" >> /var/log/git-honeypot.log
+echo "[$TIME] Acceso Git al honeypot desde IP: $IP | Usuario: $USER" >> /KIRIBAKO/log/git-honeypot.log
 --------------------------------------------------------------------------------------
 
 # 🔔 agrego prácticas de honeypot en mysql
 # habilito el archivo de logs
-mkdir /var/log/mysql
-touch /var/log/mysql/mysql.log
-vim /etc/mysql/mariadb.conf.d/50-server.cnf
---------------------------------------------------------------------------------------
-general_log = 1
-general_log_file = /var/log/mysql/mysql.log
-log_output = FILE
---------------------------------------------------------------------------------------
 systemctl restart mariadb
+touch /KIRIBAKO/log/honeypot-alertas.log
 
 # creo un script para escuchar si alguien accede a la base de datos
 cd /KIRIBAKO
@@ -469,7 +473,7 @@ vim mysql-honeypot-alerta.sh
 # Ruta al log de MySQL
 LOG="/var/log/mysql/mysql.log"
 # Ruta del log interno de alertas
-ALERTA_LOG="/var/log/mysql/honeypot-alertas.log"
+ALERTA_LOG="/KIRIBAKO/log/honeypot-alertas.log"
 
 # Filtrar conexiones nuevas y evitar duplicados
 tail -F "$LOG" | grep --line-buffered "Connect" | while read linea; do
@@ -477,7 +481,7 @@ tail -F "$LOG" | grep --line-buffered "Connect" | while read linea; do
     echo "[$FECHA] ALERTA: Nueva conexión a MySQL → $linea" | tee -a "$ALERTA_LOG"
 
     # Opcional: enviar correo (requiere configurar `mailutils`)
-    # echo "Acceso sospechoso a MySQL: $linea" | mail -s "🚨 Alerta MySQL" tu-email@dominio.com
+    # echo "Acceso sospechoso a MySQL: $linea" | mail -s "🚨 Alerta MySQL" ******@gmail.com
 
     # Opcional: alerta en Telegram, Discord, etc. (puedo ayudarte con eso también)
 done
