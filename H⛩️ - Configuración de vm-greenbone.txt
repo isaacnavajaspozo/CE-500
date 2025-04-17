@@ -663,7 +663,7 @@ sudo cp -v $BUILD_DIR/openvasd.service /etc/systemd/system/
 # *********************************************************************
 sudo systemctl daemon-reload
 
-# actualizar los feeds (vulnerabilidades, escaneos, rendimiento)
+# ⚠️ ¡IMPORTANTE! actualizar los feeds (vulnerabilidades, escaneos, rendimiento)
 sudo /usr/local/bin/greenbone-feed-sync
 
 sudo systemctl start ospd-openvas
@@ -743,6 +743,20 @@ sudo systemctl stop openvasd
 # 🔴 Si se borran los archivos .lock con feed-sync se vuelven a crear 
 # 🔴 Si se bloquea al hacer un feed-sync se puede forzar el borrado del archivo .lock y volverlos a lanzar un feed-sync
 
+sudo systemctl start ospd-openvas
+sudo systemctl start gvmd
+sudo systemctl start gsad
+sudo systemctl start openvasd
+
+sudo systemctl enable ospd-openvas
+sudo systemctl enable gvmd
+sudo systemctl enable gsad
+sudo systemctl enable openvasd
+
+sudo systemctl status ospd-openvas
+sudo systemctl status gvmd
+sudo systemctl status gsad
+sudo systemctl status openvasd
 
 #=========================================================================================================================
 [⛩️ENTORNO WEB CON NVT CERT GVMD_DATA SCAP CARGADOS]::
