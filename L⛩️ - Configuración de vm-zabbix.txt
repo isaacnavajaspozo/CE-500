@@ -220,6 +220,7 @@ sudo systemctl restart snmpd
 sudo systemctl enable snmpd
 sudo systemctl status snmpd
 
+# 🔁 asi repito con cada uno de los servidores linux
 
 #=========================================================================================================================
 [⛩️INTERFACE WEB - DESCUBRIR EL HOST]::
