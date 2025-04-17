@@ -33,6 +33,7 @@ apt update && sudo apt install -y wget unzip openssl
 
 # Descargar binario
 # Comprobar la última versión antes de descargar : https://github.com/Velocidex/velociraptor/releases
+apt install wget -y
 wget https://github.com/Velocidex/velociraptor/releases/latest/download/velociraptor-v0.74.1-linux-amd64 -O velociraptor
 chmod +x velociraptor
 mv velociraptor /usr/local/bin/
@@ -52,6 +53,10 @@ velociraptor config generate -i
   # Habilita Web UI
   # Crea certificados (mTLS incluidos)
   # Guarda el archivo final como server.config.yaml
+  # ⚠️ cuando me pregunte por el usuario y contraseña puedo crear tantos usuarios como quiera
+  # cuando quiera dejar de agregar usuario dejo una sola vez los campos vacios, pulsando dos intros para pasar al siguiente apartado
+    > usuario: root
+    > contraseña: ****
 # genera el archivo server.config.yaml
 velociraptor --config server.config.yaml debian server
 # Genera la configuración del cliente a partir de la configuración del servidor y la guarda en client.config.yaml
