@@ -695,8 +695,9 @@ xdg-open "http://<IP_DEL_SERVIDOR>:9392" 2>/dev/null >/dev/null &
 http://<IP_DEL_SERVIDOR>:9392/
 admin:admin
 
-==================================================================================================================================================
-==========[Entorno WEB]===========================================================================================================================
+
+#=========================================================================================================================
+[⛩️ENTORNO WEB]::
 
 Administration > Feed Status 
 
@@ -719,7 +720,6 @@ Administration > Feed Status
 	
 # La web es reactiva y el mensaje de error tiene un timeout por lo que no vuelve a aparecer pero eso no significa que haya terminado de volcar los datos...
 # para comprobar que vuelve a aparecer hay que recargar la web : CNTRL + F5	
-
 
 ===================================================================================================================================================
 
@@ -744,9 +744,8 @@ sudo systemctl stop openvasd
 # 🔴 Si se bloquea al hacer un feed-sync se puede forzar el borrado del archivo .lock y volverlos a lanzar un feed-sync
 
 
-==================================================================================================================================================
-==========[Entorno WEB con NVT CERT GVMD_DATA SCAP cargados]======================================================================================
-
+#=========================================================================================================================
+[⛩️ENTORNO WEB CON NVT CERT GVMD_DATA SCAP CARGADOS]::
 Configuration > Target > New Target > 192.168.0.1/24 
 
 SCANS > Task > New Task
