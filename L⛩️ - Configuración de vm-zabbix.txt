@@ -188,6 +188,7 @@ http://<IP_SERVIDOR_ZABBIX>/zabbix
             + Plantillas            : Windows by Zabbix agent
             + Grupos de equipos     : Applications
             + Interfaces   -  Agent : <IP_DEL_PC>
+# recargo la interface web hasta que el apartado disponibilidad muestra en verde SNMP
 
 # 🔁 asi repito con cada uno de los disposisitivos
 
