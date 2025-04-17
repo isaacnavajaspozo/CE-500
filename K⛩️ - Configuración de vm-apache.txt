@@ -259,11 +259,11 @@ sudo systemctl restart apache2
 #=========================================================================================================================
 [⛩️INSTALACIÓN DESPLIEGUE GIT]::
 # creo la carpeta de repositorio git
-mkdir /KIRIBAKO/git
+mkdir /etc/git
 
 # dentro de la ruta del repositorio del servidor tengo que agregar una carpeta /hooks con el archivo post-receive
 # /ruta/a/tu/repositorio.git/hooks
-mkdir /etc/git && mkdir /etc/git/hooks && cd /etc/git/hooks
+mkdir /etc/git/hooks && cd /etc/git/hooks
 vim post-receive
 --------------------------------------------------------------------------------------
 #!/bin/bash
@@ -282,7 +282,8 @@ GIT_WORK_TREE=$DEPLOY_DIR git checkout -f master
 # echo "Se ha realizado un push al repositorio y se ha actualizado el directorio de despliegue." | mail -s "Notificación de Push" $EMAIL
 --------------------------------------------------------------------------------------
 
-# el archivo post-receive lo que va hacer es mandar directamente la rama master a producción para que los cambios sean inminentes
+# # el archivo post-receive se va a activar cada vez que un usuario realice un push
+# va a es mandar directamente la rama master a producción para que los cambios sean inminentes
 
 #=========================================================================================================================
 [⛩️HONEYPOT]::
@@ -485,6 +486,15 @@ vim ~/.bashrc
 ...
 --------------------------------------------------------------------------------------
 source ~/.bashrc
+
+
+# compruebo los servicios
+systemctl reload apache2
+> password-certificado: **** 
+systemctl reload mysql
+
+systemctl status apache2
+systemctl status mysql
 
 #=========================================================================================================================
 [⛩️MATO PROCESOS SI HAY FALLO]:
