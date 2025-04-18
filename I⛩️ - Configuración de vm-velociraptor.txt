@@ -123,7 +123,7 @@ vim /etc/velociraptor/client.config.yaml
 -------------------------------------------------------------------
 ...
 server_urls:
-  - https://<IP_DEL_SERVIDOR_VELOCIRAPTOR>:8889/
+  - https://<IP_DEL_SERVIDOR_VELOCIRAPTOR>:8000/                    # el puerto 8000 es la api por la que se van a transmitir los agentes
 ...
 -------------------------------------------------------------------
 
@@ -135,7 +135,7 @@ Description=Velociraptor Client
 After=network.target
 
 [Service]
-ExecStart=/usr/local/bin/velociraptor_client client --config /etc/velociraptor/client.config.yaml
+ExecStart=/usr/local/bin/velociraptor_client --config /etc/velociraptor/client.config.yaml client
 Restart=always
 User=root
 
@@ -144,19 +144,87 @@ WantedBy=multi-user.target
 -------------------------------------------------------------------
 
 # habilito servicios
+sudo systemctl daemon-reexec
 systemctl start velociraptor-client
 systemctl enable velociraptor-client
 systemctl status velociraptor-client
 
 
-
-
-
-
-
 #===========================================================================================================================
 [⛩️CONFIGURACIÓN INTERFACE WEB]:
+# 🦖 me dirijo a la interface y activo los clientes
+https://<IP_DEL_SERVIDOR_VELOCIRAPTOR>:8889/
+
+# 🔍 pulso en search clients que en las nuevas versiones es pulsando en la lupa del buscador 
+# lo activo y pulso en "Client ID", con esto desabilito más opciones de la interface de los clientes
+
+# 🗂️ artifacts     :: módulos predefinidos escritos en VQL (Velociraptor Query Language) que saben qué datos recolectar y cómo hacerlo (también pueden ser desarrollados).
+# 🗂️ hunts         :: es un job orquestado donde selecciono artifacts de forma masiva o programada sobre los clientes.
+#                   + en un caso habitual solo voy a configurar directamente los hunt (las búsquedas)  
+
 # 🦖 velociraptor es una herramienta de ciberseguridad que se usa principalmente para cuando pasa algo sospechoso o grave (como un ataque)
+# Generic.Client.Info
+# el hunt Generic.Client.Info invoca el Artifact del mismo nombren del servidor cliente para conocer el inventario básico
+Hunt manager > New Hunt 
+    > Include condition: Run everywhere
+    > Exclude condition: Run everywhere
+> Select Artifacts
+    > Generic.Client.Info
+> Launch
+
+# otros hunt que puedo configurar:
++------------------------------------+----------------------------------------+-----------------------------------------------------------------------+
+| Tarea                              | Artifact / Hunt                        | Para qué sirve                                                        |
++------------------------------------+----------------------------------------+-----------------------------------------------------------------------+
+| Listar procesos                    | Generic.System.PsList                  | Ver qué procesos corren y detectar “extraños”.                        |
+| Conexiones de red                  | Generic.System.Netstat                 | Ver puertos abiertos y conexiones activas.                            |
+| Módulos de kernel cargados         | Linux.System.KernelModules             | Asegurar sólo módulos deseados.                                       |
+| Servicios habilitados (systemd)    | Linux.System.Services                  | Identificar daemons y su estado.                                      |
+| Usuarios locales                   | Linux.System.Users.LocalAccounts       | Comprobar usuarios, shells y UID.                                     |
+| Listado de paquetes instalados     | Linux.System.Packages                  | Inventario de versiones de software.                                  |
+| Tareas programadas (cron)          | Linux.System.Crontab                   | Ver cronjobs de todos los usuarios.                                   |
+| Integridad de ficheros críticos    | Linux.File.Integrity                   | Detectar cambios no autorizados en /etc, etc.                         |
+| Archivos modificados               | Linux.File.ModificationTimes           | Detectar modificaciones en archivos importantes.                      |
+| Logs del sistema                   | Linux.System.Logs                      | Verificación de logs para actividades sospechosas.                    |
+| Verificación de firewalls          | Linux.Network.FirewallStatus           | Asegurar la configuración del firewall.                               |
+| Tiempos de arranque                | Linux.System.Uptime                    | Verificar cuándo se inició el sistema.                                |
+| Llamadas a funciones de kernel     | Linux.System.KernelSysCalls            | Detectar actividades sospechosas en el kernel.                        |
+| Accesos a archivos importantes     | Linux.File.AccessLog                   | Ver qué usuarios han accedido a archivos críticos.                    |
+| Directorios en uso                 | Linux.System.FileDescriptors           | Ver qué archivos están siendo usados por procesos.                    |
+| Llamadas a scripts shell           | Linux.System.BashHistory               | Ver comandos ejecutados en bash.                                      |
+| Tiempos de conexión a red          | Linux.Network.ConnectionTimes          | Verificar tiempos de conexión para detectar patrones.                 |
+| Actividades en el sistema          | Linux.System.ProcessesByUser           | Ver qué procesos son ejecutados por qué usuario.                      |
+| Archivos de configuración          | Linux.File.ConfigurationFiles          | Comprobar la integridad de archivos de configuración.                 |
+| Detección de rootkits              | Linux.System.RootkitDetection          | Identificar rootkits en el sistema.                                   |
+| Verificación de módulos cargados   | Linux.System.ModuleFiles               | Comprobar los módulos cargados en el sistema.                         |
+| Archivos de usuario ocultos        | Linux.File.HiddenFiles                 | Detectar archivos ocultos o anómalos en el sistema.                   |
+| Comandos de red ejecutados         | Linux.Network.CommandHistory           | Ver qué comandos de red han sido ejecutados.                          |
+| Detección de procesos inyectados   | Linux.System.InjectedProcesses         | Detectar si hay procesos inyectados por un atacante.                  |
+| Actividades de mount/unmount       | Linux.System.MountActivity             | Ver qué dispositivos están siendo montados/desmontados.               |
+| Sesiones SSH activas               | Linux.System.SSHSessions               | Verificar si hay sesiones SSH activas.                                |
+| Usuarios y grupos de sudo          | Linux.System.Sudoers                   | Comprobar quién tiene privilegios de sudo.                            |
+| Almacenamiento de credenciales     | Linux.System.Passwords                 | Buscar archivos que contienen contraseñas o credenciales.             |
+| Claves SSH almacenadas             | Linux.File.SSHKeys                     | Buscar claves SSH almacenadas en el sistema.                          |
+| Análisis de logs de autenticación  | Linux.System.AuthLogs                  | Buscar intentos fallidos de autenticación o accesos sospechosos.      |
+| Configuración de Sudo              | Linux.System.Sudoers                   | Verificar configuraciones de sudo y posibles escaladas de privilegios.|
+| Información sobre el kernel        | Linux.System.KernelInfo                | Obtener información sobre el kernel utilizado.                        |
+| Conexiones de red (SSH)            | Linux.Network.SSHConnections           | Ver conexiones SSH activas e inactivas.                               |
+| Información de los usuarios        | Linux.System.Users.All                 | Obtener una lista de todos los usuarios en el sistema.                |
+| Información sobre mounts           | Linux.System.MountInfo                 | Verificar dispositivos montados en el sistema.                        |
+| Conexiones VPN                     | Linux.Network.VPNConnections           | Monitorear conexiones VPN activas.                                    |
+| Información de interfaces de red   | Linux.Network.Interfaces               | Obtener información sobre las interfaces de red.                      |
+| Actividades en dispositivos USB    | Linux.System.USBActivity               | Monitorear actividades sospechosas en puertos USB.                    |
+| Estadísticas de uso de disco       | Linux.System.DiskUsage                 | Verificar el uso del disco y posibles cambios.                        |
+| Verificación de hostname           | Linux.System.Hostname                  | Comprobar que el hostname no ha sido cambiado.                        |
+| Listado de procesos por UID        | Linux.System.ProcessByUID              | Ver qué procesos están asociados a qué UID.                           |
+| Revisión de rutas de acceso        | Linux.System.PATH                      | Ver qué rutas de acceso a binarios están configuradas.                |
+| Información sobre grupos           | Linux.System.Groups                    | Ver grupos y sus miembros.                                            |
+| Análisis de scripts maliciosos     | Linux.System.MaliciousScripts          | Detectar la presencia de scripts maliciosos.                          |
+| Análisis de puertos abiertos       | Linux.Network.PortScan                 | Realizar escaneo de puertos para detectar servicios expuestos.        |
+| Información sobre logs de seguridad| Linux.System.SecurityLogs              | Revisión de logs de seguridad del sistema.                            |
++------------------------------------+----------------------------------------+-----------------------------------------------------------------------+
+
+# otro ejemplo...
 # permitir ver los mapeos de memoria de procesos en Linux
 Hunt manager > New Hunt 
     > Tag: Linux-memoria
@@ -176,35 +244,3 @@ Hunt manager > New Hunt
     > Max MB uploaded: 50                                  # 50 o 100 (depende de cuánto esperes obtener)
     > Trace Frequency Seconds: 10
     > Urgent: [x] Skip queues and run query urgently       # omitir colas y ejecutar consultas con urgencia
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#===========================================================================================================================
-[⛩️INSTALACIÓN AGENTE-VELOCIRAPTOR EN WINDOWS]:
-# 📦 Desde Linux genero el agente (generará un .exe)
-velociraptor --config server.config.yaml config client
-
-# Copia algo tipo velociraptor-v0.7.1-windows-amd64.exe en Windowns e instalalo
-
-# Desde Windows instalalo como servicio 
-velociraptor-v0.7.1-windows-amd64.exe service install
-velociraptor-v0.7.1-windows-amd64.exe service start
-
-# Luego ve a la siguiente url y debería ver mi host Windwos conectado
-https://<IP_SERVIDOR_LINUX>:8889
