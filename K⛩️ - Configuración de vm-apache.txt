@@ -1,5 +1,5 @@
 # 🧠 Apache es un servidor web de código abierto y altamente configurable, usado para alojar aplicaciones y sitios web.
-# 🐧 Esta máquina la voy a utilizar como honeypot y me va a registrar rutas de archivos reales en php y monitorización instantanea de acceso a mysql
+# 🐧 Esta máquina la voy a utilizar como honeypot y me va a registrar rutas de archivos reales en php y monitorización instantanea de acceso a mysql (sin librerías).
 #=========================================================================================================================
 [⛩️WHITE WHALE]::
 # documentación no-oficial         		: https://es.linux-console.net/?p=29687
