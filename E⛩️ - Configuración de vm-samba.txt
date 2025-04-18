@@ -1,4 +1,6 @@
 # 🧠 Samba permite compartir archivos e impresoras con sistemas Windows a través de los protocolos SMB/CIFS.
+# 🐧 Utilizo esta máquina como servidor de archivos compartidos por usuarios, para compartir manuales IT. 
+# 🐧 Además también hace de honeypot para registrar los accesos de la carpeta principal
 #=========================================================================================================================
 [⛩️KIRIBAKO]::
 Documentación ofical samba                 : https://wiki.samba.org/index.php/Setting_up_Samba_as_a_Standalone_Server
@@ -197,3 +199,62 @@ vim /etc/anacrontab
 
 # anacron se ejecuta normalmente vía systemd (anacron.timer) o desde /etc/init.d/anacron
 # Logs: /var/log/syslog o journalctl -u anacron
+
+#=========================================================================================================================
+[⛩️CONFIGURACIÓN HONEYPOT]::
+# aunque este samba lo voy a utilizar para compartir manuales de IT, lo voy a utilizar tambien como honeypot
+
+vim /etc/samba/smb.conf
+--------------------------------------------------------------------------------------
+[global]
+    # auditoría
+    log level = 2
+    log file = /KIRIBAKO/log/log.txt
+    max log size = 1000
+
+    # acceso a archivos
+    vfs objects = audit
+    audit:facility = LOCAL7
+    audit:priority = NOTICE
+    audit:log = /var/log/samba/audit.log
+
+    # configuración samba
+    interfaces = lo eth0
+    bind interfaces only = yes
+    workgroup = WORKGROUP
+    server string = Samba Server
+    netbios name = samba
+    security = user
+    passdb backend = tdbsam:/KIRIBAKO/samba/samba_passdb.tdb
+    map to guest = Bad User
+
+[public]
+    path = /KIRIBAKO/samba/datos
+    browsable = yes
+    writable = yes
+    guest ok = no
+    read only = no
+    valid users = Ilerna
+    force user = nobody
+    force group = smbIlerna
+    create mask = 0770
+    directory mask = 0775
+
+    # configuración archivos
+    vfs objects = audit
+    audit:facility = LOCAL7
+    audit:priority = NOTICE
+    audit:log = /KIRIBAKO/log/log-audit.txt
+--------------------------------------------------------------------------------------
+# ***********************************************************************************************************
+# 🧑‍🎓 Que hace cada opción que he elegido::
+#    log level = 2                                              :: nivel de detalle de los registros, eventos de acceso
+#    log file = /KIRIBAKO/log/log.txt                           :: archivo para almacenar logs de registros
+#    max log size = 1000                                        :: tamaño de los archivos de registro a 1 MB
+#    vfs objects = audit                                        :: auditoría de archivos compartidos (VFS)
+#    audit:facility = LOCAL7                                    :: tipo de registro, registra auditorías de seguridad
+#    audit:priority = NOTICE                                    :: prioridad de los eventos que se registran o superiores
+#    audit:log = /KIRIBAKO/log/log-audit.txt                    :: Ruta de la carpeta de la auditoria de archivos
+#    directory mask = 0775                                      :: Permisos para directorios creados
+# ***********************************************************************************************************
+
