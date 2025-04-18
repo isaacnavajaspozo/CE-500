@@ -28,12 +28,13 @@ source ~/.bashrc
 #=========================================================================================================================
 [⛩️INSTALACIONES]::
 # La instalación oficial está en esta web:
-https://greenbone.github.io/docs/latest/22.4/source-build/index.htmlç
+https://greenbone.github.io/docs/latest/22.4/source-build/index.html
+
+## ⚠️ Esta instalación la he hecho ordenada pero aconsejo instalar greenbone desde su documentación oficial para instalar la última versión y si no se a entendido los pasos, entonces leer esta documentación.
 
 #=========================================================================================================================
 [⛩️MI INSTALACIÓN ORDENADA]::
 	
-	## ⚠️ Esta instalación la he hecho ordenada pero puedo seguir la documentación oficial
 	##.🧑‍🎓 Documentación oficial:
 	https://greenbone.github.io/docs/latest/22.4/source-build/index.html
 
