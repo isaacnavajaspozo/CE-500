@@ -160,7 +160,7 @@ https://<IP_DEL_SERVIDOR_VELOCIRAPTOR>:8889/
 
 # 🗂️ artifacts     :: módulos predefinidos escritos en VQL (Velociraptor Query Language) que saben qué datos recolectar y cómo hacerlo (también pueden ser desarrollados).
 # 🗂️ hunts         :: es un job orquestado donde selecciono artifacts de forma masiva o programada sobre los clientes.
-#                   + en un caso habitual solo voy a configurar directamente los hunt (las búsquedas)  
+#                   + en un caso habitual solo voy a configurar directamente los hunt (las búsquedas), cuando agrego un hunt se agrega automáticamente su artifacts al menú.
 
 # 🦖 velociraptor es una herramienta de ciberseguridad que se usa principalmente para cuando pasa algo sospechoso o grave (como un ataque)
 # Generic.Client.Info
