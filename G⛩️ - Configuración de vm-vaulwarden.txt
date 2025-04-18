@@ -1,4 +1,5 @@
-# 🧠 
+# 🧠 Vaultwarden se utiliza para gestionar contraseñas y datos sensibles de forma segura.
+# 🐧 Lo voy a utilizar para gestión de contraseñas, como alternativa de control a bitwarden.
 #=========================================================================================================================
 [⛩️KIRIBAKO]::
 # Documentación no-oficial   : https://serverspace.io/es/support/help/install-bitwarden-debian-11/
