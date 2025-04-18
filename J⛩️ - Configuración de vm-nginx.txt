@@ -602,9 +602,10 @@ app.listen(port, () => {
 
 
 # 🐝 honeypot para decoys :: scanners (falsificar archivos de configuración)
-# agrego archivos falsos de posibles ataques y les asocio un tamaño 
+# agrego archivos falsos de posibles ataques, les asocio un tamaño virtual y monitorizo su interactuación 
 echo "Backup falso" > /var/www/express/app/db_backup.bson && truncate -s 1455M /var/www/express/app/db_backup.bson
-echo "Backup falso" > /var/www/express/app/access.log && truncate -s 321M /var/www/express/app/access.log
+echo "Log falso" > /var/www/express/app/access.log && truncate -s 321M /var/www/express/app/access.log
+echo "Mongodb falso" > /var/www/express/mongodb. && truncate -s 987M /var/www/express/mongodb.
 
 # instalo inotify para escuchar en vivo si el archivo se abierto
 sudo apt install inotify-tools
@@ -612,7 +613,7 @@ sudo apt install inotify-tools
 # creo script para evaluar con inotify
 mkdir /KIRIBAKO/log/
 touch /KIRIBAKO/log/honypot-monitor.txt
-honypot-monitor.sh
+vim honypot-monitor.sh
 -----------------------------------------------------------------------
 #!/bin/bash
 
@@ -620,6 +621,7 @@ honypot-monitor.sh
 archivos_a_monitorear=(
   "/var/www/express/app/db_backup.bson"
   "/var/www/express/app/access.log"
+  "/var/www/express/mongodb."
 )
 
 log="/KIRIBAKO/log/honypot-monitor.txt"
@@ -647,46 +649,29 @@ sudo /KIRIBAKO/honypot-monitor.sh &
 ps aux | grep monitor.sh
 
 
-# 🐝 honeypot para PM2
-pm2 start /var/www/express/ecosystem.config.js --name "honeypot-app" --watch
+# 🐝 honeypot para Mongodb
+# voy a monitorizar si alguien se loguea en la base de datos o realiza operaciones como find, save, update
+# agrego las siguientes lineas al archivo de configuracion
+vim /etc/mongod.conf
+-----------------------------------------------------------------------
+...
+systemLog:
+  destination: file
+  path: /KIRIBAKO/log/mongod.log
+  logAppend: true
+  verbosity: 1 					# Nivel 1 para registrar conexiones y operaciones básicas
 
+security:
+  authorization: enabled  			# Opcional, pero recomendable para monitoreo por usuario
 
+operationProfiling:
+  mode: all
+  slowOpThresholdMs: 1  			# Considera como "lenta" cualquier operación que dure más de 1 ms
+...
+-----------------------------------------------------------------------
 
-
-
-
-
-
-
-
-
-# 🐝 honeypot para mongodb
-const honeypotCollection = mongoose.model('HoneypotInteraction', new mongoose.Schema({
-  ipAddress: String,
-  action: String,
-  timestamp: { type: Date, default: Date.now }
-}));
-
-// Registrar interacción en MongoDB
-const recordHoneypotInteraction = async (ip: string, action: string) => {
-  const interaction = new honeypotCollection({ ipAddress: ip, action });
-  await interaction.save();
-};
-
-app.post('/fake-api', (req, res) => {
-  console.log(`[Honeypot] Interacción sospechosa en /fake-api desde ${req.ip}`);
-  recordHoneypotInteraction(req.ip, '/fake-api');
-  res.status(200).send('Acción no válida.');
-});
-
-
-
-
-
-
-
-
-
+# reinicio los seervicios
+sudo systemctl restart mongod
 
 
 #=========================================================================================================================
