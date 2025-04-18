@@ -5,7 +5,6 @@
 # Documentación no-oficial   : https://serverspace.io/es/support/help/install-bitwarden-debian-11/
 # Documentación oficial      : https://bitwarden.com/help/install-on-premise-linux/
 # No hay una documentación oficial para utilizar vaultwarden sin docker 
-# yo quiero hacerlo con docker pero utilizandolo de forma controlada como máquina debian, así que necesito instalarlo como si no tuviese docker
 # Documentación no-oficial   : https://community.hetzner.com/tutorials/how-to-install-vaultwarden
 
 #=========================================================================================================================
@@ -56,12 +55,6 @@ vim /opt/vaultwarden/.env
     > SIGNUPS_ALLOWED=false                                # en false no permite registros a la db
     > DATABASE_URL=data/db.sqlite3
 
-# habilitar y ejecutar Vaultwarden
-sudo systemctl daemon-reload
-sudo systemctl enable vaultwarden
-sudo systemctl start vaultwarden
-sudo systemctl status vaultwarden
-
 # instalo 
 sudo apt install build-essential curl git libssl-dev pkg-config
 
@@ -86,18 +79,23 @@ After=network.target
 User=vaultwarden
 Group=vaultwarden
 WorkingDirectory=/opt/vaultwarden
-ExecStart=/opt/vaultwarden/vaultwarden
+ExecStart=/opt/vaultwarden/target/release/vaultwarden
 Restart=always
 EnvironmentFile=/opt/vaultwarden/.env
 
 [Install]
 WantedBy=multi-user.target
 -----------------------------------------------------------------------
+# habilitar y ejecutar Vaultwarden
+sudo systemctl daemon-reload
+sudo systemctl enable vaultwarden
+sudo systemctl start vaultwarden
+sudo systemctl status vaultwarden
 
 sudo systemctl daemon-reload
 sudo systemctl start vaultwarden
 sudo systemctl enable vaultwarden
-
+sudo systemctl status vaultwarden
 
 
 
