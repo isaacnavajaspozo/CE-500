@@ -39,7 +39,7 @@ wget https://github.com/Velocidex/velociraptor/releases/latest/download/velocira
 chmod +x velociraptor
 mv velociraptor /usr/local/bin/
 
-# Inicializar configuración
+# Inicializar configuración y genera el archivo server.config.yaml
 velociraptor config generate -i
     > Self Signed SSL
     > Linux
@@ -58,7 +58,7 @@ velociraptor config generate -i
   # cuando quiera dejar de agregar usuario dejo una sola vez los campos vacios, pulsando dos intros para pasar al siguiente apartado
     > usuario: root
     > contraseña: ****
-# genera el archivo server.config.yaml
+# genera un archivo parecido a velociraptor_server_0.74.1_amd64.deb, que es el instalador del servidor para montar otro servidor
 velociraptor --config server.config.yaml debian server
 # Genera la configuración del cliente a partir de la configuración del servidor y la guarda en client.config.yaml
 velociraptor --config server.config.yaml config client > client.config.yaml
@@ -95,6 +95,64 @@ sudo ss -tuln | grep 8889
 
 # pruebo en navegador
 https://<IP_SERVIDOR_LINUX>:8889
+
+#===========================================================================================================================
+[⛩️CONFIGURACIÓN DEL AGENTE]:
+# 🔁 este proceso tengo que repetirlo por cada cliente (agente)
+
+# velociraptor necesita crear un agente para conectar con el dispositivo cliente
+# como anteriormente ya he creado la configuración del cliente compruebo que tengo el archivo 
+find /KIRIBAKO/client.config.yaml
+    # /KIRIBAKO/client.config.yaml
+
+# genero el binario que me va a generar el archivo de instalación según la distribución de linux o el s.o
+# en mi caso lo voy hacer para un servicor debian
+# velociraptor --config client.config.yaml windows client
+velociraptor --config client.config.yaml debian client
+
+# migro el archivo desde la máquina principal 
+exit
+cp /var/lib/lxc/vm-velociraptor/rootfs/KIRIBAKO/velociraptor_client_0.74.1_amd64.deb /var/lib/lxc/vm-apache/rootfs/KIRIBAKO/
+
+# entro en la máquina del agente (que en este caso es vm-apache) e instalo el paquete
+cd /KIRIBAKO
+sudo dpkg -i velociraptor_client_0.74.1_amd64.deb
+
+# cambio la configuración
+vim /etc/velociraptor/client.config.yaml
+-------------------------------------------------------------------
+...
+server_urls:
+  - https://<IP_DEL_SERVIDOR_VELOCIRAPTOR>:8889/
+...
+-------------------------------------------------------------------
+
+# creo un servicio 
+sudo vim /etc/systemd/system/velociraptor-client.service
+-------------------------------------------------------------------
+[Unit]
+Description=Velociraptor Client
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/velociraptor_client client --config /etc/velociraptor/client.config.yaml
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
+-------------------------------------------------------------------
+
+# habilito servicios
+systemctl start velociraptor-client
+systemctl enable velociraptor-client
+systemctl status velociraptor-client
+
+
+
+
+
+
 
 #===========================================================================================================================
 [⛩️CONFIGURACIÓN INTERFACE WEB]:
