@@ -26,8 +26,14 @@ chmod +x script-00.sh
 source ~/.bashrc
 
 #=========================================================================================================================
-[⛩️INSTALACIÓN GREENBONE]::
+[⛩️INSTALACIONES]::
+# La instalación oficial está en esta web:
+https://greenbone.github.io/docs/latest/22.4/source-build/index.htmlç
 
+#=========================================================================================================================
+[⛩️MI INSTALACIÓN ORDENADA]::
+	
+	## ⚠️ Esta instalación la he hecho ordenada pero puedo seguir la documentación oficial
 	##.🧑‍🎓 Documentación oficial:
 	https://greenbone.github.io/docs/latest/22.4/source-build/index.html
 
