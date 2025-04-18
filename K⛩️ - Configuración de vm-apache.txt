@@ -1,5 +1,5 @@
 # 🧠 Apache es un servidor web de código abierto y altamente configurable, usado para alojar aplicaciones y sitios web.
-#=========================================================================================================================
+# 🐧 Esta máquina la voy a utilizar como honeypot y me va a registrar #=========================================================================================================================
 [⛩️WHITE WHALE]::
 # documentación no-oficial         		: https://es.linux-console.net/?p=29687
 # documentación no-oficial         		: https://www.php.net/manual/es/install.unix.debian.php
@@ -297,6 +297,7 @@ chmod 666 /KIRIBAKO/log/honeypot_activity.log
 # creo nuevas rutas conntrolados por logs
 cd /var/www/php
 
+## 🐝 honeypot rutas  
 # 🍯 honeypot
 vim index.php
 --------------------------------------------------------------------------------------
@@ -461,6 +462,7 @@ TIME=$(date "+%Y-%m-%d %H:%M:%S")
 echo "[$TIME] Acceso Git al honeypot desde IP: $IP | Usuario: $USER" >> /KIRIBAKO/log/git-honeypot.log
 --------------------------------------------------------------------------------------
 
+## 🐝 honeypot acceso mysql
 # 🔔 agrego prácticas de honeypot en mysql
 # habilito el archivo de logs
 systemctl restart mariadb
