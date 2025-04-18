@@ -1,4 +1,4 @@
-# 🧠 Velociraptor es una plataforma de respuesta a incidentes que ayuda a investigar en tiempo real.
+# 🧠 Velociraptor es una herramienta de DFIR de respuesta a incidentes que ayuda a investigar incidencias en tiempo real.
 # 🐧 Lo voy a dejar configurado y lo voy a utilizar exclusivamente cuando pase algo sospechoso o grave.
 #===========================================================================================================================
 [⛩️INSTALACIÓN ETHERNET]:
