@@ -52,8 +52,27 @@ rmdir /opt/vaultwarden/vaultwarden-1.33.2
 cp .env.template .env
 vim /opt/vaultwarden/.env
     > DOMAIN=https://<IP_SERVIDOR>
-    > SIGNUPS_ALLOWED=false                                # en false no permite registros 
+    > SIGNUPS_ALLOWED=false                                # en false no permite registros a la db
     > DATABASE_URL=data/db.sqlite3
+
+# habilitar y ejecutar Vaultwarden
+sudo systemctl daemon-reload
+sudo systemctl enable vaultwarden
+sudo systemctl start vaultwarden
+sudo systemctl status vaultwarden
+
+# instalo 
+sudo apt install build-essential curl git libssl-dev pkg-config
+
+# instalo Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source $HOME/.cargo/env
+
+# creo el binario vaultwarden en el directorio target/release
+cd /opt/vaultwarden
+cargo build --release
+cargo build --release --features sqlite
+ls target/release/
 
 # crear un servicio systemd
 vim /etc/systemd/system/vaultwarden.service
@@ -74,32 +93,9 @@ EnvironmentFile=/opt/vaultwarden/.env
 WantedBy=multi-user.target
 -----------------------------------------------------------------------
 
-# habilitar y ejecutar Vaultwarden
-sudo systemctl daemon-reload
-sudo systemctl enable vaultwarden
-sudo systemctl start vaultwarden
-sudo systemctl status vaultwarden
-
-# ⚠️ si sale un error de: ExecStart es porque no existe el binario así que lo creo
-# instalo 
-sudo apt install build-essential curl git libssl-dev pkg-config
-
-# instalo Rust
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-source $HOME/.cargo/env
-
-# creo el binario vaultwarden en el directorio target/release
-cd /opt/vaultwarden
-cargo build --release
-cargo build --release --features sqlite
-ls target/release/
-
 sudo systemctl daemon-reload
 sudo systemctl start vaultwarden
 sudo systemctl enable vaultwarden
-
-
-
 
 
 
