@@ -1,4 +1,5 @@
-# 🧠 Velociraptor es una plataforma de respuesta a incidentes y forense digita que permite la recolección de datos, la monitorización y la ejecución de consultas en sistemas finales (ayuda a investigar y responder a incidentes en tiempo rea).
+# 🧠 Velociraptor es una plataforma de respuesta a incidentes que ayuda a investigar en tiempo real.
+# 🐧 Lo voy a dejar configurado y lo voy a utilizar exclusivamente cuando pase algo sospechoso o grave.
 #===========================================================================================================================
 [⛩️INSTALACIÓN ETHERNET]:
 # Versiones                            : https://github.com/Velocidex/velociraptor/releases
