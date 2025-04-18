@@ -1,5 +1,5 @@
 # 🧠 Nginx es un servidor web y proxy reverso eficiente y ligero, optimizado para manejar altas cargas y tráfico concurrente.
-# 🐧 Esta máquina la voy a utilizar como honeypot y me va a registrar decoys, simulación de rutas y gestión con mongodb (sin librerías).
+# 🐧 Esta máquina la voy a utilizar como honeypot y me va a registrar decoys, simulación de rutas y gestión con mongodb (sin paquetes externos).
 #=========================================================================================================================
 [⛩️WHITE WHALE]::
 # Documentación configurar Node 		: https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-20-04-es?
