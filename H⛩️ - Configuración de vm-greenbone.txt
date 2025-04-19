@@ -30,8 +30,14 @@ source ~/.bashrc
 # La instalación oficial está en esta web:
 https://greenbone.github.io/docs/latest/22.4/source-build/index.html
 
-## ⚠️ Esta instalación la he hecho ordenada pero aconsejo instalar greenbone desde su documentación oficial para instalar la última versión y si no se a entendido los pasos, entonces leer esta documentación.
-export OPENVAS_SCANNER_VERSION=22.4
+## ⚠️ Esta instalación la he hecho ordenada corrigiendo los problemas con la documentación oficial en debian
+## ⚠️ antes de nada acosejo investigar si dispongo de los recursos necesario porque aunque se inicie no a poder analizar nada
+## ⚠️ si no dispones de estos recursos minimos ni te molestes en intentarlo (lo digo por experiencia...) 
+## ⚠️ estos son los recursos minimos ::
+df -h
+	> CPU Cores: 2
+	> Random-Access Memory: 4GB
+	> Hard Disk: 20GB free
 
 #=========================================================================================================================
 [⛩️MI INSTALACIÓN ORDENADA]::
