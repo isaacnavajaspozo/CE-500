@@ -31,10 +31,13 @@ source ~/.bashrc
 https://greenbone.github.io/docs/latest/22.4/source-build/index.html
 
 ## ⚠️ Esta instalación la he hecho ordenada corrigiendo los problemas con la documentación oficial en debian
-## ⚠️ antes de nada acosejo investigar si dispongo de los recursos necesario porque aunque se inicie no a poder analizar nada
+## ⚠️ antes de nada acosejo investigar si dispongo de los recursos necesarios porque aunque se inicie la interface no va poder analizar nada
+## 🚨 el error típico ante falta de recursos es que cuando creas un Task se queda en : ❌ Interrupted at 0 %
 ## ⚠️ si no dispones de estos recursos minimos ni te molestes en intentarlo (lo digo por experiencia...) 
 ## ⚠️ estos son los recursos minimos ::
 df -h
+lscpu | grep "^CPU(s)"
+
 	> CPU Cores: 2
 	> Random-Access Memory: 4GB
 	> Hard Disk: 20GB free
@@ -792,8 +795,12 @@ sudo systemctl status gvmd
 sudo systemctl status gsad
 sudo systemctl status openvasd
 
+## 🚨 el error típico ante falta de recursos es que cuando creas un Task se queda en : ❌ Interrupted at 0 %
+
 #=========================================================================================================================
 [⛩️ENTORNO WEB CON NVT CERT GVMD_DATA SCAP CARGADOS]::
+# analizar red de manera automática
+
 Configuration > Target > New Target > 192.168.1.1/24 
 
 SCANS > Task > New Task
