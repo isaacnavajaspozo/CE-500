@@ -129,7 +129,7 @@ lscpu | grep "^CPU(s)"
 # 🔥 Instalo el paquete cargo y rustup
 # *********************************************************************
 	# instalo cargo 
-	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+	sudo curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 	1
 
 	source "$HOME/.cargo/env"
