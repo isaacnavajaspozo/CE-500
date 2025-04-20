@@ -1,11 +1,11 @@
 # 🧠 Greenbone es una plataforma de gestión de vulnerabilidades que ofrece herramientas para realizar escaneos de seguridad.
 # 🐧 Utilizo greenbone para escanear toda mi red en busca de vulnerabilidades que corregir.
 #===========================================================================================================================
-[⛩️INSTALACIÓN GREENBONE]:
+[🐍INSTALACIÓN GREENBONE]:
 # Documentación oficial : https://greenbone.github.io/docs/latest/22.4/source-build/index.html
 
 #=========================================================================================================================
-[⛩️INSTALACIONES]::
+[🐍INSTALACIONES]::
 
 # instalaciones 
 apt update
@@ -26,7 +26,7 @@ chmod +x script-00.sh
 source ~/.bashrc
 
 #=========================================================================================================================
-[⛩️INSTALACIONES]::
+[🐍INSTALACIONES]::
 # La instalación oficial está en esta web:
 https://greenbone.github.io/docs/latest/22.4/source-build/index.html
 
@@ -45,7 +45,7 @@ lscpu | grep "^CPU(s)"
 🔥🕷️ En mi caso es la segunda vez que realizo la instalación porque no localizaba el fallo, pero como mi máquina es de bajos recursos tengo que realizar la instalación con una máquina virtual de VMWare
 
 #=========================================================================================================================
-[⛩️MI INSTALACIÓN ORDENADA]::
+[🐍MI INSTALACIÓN ORDENADA]::
 	
 ##.🧑‍🎓 Documentación oficial:
 https://greenbone.github.io/docs/latest/22.4/source-build/index.html
@@ -737,7 +737,7 @@ admin:admin
 
 
 #=========================================================================================================================
-[⛩️ENTORNO WEB]::
+[🐍ENTORNO WEB]::
 
 Administration > Feed Status 
 
@@ -800,7 +800,7 @@ sudo systemctl status gsad
 sudo systemctl status openvasd
 
 #=========================================================================================================================
-[⛩️ENTORNO WEB CON NVT CERT GVMD_DATA SCAP CARGADOS]::
+[🐍ENTORNO WEB CON NVT CERT GVMD_DATA SCAP CARGADOS]::
 ## 🚨 el error típico ante falta de recursos es que cuando creas un Task se queda en : ❌ Interrupted at 0 %
 ## 👍 si todo funciona bien, voy a  analizar la red de manera automática
 
