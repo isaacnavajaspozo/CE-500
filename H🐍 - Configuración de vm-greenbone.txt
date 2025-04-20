@@ -669,7 +669,8 @@ EOF
 sudo cp -v $BUILD_DIR/gsad.service /etc/systemd/system/
 
 # pruebo que está escuchando el puerto
-sudo netstat -tulnp | grep 9392
+# sudo netstat -tulnp | grep 9392
+sudo ss -tulnp | grep 9392
 # tcp        0      0 0.0.0.0:9392           0.0.0.0:*               LISTEN      <pid>/gsad
 # *********************************************************************
 
