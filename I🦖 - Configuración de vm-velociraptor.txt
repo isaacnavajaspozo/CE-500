@@ -1,14 +1,14 @@
 # 🧠 Velociraptor es una herramienta de DFIR de respuesta a incidentes que ayuda a investigar incidencias en tiempo real.
 # 🐧 Lo voy a dejar configurado y lo voy a utilizar exclusivamente cuando pase algo sospechoso o grave.
 #===========================================================================================================================
-[⛩️INSTALACIÓN ETHERNET]:
+[🦖INSTALACIÓN ETHERNET]:
 # Versiones                            : https://github.com/Velocidex/velociraptor/releases
 # Documentación oficial                : https://github.com/Velocidex/velociraptor?tab=readme-ov-file
 # Documentación oficial                : https://github.com/Velocidex/velociraptor
 # Documentación oficial                : https://docs.velociraptor.app/
 
 #=========================================================================================================================
-[⛩️INSTALACIONES]::
+[🦖INSTALACIONES]::
 # instalaciones 
 apt update
 apt upgrade -y
@@ -28,7 +28,7 @@ chmod +x script-00.sh
 source ~/.bashrc
 
 #===========================================================================================================================
-[⛩️INSTALACIÓN SERVIDOR-VELOCIRAPTOR EN LINUX]:
+[🦖INSTALACIÓN SERVIDOR-VELOCIRAPTOR EN LINUX]:
 # Herramientas básicas
 apt update && sudo apt install -y wget unzip openssl
 
@@ -97,7 +97,7 @@ sudo ss -tuln | grep 8889
 https://<IP_SERVIDOR_LINUX>:8889
 
 #===========================================================================================================================
-[⛩️CONFIGURACIÓN DEL AGENTE]:
+[🦖CONFIGURACIÓN DEL AGENTE]:
 # 🔁 este proceso tengo que repetirlo por cada cliente (agente)
 
 # velociraptor necesita crear un agente para conectar con el dispositivo cliente
@@ -151,8 +151,8 @@ systemctl status velociraptor-client
 
 
 #===========================================================================================================================
-[⛩️CONFIGURACIÓN INTERFACE WEB]:
-# 🦖 me dirijo a la interface y activo los clientes
+[🦖CONFIGURACIÓN INTERFACE WEB]:
+# me dirijo a la interface y activo los clientes (agentes/SNMP)
 https://<IP_DEL_SERVIDOR_VELOCIRAPTOR>:8889/
 
 # 🔍 pulso en search clients que en las nuevas versiones es pulsando en la lupa del buscador 
