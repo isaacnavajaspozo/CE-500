@@ -47,44 +47,44 @@ lscpu | grep "^CPU(s)"
 #=========================================================================================================================
 [⛩️MI INSTALACIÓN ORDENADA]::
 	
-	##.🧑‍🎓 Documentación oficial:
-	https://greenbone.github.io/docs/latest/22.4/source-build/index.html
+##.🧑‍🎓 Documentación oficial:
+https://greenbone.github.io/docs/latest/22.4/source-build/index.html
 
-	##.🧑‍🎓 Explicación de componentes OpenVass:
-		gvm-libs:		Biblioteca C utilizadas en openvas-scanner , gvmd , gsad y pg-gvm.
-		gvmd:			Servicio principal, utiliza PostgreSQL y realiza autenticación, gestión de escaneos, la información sobre vulnerabilidades y mucho más
-		pg-gvm:			Extensión de PostgreSQL que agrega varias funciones utilizadas por gvmd, (iCalendar y evaluación de rango de host)
-		GSA:			La aplicación web en JavaScript, React y NodeJS
-		gsad:			En C. Se comunica con gvmd mediante GMP. Servidor web con contenido estático y proporciona una API para la web
-		openvas-smb:		Módulo auxiliar para openvas-scanner, para interactuar con sistemas Microsoft Windows a través de la API
-		openvas-scanner:	Motor de escaneo con todas las funciones que ejecuta un flujo de pruebas de vulnerabilidad (VT) continuamente actualizado y ampliado
-		ospd-openvas:		Motor de escaneo con todas las funciones que ejecuta un flujo de pruebas de vulnerabilidad (VT) continuamente actualizado y ampliado
-		openvasd:		Utiliza para detectar productos vulnerables, actualmente solo notus está integrado en gvmd
-		greenbone-feed-sync:	script basado en Python para descargar todos los datos de la fuente de la comunidad Greenbone a su máquina local
-		gvm-tools:		Colección de herramientas que ayudan a controlar instalaciones 
-		servidor Redis:		Utilizado por el escáner (openvas-scanner y ospd-openvas) para manejar la información de VT 
-		Estándares relacionados:
-				[NVT]:		Es el conjunto de pruebas de vulnerabilidades de la comunidad Greenbone
-				[CERT]:	 	Incluye avisos de seguridad de organizaciones como CERT-Bund o DFN-CERT
-				[GVMD_DATA]: 	Contiene configuraciones necesarias para que OpenVAS funcione correctamente, como Policies, Port Lists, Report Formats, Scan Configs.
-				[SCAP]:		Están dividido en:
-							+ [[CVEs]]: (Common Vulnerabilities and Exposures): Base de datos de vulnerabilidades conocidas.
-							+ [[CPEs]]: (Common Platform Enumeration): Identificadores únicos para sistemas operativos y software.
+##.🧑‍🎓 Explicación de componentes OpenVass:
+	gvm-libs:		Biblioteca C utilizadas en openvas-scanner , gvmd , gsad y pg-gvm.
+	gvmd:			Servicio principal, utiliza PostgreSQL y realiza autenticación, gestión de escaneos, la información sobre vulnerabilidades y mucho más
+	pg-gvm:			Extensión de PostgreSQL que agrega varias funciones utilizadas por gvmd, (iCalendar y evaluación de rango de host)
+	GSA:			La aplicación web en JavaScript, React y NodeJS
+	gsad:			En C. Se comunica con gvmd mediante GMP. Servidor web con contenido estático y proporciona una API para la web
+	openvas-smb:		Módulo auxiliar para openvas-scanner, para interactuar con sistemas Microsoft Windows a través de la API
+	openvas-scanner:	Motor de escaneo con todas las funciones que ejecuta un flujo de pruebas de vulnerabilidad (VT) continuamente actualizado y ampliado
+	ospd-openvas:		Motor de escaneo con todas las funciones que ejecuta un flujo de pruebas de vulnerabilidad (VT) continuamente actualizado y ampliado
+	openvasd:		Utiliza para detectar productos vulnerables, actualmente solo notus está integrado en gvmd
+	greenbone-feed-sync:	script basado en Python para descargar todos los datos de la fuente de la comunidad Greenbone a su máquina local
+	gvm-tools:		Colección de herramientas que ayudan a controlar instalaciones 
+	servidor Redis:		Utilizado por el escáner (openvas-scanner y ospd-openvas) para manejar la información de VT 
+	Estándares relacionados:
+		[NVT]:		Es el conjunto de pruebas de vulnerabilidades de la comunidad Greenbone
+		[CERT]:	 	Incluye avisos de seguridad de organizaciones como CERT-Bund o DFN-CERT
+		[GVMD_DATA]: 	Contiene configuraciones necesarias para que OpenVAS funcione correctamente, como Policies, Port Lists, Report Formats, Scan Configs.
+		[SCAP]:		Están dividido en:
+				+ [[CVEs]]: (Common Vulnerabilities and Exposures): Base de datos de vulnerabilidades conocidas.
+				+ [[CPEs]]: (Common Platform Enumeration): Identificadores únicos para sistemas operativos y software.
 
-	##.🧑‍🎓 Índice de la instalación:
-		01.📌 Actualizar el sistema
-		02.📌 Creando un usuario y un grupo 
-		03.📌 Instalaciones
-		04.📌 Exporto las varables para la instalación
-		05.📌 Directorios de origen
-		06.📌 Importación de la clave de firma de Greenbone
-		07.📌 Instalación de los componentes
-		08.📌 Ajustes de permisos
-		09.📌 Validaciones de feeds
-		10.📌 Configuración de sudo para escanear 
-		11.📌 Configuración de PostgreSQL
-		12.📌 Configurar un usuario administrador
-		13.📌 Realizar una sincronización de feeds 
+##.🧑‍🎓 Índice de la instalación:
+	01.📌 Actualizar el sistema
+	02.📌 Creando un usuario y un grupo 
+	03.📌 Instalaciones
+	04.📌 Exporto las varables para la instalación
+	05.📌 Directorios de origen
+	06.📌 Importación de la clave de firma de Greenbone
+	07.📌 Instalación de los componentes
+	08.📌 Ajustes de permisos
+	09.📌 Validaciones de feeds
+	10.📌 Configuración de sudo para escanear 
+	11.📌 Configuración de PostgreSQL
+	12.📌 Configurar un usuario administrador
+	13.📌 Realizar una sincronización de feeds 
 		
 # =====================================================================
 # =====================================================================
@@ -98,11 +98,11 @@ lscpu | grep "^CPU(s)"
 # 02.📌 Creando un usuario y un grupo 
 # *********************************************************************
 	# Greenbone debe ejecutarse como un usuario y un grupo dedicado (no le doy acceso a terminal)
-	useradd -r -M -U -G sudo -s /usr/sbin/nologin gvm
+	sudo useradd -r -M -U -G sudo -s /usr/sbin/nologin gvm
 	
 	# permitir que el usuario actual ejecute gvmd
-	usermod -aG gvm "nombre de usuario Linux"
-	su "nombre de usuario Linux"
+	sudo usermod -aG gvm root
+	su root
 # *********************************************************************
 
 # 03.📌 Instalaciones
@@ -188,7 +188,7 @@ lscpu | grep "^CPU(s)"
 # *********************************************************************
 	# Descarga las fuentes
 	curl -f -L https://github.com/greenbone/gvm-libs/archive/refs/tags/v$GVM_LIBS_VERSION.tar.gz -o $SOURCE_DIR/gvm-libs-$GVM_LIBS_VERSION.tar.gz
-	curl -f -L https://github.com/greenbone/gvm-libs/releases/download/v$GVM_LIBS_VERSION/gvm-libs-v$GVM_LIBS_VERSION.tar.gz.asc -o $SOURCE_DIR/gvm-libs-$GVM_LIBS_VERSION.tar.gz.asc
+curl -f -L https://github.com/greenbone/gvm-libs/releases/download/v$GVM_LIBS_VERSION/gvm-libs-$GVM_LIBS_VERSION.tar.gz.asc -o $SOURCE_DIR/gvm-libs-$GVM_LIBS_VERSION.tar.gz.asc
 
 	gpg --verify $SOURCE_DIR/gvm-libs-$GVM_LIBS_VERSION.tar.gz.asc $SOURCE_DIR/gvm-libs-$GVM_LIBS_VERSION.tar.gz
 
@@ -763,8 +763,9 @@ Administration > Feed Status
 ===================================================================================================================================================
 
 ⚠️[FALLO DE FEED]⚠️:
+## 🔴 Esperar 48 horas antes de estar seguro si fallan los feeds
 ## 🔴 NUNCA hay que volver a generar los feed de los greenbone si es por otro error o funciona bien
-## 🔴 En el caso de que deje de funcionar los feeds tengo qeu hacer lo siguiente: 
+## 🔴 En el caso de que deje de funcionar los feeds tengo que hacer lo siguiente: 
 
 sudo systemctl stop ospd-openvas
 sudo systemctl stop gvmd
@@ -797,11 +798,10 @@ sudo systemctl status gvmd
 sudo systemctl status gsad
 sudo systemctl status openvasd
 
-## 🚨 el error típico ante falta de recursos es que cuando creas un Task se queda en : ❌ Interrupted at 0 %
-
 #=========================================================================================================================
 [⛩️ENTORNO WEB CON NVT CERT GVMD_DATA SCAP CARGADOS]::
-# analizar red de manera automática
+## 🚨 el error típico ante falta de recursos es que cuando creas un Task se queda en : ❌ Interrupted at 0 %
+## 👍 si todo funciona bien, voy a  analizar la red de manera automática
 
 Configuration > Target > New Target > 192.168.1.1/24 
 
