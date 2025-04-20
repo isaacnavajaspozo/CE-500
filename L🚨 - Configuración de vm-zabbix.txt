@@ -1,13 +1,13 @@
 # 🧠 Zabbix es una herramienta de monitoreo integral y escalable para infraestructuras de TI, que ofrece visualización, alertas y gestión centralizada de servidores, redes y aplicaciones.
 # 🐧 Voy a utilizar zabbix para monitorizar equipos y servidores a través de agentes o SNMP, generar alertas y generar gráficos de disponivilidad o recursos.
 #=========================================================================================================================
-[⛩️KIRIBAKO]::
+[🚨KIRIBAKO]::
 Documentación ofical zabbix                 : https://www.zabbix.com/download?os_distribution=debian
                                             : https://www.zabbix.com/download
                                             : https://www.zabbix.com/download?zabbix=7.2&os_distribution=debian&os_version=12&components=server_frontend_agent&db=mysql&ws=apache
 
 #=========================================================================================================================
-[⛩️INSTALACIONES]::
+[🚨INSTALACIONES]::
 # instalaciones 
 apt update
 apt upgrade -y
@@ -27,7 +27,7 @@ chmod +x script-00.sh
 source ~/.bashrc
 
 #=========================================================================================================================
-[⛩️INSTALACIÓN ZABBIX]::
+[🚨INSTALACIÓN ZABBIX]::
 # instalaciones necesarias
 apt install -y dpkg wget vim mariadb-server mariadb-client mysql-server
 
@@ -77,7 +77,7 @@ systemctl restart zabbix-server zabbix-agent apache2
 systemctl enable zabbix-server zabbix-agent apache2
 
 #=========================================================================================================================
-[⛩️INTERFACE WEB - MONITORIZO DISPOSITIVO CON AGENTE]::
+[🚨INTERFACE WEB - MONITORIZO DISPOSITIVO CON AGENTE]::
 # busco la web desde http
 http://<IP_HOST_VM-ZABBIX>/zabbix
 
@@ -194,7 +194,7 @@ http://<IP_SERVIDOR_ZABBIX>/zabbix
 # 🔁 asi repito con cada uno de los disposisitivos
 
 #=========================================================================================================================
-[⛩️INTERFACE WEB - SNMP]::
+[🚨INTERFACE WEB - SNMP]::
 # 🐧 para un dispositivo linux por SNMP:
 apt install snmp snmpd -y
 
@@ -242,7 +242,7 @@ http://<IP_SERVIDOR_ZABBIX>/zabbix
 # 🔁 asi repito con cada uno de los servidores linux
 
 #=========================================================================================================================
-[⛩️INTERFACE WEB - DESCUBRIR EL HOST]::
+[🚨INTERFACE WEB - DESCUBRIR EL HOST]::
 # descubro toda mi red a traves de pings
 Recopilación de datos > Descubrimiento
     > Name:
@@ -257,7 +257,7 @@ Recopilación de datos > Descubrimiento
     > Activado: [x]
 
 #=========================================================================================================================
-[⛩️INTERFACE WEB - ALERTAS]::
+[🚨INTERFACE WEB - ALERTAS]::
 # lo primero que voy hacer va a ser crear una contraseña alternativa desde gmail 
 https://myaccount.google.com/
 seguridad
