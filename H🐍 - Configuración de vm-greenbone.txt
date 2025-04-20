@@ -34,7 +34,7 @@ https://greenbone.github.io/docs/latest/22.4/source-build/index.html
 ## ⚠️ antes de nada acosejo investigar si dispongo de los recursos necesarios porque aunque se inicie la interface no va poder analizar nada
 ## 🚨 el error típico ante falta de recursos es que cuando creas un Task se queda en : ❌ Interrupted at 0 %
 ## ⚠️ si no dispones de estos recursos minimos ni te molestes en intentarlo (lo digo por experiencia...) 
-## ⚠️ estos son los recursos minimos ::
+## ⚠️ estos son los recursos minimos que tiene que dar después de la instalación::
 df -h
 lscpu | grep "^CPU(s)"
 
