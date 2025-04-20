@@ -1,10 +1,10 @@
 #=========================================================================================================================
-[⛩️KIRIBAKO]::
+[👺KIRIBAKO]::
 # Guia de oficial instalación LXC      : https://linuxcontainers.org/#navigation
 # Guia no oficial                      : https://www.josedomingo.org/pledin/2021/12/introduccion-lxc/
 
 #=========================================================================================================================
-[⛩️RESUMEN PROYECTO · MÁQUINAS LABORATORÍO]:
+[👺RESUMEN PROYECTO · MÁQUINAS LABORATORÍO]:
 # 🧑‍🎓 Dentro de un servidor Debian, voy a crear unas máquinas virtuales con LXC (Linux Containers). Ya que lo que quiero es crear máquinas independientes con distintos servicios.
 # 🧑‍🎓 Voy a crear un script para hacer más sencillo la utilización e instalación de LXC
 #      Configuración de los contenedores LXC      :: cat /etc/lxc/default.conf
@@ -14,7 +14,7 @@
 
 
 #=========================================================================================================================
-[⛩️MANUAL DE FUNCIONAMIENTO LXC]:
+[👺MANUAL DE FUNCIONAMIENTO LXC]:
 # 🧑‍🎓 Este paso lo dejo para conocer los comandos que voy hacer por debajo pero lo quiero qutomatizar con el script del siguiente apartado
 # 📦 Instalación en Debian
 sudo apt update
@@ -38,12 +38,12 @@ sudo lxc-attach -n vm-samba
 
 
 #=========================================================================================================================
-[⛩️INSTALACIÓN]:
+[👺INSTALACIÓN]:
 sudo apt update
 sudo apt install lxc
 
 #=========================================================================================================================
-[⛩️INSTALACIÓN DE SCRIPT]:
+[👺INSTALACIÓN DE SCRIPT]:
 # creo carpeta en servidor principal
 cd / && mkdir KIRIBAKO
 cd /KIRIBAKO
