@@ -610,6 +610,7 @@ WantedBy=multi-user.target
 EOF
 
 sudo cp -v $BUILD_DIR/ospd-openvas.service /etc/systemd/system/
+
 # *********************************************************************
 
 # 🔥 Archivo de servicio systemd para gvmd
@@ -638,6 +639,7 @@ WantedBy=multi-user.target
 EOF
 
 sudo cp -v $BUILD_DIR/gvmd.service /etc/systemd/system/
+
 # *********************************************************************
 
 # 🔥 Archivo de servicio systemd para gsad
@@ -668,10 +670,6 @@ EOF
 
 sudo cp -v $BUILD_DIR/gsad.service /etc/systemd/system/
 
-# pruebo que está escuchando el puerto
-# sudo netstat -tulnp | grep 9392
-sudo ss -tulnp | grep 9392
-# tcp        0      0 0.0.0.0:9392           0.0.0.0:*               LISTEN      <pid>/gsad
 # *********************************************************************
 
 # 🔥 Archivo de servicio systemd para openvasd
@@ -697,6 +695,7 @@ WantedBy=multi-user.target
 EOF
 
 sudo cp -v $BUILD_DIR/openvasd.service /etc/systemd/system/
+
 # *********************************************************************
 
 # 13.📌 Realizar una sincronización de feeds 
@@ -729,12 +728,16 @@ vim /var/log/gvm/gvmd.log
 # *********************************************************************
 
 # Cómo abrir Greenbone Security Assistant en el navegado
-xdg-open "http://<IP_DEL_SERVIDOR>:9392" 2>/dev/null >/dev/null &
+# xdg-open "http://<IP_DEL_SERVIDOR>:9392" 2>/dev/null >/dev/null &
 
 # Para abrir la aplicación web, es a través de la IP y el puerto
 http://<IP_DEL_SERVIDOR>:9392/
 admin:admin
 
+# pruebo que está escuchando el puerto
+# sudo netstat -tulnp | grep 9392
+sudo ss -tulnp | grep 9392
+# tcp        0      0 0.0.0.0:9392           0.0.0.0:*               LISTEN      <pid>/gsad
 
 #=========================================================================================================================
 [🐍ENTORNO WEB]::
@@ -761,10 +764,34 @@ Administration > Feed Status
 # La web es reactiva y el mensaje de error tiene un timeout por lo que no vuelve a aparecer pero eso no significa que haya terminado de volcar los datos...
 # para comprobar que vuelve a aparecer hay que recargar la web : CNTRL + F5	
 
-===================================================================================================================================================
+
+#=========================================================================================================================
+[🐍ENTORNO WEB CON NVT CERT GVMD_DATA SCAP CARGADOS]::
+## 🚨 el error típico ante falta de recursos es que cuando creas un Task se queda en : ❌ Interrupted at 0 %
+## 👍 si todo funciona bien, voy a  analizar la red de manera automática
+
+Configuration > Target > New Target > 192.168.1.1/24 
+
+SCANS > Task > New Task
+	Name: Host-local
+	Scan Target: (El que hemos creado anteriormente...) ⬆️
+	Min QoD: 70
+	Maximum concurrently executed NVTs per host: 4
+	Maximum concurrently scanned hosts: 254
+# una vez creado pulso "start" para inicializar el escaneo
+
+# esto puede tardar una estimación de 10 horas 
+
+# si has llegado hasta aquí sin fallos, 🎉🎉 ¡Enhorabuena!, ya tiene un Greenbone instalado en Debian
+
+
+
+#=========================================================================================================================
+#=========================================================================================================================
+[🐍FALLO FEEDS]::
+## ⚠️ Es aconsejable esperar 48 horas antes de estar seguro si fallan los feeds (que es el tiempo estimado en el que suelen tardar en descargarse completamente...)
 
 ⚠️[FALLO DE FEED]⚠️:
-## 🔴 Esperar 48 horas antes de estar seguro si fallan los feeds
 ## 🔴 NUNCA hay que volver a generar los feed de los greenbone si es por otro error o funciona bien
 ## 🔴 En el caso de que deje de funcionar los feeds tengo que hacer lo siguiente: 
 
@@ -798,20 +825,3 @@ sudo systemctl status ospd-openvas
 sudo systemctl status gvmd
 sudo systemctl status gsad
 sudo systemctl status openvasd
-
-#=========================================================================================================================
-[🐍ENTORNO WEB CON NVT CERT GVMD_DATA SCAP CARGADOS]::
-## 🚨 el error típico ante falta de recursos es que cuando creas un Task se queda en : ❌ Interrupted at 0 %
-## 👍 si todo funciona bien, voy a  analizar la red de manera automática
-
-Configuration > Target > New Target > 192.168.1.1/24 
-
-SCANS > Task > New Task
-	Name: Host-local
-	Scan Target: (El que hemos creado anteriormente...) ⬆️
-	Min QoD: 70
-	Maximum concurrently executed NVTs per host: 4
-	Maximum concurrently scanned hosts: 254
-# una vez creado pulso "start" para inicializar el escaneo
-
-# esto puede tardar una estimación de 10 horas 
