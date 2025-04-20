@@ -42,7 +42,7 @@ lscpu | grep "^CPU(s)"
 	> Random-Access Memory: 4GB
 	> Hard Disk: 20GB free
 
-## ⚠️ recursos recomendados antes de realizar la instalación::
+## ⚠️ recursos con los que he realizado la máquina virtual::
 
 	> CPU Cores: 2
 	> Random-Access Memory: 4GB
