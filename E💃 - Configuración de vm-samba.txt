@@ -2,13 +2,13 @@
 # 🐧 Utilizo esta máquina como servidor de archivos compartidos por usuarios, para compartir manuales IT. 
 # 🐧 Además también hace de honeypot para registrar los accesos de la carpeta principal
 #=========================================================================================================================
-[⛩️KIRIBAKO]::
+[💃KIRIBAKO]::
 Documentación ofical samba                 : https://wiki.samba.org/index.php/Setting_up_Samba_as_a_Standalone_Server
 Documentación oficial de usuarios samba    : https://wiki.samba.org/index.php/User_and_Group_management
 Documentación oficial de restic            : https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html#local
 
 #=========================================================================================================================
-[⛩️INSTALACIONES]::
+[💃INSTALACIONES]::
 
 # instalaciones 
 apt update
@@ -29,7 +29,7 @@ chmod +x script-00.sh
 source ~/.bashrc
 
 #=========================================================================================================================
-[⛩️MODIFICAR RUTA DE SAMBA]::
+[💃MODIFICAR RUTA DE SAMBA]::
 # Instalación samba
 sudo apt install -y samba 
 
@@ -127,7 +127,7 @@ systemctl status smbd
 \\<NOMBRE_DEL_HOST>
 
 #=========================================================================================================================
-[⛩️INSTALO RESTIC]::
+[💃INSTALO RESTIC]::
 # restic lo voy a utilizar en caso de querer rescatar archivos en vivo
 apt install restic -y
 
@@ -164,7 +164,7 @@ restic restore <snapshot_id> --target /ruta/a/la/carpeta/de/recuperacion
 restic forget <snapshot_id>
 
 #=========================================================================================================================
-[⛩️INSTALO ANACRON]::
+[💃INSTALO ANACRON]::
 # es ideal para sistemas que no están siempre encendidos (como un portátil). Ejecuta tareas periódicas aunque el equipo esté apagado en el momento programado
 
 # instalo
@@ -201,7 +201,7 @@ vim /etc/anacrontab
 # Logs: /var/log/syslog o journalctl -u anacron
 
 #=========================================================================================================================
-[⛩️CONFIGURACIÓN HONEYPOT]::
+[💃CONFIGURACIÓN HONEYPOT]::
 # aunque este samba lo voy a utilizar para compartir manuales de IT, lo voy a utilizar tambien como honeypot
 
 vim /etc/samba/smb.conf
