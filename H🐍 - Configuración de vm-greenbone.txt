@@ -46,9 +46,8 @@ lscpu | grep "^CPU(s)"
 
 #=========================================================================================================================
 [🐍MI INSTALACIÓN ORDENADA]::
-	
-##.🧑‍🎓 Documentación oficial:
-https://greenbone.github.io/docs/latest/22.4/source-build/index.html
+# Esta es mi instalación ordenada y solucionando errores de la documentación oficial con Debian
+# en el caso de cambiar las versiones, solo hay que modificar todas las variables del punto 04.
 
 ##.🧑‍🎓 Explicación de componentes OpenVass:
 	gvm-libs:		Biblioteca C utilizadas en openvas-scanner , gvmd , gsad y pg-gvm.
