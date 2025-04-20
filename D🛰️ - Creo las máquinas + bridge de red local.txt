@@ -1,10 +1,10 @@
 #=========================================================================================================================
-[⛩️KIRIBAKO]::
+[🛰️KIRIBAKO]::
 # 📄🚫 No puedo utilizar dockerfiles porque me han pedido desde el centro que realice las instalaciones como si fuesen servidores independientes
 # 📄🚫 Es decir que la idea de utilizar docker-compose me sirve solo para dividir en una misma máquina los distintos servidores
 
 #=========================================================================================================================
-[⛩️BRIDGE DE RED LOCAL]::
+[🛰️BRIDGE DE RED LOCAL]::
 #🧑‍🎓 Por defecto LXC utiliza un bridge de lxcbr0 (que es NAT por defecto), pero voy a utilizar un bridge real (modo puente): br0 que use la red 192.168.1.x. (la misma que mi red local).
 vim /etc/network/interfaces
 --------------------------------------------------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ systemctl restart networking
 sudo reboot now
 
 #=========================================================================================================================
-[⛩️NOMBRES DE LAS MÁQUINAS]::
+[🛰️NOMBRES DE LAS MÁQUINAS]::
 # Los nombres de las máquinas
 1 - vm-samba
 2 - vm-pentesting (la ejecuto sin script por que quiero que sea un kali)
@@ -77,14 +77,14 @@ sudo reboot now
 8 - vm-nagios
 
 #=========================================================================================================================
-[⛩️CREO LAS MÁQUINAS]::
+[🛰️CREO LAS MÁQUINAS]::
 # 🧑‍🎓 Llegados a este punto lo único que tengo que hacer es ejecutar el script : _kiribako || /KIRIBAKO/lxc-manager.sh
 #       1º Crear las máquinas con los mismos nombres anteriormente mencionados
 #       2º Inicializar las máquinas en segundo plano (para poder acceder a ellas)
 #       3º Acceder a ellas para configurarlas 
 
 #=========================================================================================================================
-[⛩️CREAR ALIAS EN SERVIDOR PRINCIPAL]::
+[🛰️CREAR ALIAS EN SERVIDOR PRINCIPAL]::
 # 🧑‍🎓 Compruebo que tengo el alias creado para ejecutar el script directamente
 # el script estaba en la ruta /KIRIBAKO/lxc-manager.sh
 ls /KIRIBAKO | grep lxc-manager.sh
