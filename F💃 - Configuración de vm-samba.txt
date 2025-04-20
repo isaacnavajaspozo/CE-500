@@ -180,7 +180,7 @@ vim /etc/cron.daily/restic-backup
 # | |      .------------- job identifier (used for logs & state tracking)
 # | |      |        .---- command to be executed
 # | |      |        |
-1 5 restic.daily nice /etc/cron.daily/restic-backup
+1 5 restic.daily nice /KIRIBAKO/backups
 -----------------------------------------------------------------------------
 sudo chmod +x /etc/cron.daily/restic-backup
 
