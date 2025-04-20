@@ -1,5 +1,5 @@
 #===========================================================================================================================
-[⛩️INSTALACIÓN ETHERNET]:
+[⚡INSTALACIÓN ETHERNET]:
 # Tengo un mini-pc N3350 MLLSE M2 que el Kernel no incluye el driver de Etehernet 
 # Documentación: https://github.com/dante1613/Motorcomm-YT6801/tree/main
 
