@@ -42,6 +42,12 @@ lscpu | grep "^CPU(s)"
 	> Random-Access Memory: 4GB
 	> Hard Disk: 20GB free
 
+## ⚠️ recursos recomendados antes de realizar la instalación::
+
+	> CPU Cores: 2
+	> Random-Access Memory: 4GB
+	> Hard Disk: 40GB free
+
 🔥🕷️ En mi caso es la segunda vez que realizo la instalación porque no localizaba el fallo, pero como mi máquina es de bajos recursos tengo que realizar la instalación con una máquina virtual de VMWare
 
 #=========================================================================================================================
