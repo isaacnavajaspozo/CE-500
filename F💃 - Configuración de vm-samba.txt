@@ -258,3 +258,9 @@ vim /etc/samba/smb.conf
 #    directory mask = 0775                                      :: Permisos para directorios creados
 # ***********************************************************************************************************
 
+# dar permisos y crear archivo de log
+mkdir /KIRIBAKO/log 
+touch /KIRIBAKO/log/log.txt
+sudo chown root:root /KIRIBAKO/log/log.txt
+sudo chmod 644 /KIRIBAKO/log/log.txt
+
