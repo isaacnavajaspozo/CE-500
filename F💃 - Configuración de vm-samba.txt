@@ -181,6 +181,7 @@ vim /etc/cron.daily/restic-backup
 # | |      |        .---- command to be executed
 # | |      |        |
 1 5 restic.daily nice /KIRIBAKO/backups
+# cada día trás cinco minutos de arrancar la máquina con bajo rendimiento de CPU 
 -----------------------------------------------------------------------------
 sudo chmod +x /etc/cron.daily/restic-backup
 
