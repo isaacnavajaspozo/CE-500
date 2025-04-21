@@ -150,30 +150,30 @@ mkdir php
 cd php && vim index.php
 --------------------------------------------------------------------------------------
 	<?php
-	// Configuración de la conexión
-	$host = '127.0.0.1'; // o localhost
+	// conexión
+	$host = '127.0.0.1';
 	$db   = 'mysql_db';
-	$user = 'admin'; // usuario con acceso a la base de datos
+	$user = 'admin';
 	$pass = 'Tutipoda&452';
 	$charset = 'utf8mb4';
 	
-	// Configuración de PDO y manejo de errores
+	// PDO y manejo de errores
 	$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
 	$options = [
-	    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, // Muestra excepciones en errores
-	    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,       // Obtención en forma de array asociativo
+	    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, 
+	    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,      
 	    PDO::ATTR_EMULATE_PREPARES   => false,
 	];
 	
 	try {
-	    // Creando la conexión a la base de datos
+	    // conexión a la base de datos
 	    $pdo = new PDO($dsn, $user, $pass, $options);
 	    echo "¡Conexión a la base de datos '$db' exitosa!<br><br>";
 	    
-	    // Realizamos una consulta simple para comprobar la tabla 'usuarios'
+	    // comprueba la tabla 'usuarios'
 	    $stmt = $pdo->query("SELECT * FROM usuarios");
 	    
-	    // Mostramos los resultados
+	    // respuesta
 	    $usuarios = $stmt->fetchAll();
 	    if($usuarios) {
 	        echo "<strong>Usuarios encontrados:</strong><br>";
@@ -185,7 +185,7 @@ cd php && vim index.php
 	    }
 	    
 	} catch (\PDOException $e) {
-	    // En caso de error, se muestra un mensaje y se detiene la ejecución
+	    // se muestra un mensaje en caso de error
 	    throw new \PDOException($e->getMessage(), (int)$e->getCode());
 	}
 	?>
@@ -365,7 +365,7 @@ $log = "[" . date("Y-m-d H:i:s") . "] IP: $ip | URI: $uri | Agente: $userAgent\n
 
 file_put_contents("/KIRIBAKO/log/honeypot_activity.log", $log, FILE_APPEND);
 
-// Mensaje falso
+// falso
 http_response_code(404);
 echo "404: Necesitas estar registrado";
 ?>
@@ -383,7 +383,7 @@ $log = "[" . date("Y-m-d H:i:s") . "] IP: $ip | URI: $uri | Agente: $userAgent\n
 
 file_put_contents("/KIRIBAKO/log/honeypot_activity.log", $log, FILE_APPEND);
 
-// Mensaje falso
+// falso
 http_response_code(404);
 echo "404";
 ?>
@@ -398,10 +398,10 @@ $ip = $_SERVER['REMOTE_ADDR'];
 $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'N/A';
 $log = "[" . date("Y-m-d H:i:s") . "] IP: $ip | Agente: $userAgent\n";
 
-// Guardamos en el archivo de log
+// archivo de log
 file_put_contents("/KIRIBAKO/log/honeypot_login.log", $log, FILE_APPEND);
 
-// Simulamos fallo de login
+// simulo fallo de login
 $mensaje = "Usuario o contraseña incorrecta.";
 ?>
 
