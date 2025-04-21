@@ -26,6 +26,12 @@ alias df='df --exclude-type=tmpfs'
 PS1='\[\e[0;90m\]r00t箱\e[38;5;213m[\H]\e[38;5;213m\e[1;32m \w\e[0;37m $: '
 
 ## cambiar colores para ls
+# color-verde:    directorios 
+# color-gris:     archivos normales
+# color-magenta:  enlaces simbolicos
+# color-amarillo: directorios bloqueados, enlaces especiales, dispositivos de bloque y los de caracter 
+# color-rojo:     archivos huérfanos, archivos bloqueados, archivos ejecutables (negrita) 
+# color azul:     FIFO
 export LS_COLORS="di=1;32:fi=0;37:ln=1;35:so=0;38;5;208:pi=0;34:bd=0;33:cd=0;33:or=0;31:mi=0;31:ex=1;31"
 EOF
 
