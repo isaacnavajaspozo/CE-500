@@ -203,7 +203,7 @@ vim /etc/anacrontab
 
 #=========================================================================================================================
 [💃CONFIGURACIÓN HONEYPOT]::
-# aunque este samba lo voy a utilizar para compartir manuales de IT, lo voy a utilizar tambien como honeypot
+# aunque este samba lo voy a utilizar para compartir manuales de IT, lo voy a configurar como un sistema de alertas 
 
 vim /etc/samba/smb.conf
 --------------------------------------------------------------------------------------
