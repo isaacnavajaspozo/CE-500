@@ -505,13 +505,13 @@ openssl x509 -in /var/www/express/letsencrypt/pruebas.local.crt -text -noout
 # 🐝 honeypot rutas 
 vim /var/www/express/app/index.ts
 -----------------------------------------------------------------------
-import express, { Request, Response, NextFunction } from 'express';
-import fs from 'fs';
+import express, { Request, Response, NextFunction } from 'express';ts    c /var/www/express/app/index.ts                                                                                                                                     import fs from 'fs';
 import path from 'path';
+import mongoose from 'mongoose';
 
 const app = express();
 const port = 3000;
-const mongoURI = 'mongodb://localhost:27017/tu_base_de_datos'; 
+const mongoURI = 'mongodb://localhost:27017/tu_base_de_datos';
 
 // ruta del log
 const logPath = '/KIRIBAKO/log/express_access.log';
@@ -567,7 +567,6 @@ app.post('/login', (req, res) => {
   res.send('Inicio de sesión exitoso!');
 });
 
-
 app.get('/.git', (req: Request, res: Response) => {
   res.send('User without permissions');
 });
@@ -578,7 +577,7 @@ app.get('/datos-sensibles', (req: Request, res: Response) => {
 
 // latencia simulada
 app.get('/config.bak', async (req, res) => {
-  await new Promise(resolve => setTimeout(resolve, 30000)); 
+  await new Promise(resolve => setTimeout(resolve, 30000));
   res.status(200).send('Configuration backup file');
 });
 
@@ -588,7 +587,7 @@ app.get('/api/v1/internal/debug', (req, res) => {
 });
 
 // imprimo por consola la conexión
-mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(mongoURI)
   .then(() => {
     console.log('👨‍💻 Connect to MongoDB');
   })
