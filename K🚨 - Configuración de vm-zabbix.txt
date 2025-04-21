@@ -209,7 +209,7 @@ rocommunity MaltLiquor_13 localhost
 rocommunity MaltLiquor_13 192.168.1.0/24
 
 syslocation "KIRIBAKO"
-syscontact  "La caja del mal: <******@gmail.com>"
+syscontact  "La caja: <******@gmail.com>"
 
 # Ramas personalizadas
 #extend test1 /bin/echo "Hello world"
