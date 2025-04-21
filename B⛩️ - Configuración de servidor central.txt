@@ -290,8 +290,6 @@ vim /etc/iptables/rules.v4
 # Frontend y agent
 -A INPUT -p tcp --dport 8000 -j ACCEPT
 -A INPUT -p tcp --dport 8001 -j ACCEPT
-# SNMP
--A INPUT -p udp --dport 161 -j ACCEPT
 
 # 🪶 apache
 # http
