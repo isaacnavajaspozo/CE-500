@@ -1,7 +1,8 @@
 #=========================================================================================================================
 [⛩️KIRIBAKO]::
-# Documentación oficial SSH    : https://www.openssh.com/
-# Documentación no-oficial     : https://synay.net/es/support/kb/disabling-automatic-workstation-sleep-debian-12
+# Documentación oficial SSH            : https://www.openssh.com/
+# Documentación no-oficial             : https://synay.net/es/support/kb/disabling-automatic-workstation-sleep-debian-12
+# Documentación oficial de iptables:   : https://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html
 
 #=========================================================================================================================
 [⛩️INSTALACIONES]::
