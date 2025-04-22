@@ -9,7 +9,7 @@
 # Documentación oficial de Lets Encrypt		: https://letsencrypt.org/
 # Documentación OpenSSL				: https://docs.openssl.org/3.0/man7/migration_guide/
 # Documentación de mongodb	   		: https://www.mongodb.com/docs/
-#						: https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-debian/?
+#						: https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-debian/
 #						: https://www.mongodb.com/docs/manual/reference/configuration-options/#systemlog
 #						: https://www.mongodb.com/docs/manual/
 
@@ -254,25 +254,19 @@ pm2 logs express
 #=========================================================================================================================
 [⛩️INSTALACIÓN DE MONGODB]:
 # importar la clave pública de MongoDB
-cd /KIRIBAKO
-apt install wget
-
-# iumportar la clave pública
 sudo apt-get install gnupg curl
-
-# clave GPG pública de MongoDB
-curl -fsSL https://www.mongodb.org/static/pgp/server-6.0.asc | \
-   sudo gpg -o /usr/share/keyrings/mongodb-server-6.0.gpg \
+curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | \
+   sudo gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg \
    --dearmor
 
-# crea el archivo de lista (añado el repositorio 6.0 compatible con sistemas más antiguos...)
-echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg arch=amd64 ] https://repo.mongodb.org/apt/debian bookworm/mongodb-org/6.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+# añadir el repositorio de MongoDB
+echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] http://repo.mongodb.org/apt/debian bookworm/mongodb-org/8.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
 
-# recargar la base de datos
-sudo apt-get update
+# actualizo
+sudo apt update
 
-# instalar MongoDB Community Server
-sudo apt-get install -y mongodb-org
+# instalar mongodb
+sudo apt install -y mongodb-org
 
 # iniciar servicio mongodb
 sudo systemctl start mongod
@@ -280,60 +274,77 @@ sudo systemctl enable mongod
 sudo systemctl status mongod
 
 # acceder al shell mongo
-# mongo
 mongosh
 
 # crear una base de datos
-use nombre_de_base_de_datos
+use usuarios
 
 # crear un usuario con permisos
-db.createUser({
-  user: "nombre_usuario",
-  pwd: "contraseña_segura",
-// roles según sea necesario...
-  roles: [
-    { role: "read", db: "nombre_de_base_de_datos" },            // Solo lectura
-    { role: "readWrite", db: "nombre_de_base_de_datos" },       // Lectura y escritura
-    { role: "dbAdmin", db: "nombre_de_base_de_datos" },         // Administración de la base de datos
-    { role: "dbOwner", db: "nombre_de_base_de_datos" },         // Propietario de la base de datos
-    { role: "clusterAdmin", db: "admin" },                      // Administración de clústeres (para MongoDB en clúster)
-    { role: "backup", db: "admin" },                            // Permisos de respaldo
-    { role: "restore", db: "admin" },                           // Permisos de restauración
-    { role: "userAdmin", db: "nombre_de_base_de_datos" },       // Administración de usuarios en la base de datos
-    { role: "userAdminAnyDatabase", db: "admin" },              // Administración de usuarios en cualquier base de datos
-    { role: "root", db: "admin" },                              // Acceso completo (superusuario)
-    { role: "readAnyDatabase", db: "admin" },                   // Lectura en cualquier base de datos
-    { role: "readWriteAnyDatabase", db: "admin" }               // Lectura y escritura en cualquier base de datos
-  ]
-})
+# db.createUser({
+#   user: "nombre_usuario",
+#   pwd: "contraseña_segura",
+# // roles según sea necesario...
+#   roles: [
+#     { role: "read", db: "nombre_de_base_de_datos" },           // Solo lectura
+#     { role: "readWrite", db: "nombre_de_base_de_datos" },      // Lectura y escritura
+#     { role: "dbAdmin", db: "nombre_de_base_de_datos" },        // Administración de la base de datos
+#     { role: "dbOwner", db: "nombre_de_base_de_datos" },        // Propietario de la base de datos
+#     { role: "clusterAdmin", db: "admin" },                      // Administración de clústeres (para MongoDB en clúster)
+#     { role: "backup", db: "admin" },                            // Permisos de respaldo
+#     { role: "restore", db: "admin" },                           // Permisos de restauración
+#     { role: "userAdmin", db: "nombre_de_base_de_datos" },       // Administración de usuarios en la base de datos
+#     { role: "userAdminAnyDatabase", db: "admin" },              // Administración de usuarios en cualquier base de datos
+#     { role: "root", db: "admin" },                              // Acceso completo (superusuario)
+#     { role: "readAnyDatabase", db: "admin" },                   // Lectura en cualquier base de datos
+#     { role: "readWriteAnyDatabase", db: "admin" }               // Lectura y escritura en cualquier base de datos
+#   ]
+# })
 
 # sugerencia:
 # Usa el rol readWrite para usuarios que solo necesiten leer y escribir en una base de datos.
 # Usa el rol dbAdmin para administradores de base de datos.
 
+db.createUser({
+  user: "user",
+  pwd: "Bijowodo*402",
+ roles: [
+    { role: "readWrite", db: "usuarios" }
+  ]
+})
+
+db.createUser({
+  user: "admin",
+  pwd: "Riujtrgdo*789",
+ roles: [
+    { role: "dbAdmin", db: "usuarios" }
+  ]
+})
+
 # comprobar los usuarios
 show users
+exit
 
 # autenticación y conexión con el usuario
 # Configurar el cortafuegos
 vim /etc/mongod.conf
 ----------------------------------------------------
 security:
-  authorization: "enabled" 		# autenticación con usuario existente
+  authorization: "enabled" 		        # autenticación con usuario existente
 ...
 net:
-  bindIp: 127.0.0.1, 192.168.1.100  	# Permitir solo IPs locales y 192.168.1.100
+  bindIp: 127.0.0.1,192.168.1.1/24  	# Permitir solo IPs locales y 192.168.1.100
 ...
 net:
   http:
-    enabled: false  			# Deshabilitar la interfaz HTTP
+    enabled: false  			            # Deshabilitar la interfaz HTTP
 ----------------------------------------------------
 
 # reinicio servicio
 systemctl restart mongod
 
 # conectarse con el usuario creado
-mongo -u nombre_usuario -p contraseña_segura --authenticationDatabase nombre_de_base_de_datos
+#mongo -u nombre_usuario -p contraseña_segura --authenticationDatabase nombre_de_base_de_datos
+mongosh -u user -p Bijowodo*402 --authenticationDatabase usuarios
 
 
 ## otras configuraciones de seguridad
@@ -365,9 +376,6 @@ const mongoURI = 'mongodb://localhost:27017/nombre_de_base_de_datos';
 # reinicio pm2
 cd /var/www/express
 pm2 start ecosystem.config.js
-
-# guardo la configuración
-pm2 save
 
 # Finalmente puedo acceder desde un Windows al CLI (Command Line Interface) descargando MongoDB Compass
 https://www.mongodb.com/try/download/compass
