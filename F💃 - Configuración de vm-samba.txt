@@ -174,11 +174,11 @@ vim /etc/cron.daily/restic-backup
 -----------------------------------------------------------------------------
 # /etc/anacrontab
 # formato: periodo  delay identificador  comando
-# Example of job definition:
-# .---------------------- period in days (1 = daily, 7 = weekly, etc)
-# | .-------------------- delay in minutes after boot
-# | |      .------------- job identifier (used for logs & state tracking)
-# | |      |        .---- command to be executed
+# Ejemplo de definición de puesto de trabajo:
+# .---------------------- período en días (1 = diario, 7 = semanal, etc.)
+# | .-------------------- retraso en minutos después del arranque
+# | |      .------------- Identificador de trabajo (utilizado para registros y seguimiento de estado)
+# | |      |        .---- comando a ejecutar
 # | |      |        |
 1 5 restic.daily nice /KIRIBAKO/backups
 # cada día trás cinco minutos de arrancar la máquina con bajo rendimiento de CPU 
@@ -199,7 +199,8 @@ vim /etc/anacrontab
 -----------------------------------------------------------------------------
 
 # anacron se ejecuta normalmente vía systemd (anacron.timer) o desde /etc/init.d/anacron
-# Logs: /var/log/syslog o journalctl -u anacron
+# Logs: /var/log/syslog
+journalctl -u anacron
 
 #=========================================================================================================================
 [💃CONFIGURACIÓN HONEYPOT]::
