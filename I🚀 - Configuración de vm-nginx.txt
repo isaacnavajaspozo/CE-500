@@ -683,6 +683,21 @@ sudo systemctl restart mongod
 
 
 #=========================================================================================================================
+[⛩️MODIFICO MAC]::
+# modifico MAC para simular una MAC de interface iDRAC (DELL), como si fuese un servidor rack DELL
+
+ip link set dev eth0 down
+# para asignar una MAC creible : https://standards-oui.ieee.org
+ip link set dev eth0 address F8:BC:12:7E:4A:D9
+ip link set dev eth0 up
+
+# comprobar el cliente de la MAC
+https://macaddresslookup.io/es?search=00:14:22:1A:2B:3C
+
+# comprobar los cambios
+ip a
+
+#=========================================================================================================================
 [⛩️MATO PROCESOS SI HAY FALLO]:
 # compruebo los procesos en mi puerto
 lsof -i :3000
