@@ -28,8 +28,9 @@ sudo apt install wget
 
 # Descargo driver
 mkdir yt6801 && cd yt6801
-https://www.motor-comm.com/product/ethernet-control-chip/Public/Uploads/uploadfile/files/20240812/yt6801-linux-driver-1.0.29.zip
+wget https://www.motor-comm.com/product/ethernet-control-chip/Public/Uploads/uploadfile/files/20240812/yt6801-linux-driver-1.0.29.zip
 unzip yt6801-linux-driver-1.0.27.zip -d yt6801
+cd yt6801-linux-driver-1.0.29
 
 # Instalo el driver 
 # (Leer la instalación siguiente en consola porque es posible que sugiera instalar nuevos paquetes para utilizar las dependencias mencionadas...)
