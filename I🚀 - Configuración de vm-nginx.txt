@@ -510,6 +510,14 @@ sudo vim /etc/nginx/sites-available/express
 openssl x509 -in /var/www/express/letsencrypt/pruebas.local.crt -text -noout
 
 #=========================================================================================================================
+[🚀MATO PROCESOS SI HAY FALLO ]:
+# compruebo los procesos en mi puerto
+lsof -i :3000
+
+# mato el proceso
+sudo kill -9 <PID>
+
+#=========================================================================================================================
 [🚀CONFIGURACIÓN HONEYPOT]::
 # configuro nuevas rutas que sean trampas
 # 🐝 honeypot rutas 
@@ -725,17 +733,13 @@ RemainAfterExit=true
 WantedBy=multi-user.target
 -----------------------------------------------------------------------
 
-sudo systemctl daemon-reexec
-sudo systemctl daemon-reload
+# activo el sericio
 sudo systemctl enable fix-mac.service
 sudo systemctl start fix-mac.service
+sudo systemctl status fix-mac.service
 
+# reinicio
+sudo reboot
 
-#=========================================================================================================================
-[🚀MATO PROCESOS SI HAY FALLO]:
-# compruebo los procesos en mi puerto
-lsof -i :3000
-
-# mato el proceso
-sudo kill -9 <PID>
+## 🕷️ He probado la funcionalidad real del cambio de MAC y aunque dentro de la máquina muestre dos MAC (una que es la real, la deja en segundo plano de manera permanente), cuando sale a la red lo hace con la nueva MAC, es por que eso que aunque esnifen mi red van a ver mi MAC DELL falsa.
 
