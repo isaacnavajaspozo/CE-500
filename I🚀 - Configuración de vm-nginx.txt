@@ -1,7 +1,7 @@
 # 🧠 Nginx es un servidor web y proxy reverso eficiente y ligero, optimizado para manejar altas cargas y tráfico concurrente.
 # 🐧 Esta máquina la voy a utilizar como honeypot y me va a registrar decoys, simulación de rutas y gestión con mongodb (sin paquetes externos).
 #=========================================================================================================================
-[⛩️WHITE WHALE]::
+[🚀WHITE WHALE]::
 # Documentación configurar Node 		: https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-20-04-es?
 # Documentación configurar Nginx 		: https://carlosazaustre.es/como-configurar-nginx-con-node-js-en-produccion?
 # Documentación certificado 			: https://medium.com/@ali_97803/deploy-de-una-app-de-express-js-con-github-actions-usando-nginx-en-modo-https-855126f93164#82a4
@@ -14,7 +14,7 @@
 #						: https://www.mongodb.com/docs/manual/
 
 #=========================================================================================================================
-[⛩️INSTALACIONES]::
+[🚀INSTALACIONES]::
 # instalaciones 
 apt update
 apt upgrade -y
@@ -34,7 +34,7 @@ chmod +x script-00.sh
 source ~/.bashrc
 
 #=========================================================================================================================
-[⛩️SERVIDOR NGINX EXPRESS.JS]:
+[🚀SERVIDOR NGINX EXPRESS.JS]:
 🧑‍🎓 NODE  :: Entorno de ejecución para JavaScript en el servidor. Permite ejecutar código JavaScript fuera del navegador.
 🧑‍🎓 NGINX :: Servidor web y proxy inverso. Es ligero, rápido y ampliamente utilizado para actuar como proxy inverso para aplicaciones.
 🧑‍🎓 PM2   :: Gestor de procesos para aplicaciones Node.js. Mantiene las aplicaciones en ejecución, maneja ciclos de vida y garantiza su disponibilidad, incluso después de fallos o reinicios del servidor.
@@ -189,7 +189,7 @@ systemctl restart nginx
 systemctl status nginx
 
 #=========================================================================================================================
-[⛩️INSTALACIÓN DE PM2]:
+[🚀INSTALACIÓN DE PM2]:
 # PM2 no solo es útil para gestionar procesos en producción, sino que también es muy eficaz para gestionar el ciclo de vida de la aplicación, incluyendo el despliegue (deploy), la gestión de procesos, y la configuración de producción.
 
 ## process manager:
@@ -252,7 +252,7 @@ pm2 ps
 pm2 logs express
 
 #=========================================================================================================================
-[⛩️INSTALACIÓN DE MONGODB]:
+[🚀INSTALACIÓN DE MONGODB]:
 # importar la clave pública de MongoDB
 sudo apt-get install gnupg curl
 curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | \
@@ -381,7 +381,7 @@ pm2 start ecosystem.config.js
 https://www.mongodb.com/try/download/compass
 
 #=========================================================================================================================
-[⛩️COMPROBAR LA CONEXIÓN CON MONGOO]:
+[🚀COMPROBAR LA CONEXIÓN CON MONGOO]:
 # vuelvo a editar el archivo de configuración de express con una conexión simple de mongo
 cd /var/www/express/app
 vim index.ts
@@ -411,7 +411,7 @@ app.listen(port, () => {
 -----------------------------------------------------------------------
 
 #=========================================================================================================================
-[⛩️INSTALAR CERTIFICADO]:
+[🚀INSTALAR CERTIFICADO]:
 # certificado con dominio local
 ⚠️ Para un dominio local como el mio necesito un certificado autofirmado
 
@@ -508,7 +508,7 @@ sudo vim /etc/nginx/sites-available/express
 openssl x509 -in /var/www/express/letsencrypt/pruebas.local.crt -text -noout
 
 #=========================================================================================================================
-[⛩️CONFIGURACIÓN HONEYPOT]::
+[🚀CONFIGURACIÓN HONEYPOT]::
 # configuro nuevas rutas que sean trampas
 # 🐝 honeypot rutas 
 vim /var/www/express/app/index.ts
@@ -683,7 +683,7 @@ sudo systemctl restart mongod
 
 
 #=========================================================================================================================
-[⛩️MODIFICO MAC]::
+[🚀MODIFICO MAC]::
 # modifico MAC para simular una MAC de interface iDRAC (DELL), como si fuese un servidor rack DELL
 
 ip link set dev eth0 down
@@ -697,8 +697,40 @@ https://macaddresslookup.io/es?search=00:14:22:1A:2B:3C
 # comprobar los cambios
 ip a
 
+# modifico el archivo de red
+vim /etc/network/interfaces
+-----------------------------------------------------------------------
+...
+iface eth0 inet dhcp
+hwaddress ether F8:BC:12:7E:4A:D9
+...
+-----------------------------------------------------------------------
+
+# creo un servicio para que no deje de ser permanente la MAC temporal (aunque reinicie)
+vim /etc/systemd/system/fix-mac.service
+-----------------------------------------------------------------------
+[Unit]
+Description=Set static MAC address for eth0
+After=network-pre.target
+Before=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/ip link set dev eth0 address f8:bc:12:7e:4a:d9
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
+-----------------------------------------------------------------------
+
+sudo systemctl daemon-reexec
+sudo systemctl daemon-reload
+sudo systemctl enable fix-mac.service
+sudo systemctl start fix-mac.service
+
+
 #=========================================================================================================================
-[⛩️MATO PROCESOS SI HAY FALLO]:
+[🚀MATO PROCESOS SI HAY FALLO]:
 # compruebo los procesos en mi puerto
 lsof -i :3000
 
