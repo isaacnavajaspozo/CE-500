@@ -57,7 +57,7 @@ velociraptor config generate -i
   # ⚠️ cuando me pregunte por el usuario y contraseña puedo crear tantos usuarios como quiera
   # cuando quiera dejar de agregar usuario dejo una sola vez los campos vacios, pulsando dos intros para pasar al siguiente apartado
     > usuario: root
-    > contraseña: ****
+    > contraseña: root
 # genera un archivo parecido a velociraptor_server_0.74.1_amd64.deb, que es el instalador del servidor para montar otro servidor
 velociraptor --config server.config.yaml debian server
 # Genera la configuración del cliente a partir de la configuración del servidor y la guarda en client.config.yaml
