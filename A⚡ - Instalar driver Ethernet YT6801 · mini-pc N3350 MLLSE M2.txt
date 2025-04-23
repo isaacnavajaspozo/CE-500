@@ -1,7 +1,7 @@
 #===========================================================================================================================
 [⚡INSTALACIÓN ETHERNET]:
 # Tengo un mini-pc N3350 MLLSE M2 que el Kernel no incluye el driver de Etehernet 
-# Documentación: https://github.com/dante1613/Motorcomm-YT6801/tree/main
+# Documentación:                https://www.motor-comm.com/product/ethernet-control-chip
 
 # compruebo el modelo de la tarjeta red
 lspci -nnk | grep -i net -A3
@@ -27,16 +27,18 @@ apt --fix-broken install
 sudo apt install wget
 
 # Descargo driver
-wget https://github.com/dante1613/Motorcomm-YT6801/raw/main/tuxedo-yt6801/tuxedo-yt6801_1.0.28-1_all.deb
+mkdir yt6801 && cd yt6801
+https://www.motor-comm.com/product/ethernet-control-chip/Public/Uploads/uploadfile/files/20240812/yt6801-linux-driver-1.0.29.zip
+unzip yt6801-linux-driver-1.0.27.zip -d yt6801
 
 # Instalo el driver 
-sudo dpkg -i tuxedo-yt6801_1.0.28-1_all.deb
-
 # (Leer la instalación siguiente en consola porque es posible que sugiera instalar nuevos paquetes para utilizar las dependencias mencionadas...)
+./yt_nic_install.sh
+
 # Cargo el modulo 
 echo yt6801 | tee -a /etc/modules
 
-# Creo lista de dependencias
+# Creo lista de dependencias para el kernel
 sudo depmod
 
 # Comprobar el módulo de carga
