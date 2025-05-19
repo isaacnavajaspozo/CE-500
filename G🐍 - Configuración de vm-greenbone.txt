@@ -790,6 +790,24 @@ SCANS > Task > New Task
 # si has llegado hasta aquí sin fallos, 🎉🎉 ¡Enhorabuena!, ya tiene un Greenbone instalado en Debian
 
 
+#=========================================================================================================================
+[🐍PROGRAMAR ESCANER AUTOMATICO]::
+# Una vez que se a creado el target
+Menú > Configuration > Targets > New Target
+	> 192.168.1.0/24
+
+# configuración del Task
+Scan > Tasks > New Task
+# asocio el target creado
+selecciona el scan config (ej. Full and Fast)
+	> 👍 marco opción Schedule para activar programación
+
+# Programo el escaneo 
+Menú > Configuration > Schedules > New Schedule
+# define frecuencia (diaria, semanal, etc.)
+# hora de inicio
+# asocia ese Schedule a tu Task
+
 
 #=========================================================================================================================
 #=========================================================================================================================
