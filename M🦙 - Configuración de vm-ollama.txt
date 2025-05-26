@@ -1,0 +1,112 @@
+# 🧠 Ollama se utiliza para modelos LLM localmente (como chat conversacional con IA).
+# 🐧 Lo voy a utilizar para resolver dudas que me aparezcan y en especial comprender la arquitectura de diseño de los servicios utilizados en el momento de la instalación.
+#=========================================================================================================================
+[🦙 KIRIBAKO]::
+# Documentación oficial   : https://ollama.com/
+
+#=========================================================================================================================
+[🦙 INSTALACIONES]::
+# instalaciones 
+apt update
+apt upgrade -y
+
+# creo una carpeta en el contenedor e instalo el script
+mkdir /KIRIBAKO && cd /KIRIBAKO
+apt install vim -y
+vim script-00.sh
+# i - (shift + botón derecho):
+--------------------------------------------------------------------------------------
+    # código de /SCRIPTS/script-00.sh de este github
+--------------------------------------------------------------------------------------
+
+# doy permisos y hago la instalación
+chmod +x script-00.sh
+./script-00.sh
+source ~/.bashrc
+
+#=========================================================================================================================
+[🦙 INSTALACIÓN OLLAMA]::
+# instalo según diga Ollama
+# https://ollama.com/download/linux
+curl -fsSL https://ollama.com/install.sh | sh
+
+# instalo según el modelo preferible, en mi caso he elegido Gemma por la variación de recursos/calidad y la versión más reducida (Gemma3 : 1b "815 MB")
+# la primera vez dejo que se instalen las dependencias y salgo con ctrl + D
+ollama run gemma3:1b 
+
+# creo los alias para agilizar el trabajo
+cd
+vim ~/.bashrc
+----------------------------------------------------
+alias _ollama="ollama run gemma3:1b"
+alias _borrarCacheOllama="rm -rf ~/.ollama/history"
+----------------------------------------------------
+SOURCE  ~/.bashrc
+
+# ya funciona pero isntalo un modelo para definir en cada hilo mis prioridades
+
+#=========================================================================================================================
+[🦙 Creo un modelo (para orientar las respuestas)]::
+cd ~/.ollama
+mkdir models && cd models
+vim Modelfile
+----------------------------------------------------
+FROM gemma3:1b
+
+SYSTEM "Responde exclusivamente en español. Tu estilo es técnico, conciso y directo. Solo responde preguntas relacionadas con programación, administración de sistemas, hardware electrónico y ciberseguridad. Tu objetivo es ayudar a comprender las arquitecturas y diseño de elementos .Rechaza educadamente cualquier pregunta fuera de ese ámbito."
+
+# Controla aleatoriedad (0.2 = respuestas más precisas y menos creativas)
+PARAMETER temperature 0.2
+# Número máximo de tokens generados en la respuesta
+PARAMETER num_predict 512
+# Limita la elección al top 40 tokens más probables (reduce ruido)
+PARAMETER top_k 40
+# Usa solo tokens con probabilidad acumulada del 90% (top-p sampling)
+PARAMETER top_p 0.9
+# Penaliza repetición de tokens ya usados (mejora coherencia)
+PARAMETER repeat_penalty 1.1
+----------------------------------------------------
+
+    # para ver los parámetros que puedo configurar
+        > ollama show gemma3:1b
+    # si quiero agregar nuevos parámetros y ya está creado el modelo tengo que volverlo a generar
+        > ollama rm gemma3-es
+        > ollama create gemma3-es -f Modelfile
+
+
+# creo modelo
+cd ~/.ollama/models
+ollama create gemma3-es -f Modelfile
+
+# utilizo el modelo
+ollama run gemma3-es
+
+# sustituyo el alias 
+cd
+vim ~/.bashrc
+----------------------------------------------------
+alias _ollama="ollama run gemma3-es"
+----------------------------------------------------
+
+#=========================================================================================================================
+[🦙 Limito la cpu (para no saturar los recursos del pc)]::
+## existen varias opciones de hacerlo:
+
+- # esta opción NO es persistente ante reinicios de servidor:
+    # + opcion 1:
+    sudo apt update
+    sudo apt install cgroup-tools
+    
+    # Crear un grupo
+    cgcreate -g cpu:/ollama_limit
+    
+    # Limitar a 40% CPU (valor entre 0 y 100000)
+    echo 40000 | tee /sys/fs/cgroup/cpu/ollama_limit/cpu.cfs_quota_us
+    
+    # Ejecutar ollama dentro del grupo
+    cgexec -g cpu:ollama_limit ollama run gemma3-es
+
+- # esta opción SI es persistente ante reinicios de servidor:
+    # + opcion 2:
+    apt install cpulimit
+    cpulimit -l 40 -- ollama run gemma3-es
