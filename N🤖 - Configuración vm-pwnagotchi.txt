@@ -1,0 +1,79 @@
+#=========================================================================================================================
+[🤖 INSTALACIÓN]::
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 2. pwngrid
+wget "https://github.com/evilsocket/pwngrid/releases/download/v1.10.3/pwngrid_linux_amd64_v1.10.3.zip"
+unzip pwngrid_linux_amd64_v1.10.3.zip
+# ... check the sha256 digest before doing this ...
+sudo mv pwngrid /usr/bin/
+# generate the keypair
+sudo pwngrid -generate -keys /etc/pwnagotchi
+
+
+vim /etc/systemd/system/pwngrid-peer.service
+-----------------------------------------------------------------------
+[Unit]
+Description=pwngrid peer service.
+Documentation=https://pwnagotchi.ai
+Wants=network.target
+
+[Service]
+Type=simple
+PermissionsStartOnly=true
+ExecStart=/usr/bin/pwngrid -keys /etc/pwnagotchi -address 127.0.0.1:8666 -client-token /root/.api-enrollment.json -wait -log /var/log/pwngrid-peer.log -iface mon0
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
+-----------------------------------------------------------------------
+
+
+wget "https://github.com/evilsocket/pwnagotchi/archive/v1.4.3.zip"
+unzip v1.4.3.zip
+cd pwnagotchi-1.4.3
+# this will install the requirements and pwnagotchi itself
+
+sudo apt install python3-pip -y
+
+sudo apt install python3-venv -y
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+pip install .
+
+
+# AUTO mode
+sudo pwnagotchi
+# AUTO mode with debug logs
+sudo pwnagotchi --debug
+# MANU mode
+sudo pwnagotchi --manual
+# MANU mode with debug logs
+sudo pwnagotchi --manual --debug
+# show the other options
+pwnagotchi -h
