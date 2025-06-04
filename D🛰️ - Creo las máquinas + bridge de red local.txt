@@ -75,6 +75,9 @@ sudo reboot now
 7 - vm-apache
 8 - vm-nagios
 9 - vm-ollama
+10 - vm-pwnagotchi
+11 - vm-army
+12 - vm-piHole
 
 #=========================================================================================================================
 [🛰️CREO LAS MÁQUINAS]::
