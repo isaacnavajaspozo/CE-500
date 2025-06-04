@@ -1,14 +1,14 @@
 # 🧠 Vaultwarden se utiliza para gestionar contraseñas y datos sensibles de forma segura.
 # 🐧 Lo voy a utilizar para gestión de contraseñas, como alternativa de control a bitwarden.
 #=========================================================================================================================
-[🔑KIRIBAKO]::
-# Documentación no-oficial   : https://serverspace.io/es/support/help/install-bitwarden-debian-11/
-# Documentación oficial      : https://bitwarden.com/help/install-on-premise-linux/
-# No hay una documentación oficial para utilizar vaultwarden sin docker 
-# Documentación no-oficial   : https://community.hetzner.com/tutorials/how-to-install-vaultwarden
+[🔑 KIRIBAKO]::
+# Documentación no-oficial               : https://serverspace.io/es/support/help/install-bitwarden-debian-11/
+# Documentación oficial                  : https://bitwarden.com/help/install-on-premise-linux/
+# Documentación no-oficial               : https://community.hetzner.com/tutorials/how-to-install-vaultwarden
+# Documentación oficial de vaultwarden   : https://github.com/dani-garcia/vaultwarden/wiki/Building-binary#install-the-web-vault
 
 #=========================================================================================================================
-[🔑INSTALACIONES]::
+[🔑 INSTALACIONES]::
 # instalaciones 
 apt update
 apt upgrade -y
@@ -28,19 +28,19 @@ chmod +x script-00.sh
 source ~/.bashrc
 
 #=========================================================================================================================
-[🔑INSTALACIÓN BITWARDEN]::
+[🔑 INSTALACIÓN VAULTWARDEN]::
 # actualizar el sistema
 sudo apt update && sudo apt upgrade -y
 
 # instalar dependencias
-sudo apt install -y sqlite3 curl unzip build-essential pkg-config libssl-dev
+sudo apt install -y git build-essential curl pkg-config libssl-dev libsqlite3-dev
 
 # crear un usuario dedicado para Vaultwarden
 sudo useradd -r -m -U -d /opt/vaultwarden vaultwarden
 
 # descargar Vaultwarden
 cd /opt/vaultwarden
-curl -fsSL https://github.com/dani-garcia/vaultwarden/archive/refs/tags/1.33.2.tar.gz -o vaultwarden.tar.gz
+git clone https://github.com/dani-garcia/vaultwarden.git /opt/vaultwarden
 tar -xzvf vaultwarden.tar.gz
 rm vaultwarden.tar.gz
 mv /opt/vaultwarden/vaultwarden-1.33.2/* /opt/vaultwarden/
@@ -56,11 +56,19 @@ vim /opt/vaultwarden/.env
     > DATABASE_URL=data/db.sqlite3
 
 # instalo 
-sudo apt install build-essential curl git libssl-dev pkg-config
+# sudo apt install build-essential curl git libssl-dev pkg-config
+sudo apt install -y sqlite3 curl unzip build-essential pkg-config libssl-dev
 
 # instalo Rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    > 1
 source $HOME/.cargo/env
+
+# agrego ram de 2G a través de una wsap
+sudo fallocate -l 2G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
 
 # creo el binario vaultwarden en el directorio target/release
 cd /opt/vaultwarden
@@ -68,20 +76,28 @@ cargo build --release
 cargo build --release --features sqlite
 ls target/release/
 
+# pruebo el binario
+./target/debug/vaultwarden
+
+# copio el archivo .env
+cp /opt/vaultwarden/.env.template /opt/vaultwarden/.env
+
 # crear un servicio systemd
 vim /etc/systemd/system/vaultwarden.service
 -----------------------------------------------------------------------
 [Unit]
-Description=Vaultwarden Server
+Description=Vaultwarden Server (Rust Bitwarden)
 After=network.target
 
 [Service]
-User=vaultwarden
-Group=vaultwarden
+User=root
+Group=root
 WorkingDirectory=/opt/vaultwarden
-ExecStart=/opt/vaultwarden/target/release/vaultwarden
-Restart=always
+ExecStart=/opt/vaultwarden/target/debug/vaultwarden
 EnvironmentFile=/opt/vaultwarden/.env
+Restart=always
+RestartSec=5s
+Environment="WEB_VAULT_ENABLED=false"
 
 [Install]
 WantedBy=multi-user.target
@@ -92,94 +108,29 @@ sudo systemctl enable vaultwarden
 sudo systemctl start vaultwarden
 sudo systemctl status vaultwarden
 
+
+#=========================================================================================================================
+[🔑 WEB-VAULT]::
+# activo el servicio
 sudo systemctl daemon-reload
 sudo systemctl start vaultwarden
 sudo systemctl enable vaultwarden
 sudo systemctl status vaultwarden
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# ejecuto reposiorio
-apt install -y
-git clone https://github.com/bitwarden/server.git
-cd server
-
-# instalo el script
-./bitwarden.sh install
-./bitwarden.sh start
-
-## cliente# Actualizar el sistema:
-sudo apt update && sudo apt upgrade -y
-
-# Instalar dependencias necesarias:
-sudo apt install -y curl apt-transport-https gnupg
-
-# Añadir la clave GPG de Bitwarden:
-curl -fsSL https://vault.bitwarden.com/download/?app=desktop&platform=linux | sudo apt-key add -
-
-# Añadir el repositorio de Bitwarden:
-echo "deb [arch=amd64] https://vault.bitwarden.com/debian stable main" | sudo tee /etc/apt/sources.list.d/bitwarden.list
-
-# Instalar Bitwarden:
-sudo apt update
-sudo apt install bitwarden
-
-# Iniciar Bitwarden:
-bitwarden
-
+# pruebo el binario, comprovar error de web-vault/
+/opt/vaultwarden/target/debug/vaultwarden
+
+cd /opt/vaultwarden
+curl -L -o bw_web_builds.zip "https://github.com/dani-garcia/bw_web_builds/archive/refs/heads/master.zip"
+unzip bw_web_builds.zip -d web-vault
+
+# descomprimo el .zip
+unzip bw_web_builds.zip -d web-vault
+    > A
+
+# borro carpeta
+mv web-vault/bw_web_builds-master/* web-vault/
+rm -rf web-vault/bw_web_builds-master
+
+# compruebo los cambios 
+ls -la /opt/vaultwarden/web-vault
