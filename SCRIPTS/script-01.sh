@@ -1,3 +1,4 @@
+## versión de script-00.sh : versión 2
 # Instalación de paquetes iniciales
 echo "Instalando paquetes..."
 apt-get update && apt-get upgrade -y
