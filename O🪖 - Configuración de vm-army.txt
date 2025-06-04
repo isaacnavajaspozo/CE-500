@@ -1,0 +1,186 @@
+# 🧠 Este servidor se utiliza como 
+# 🐧
+#=========================================================================================================================
+[🪖📩 KIRIBAKO]::
+# Documentación oficial kismet :             https://www.kismetwireless.net/docs/readme/installing/linux/
+# documentación oficial clamav :             https://docs.clamav.net/
+
+#=========================================================================================================================
+[🪖📩 INSTALAR ANTIVIRUS]::
+# paquetes de Linux de utilización rápida y práctica (escaneres):
+# 💯 otras instalaciones:
+apt install iftop nmap tshark 
+
+
+
+
+# instalación antivirus Linux:
+## 👹 clamav::
+apt install clamav
+apt install clamav-freshclam
+# busco actualizaciones en la base de datos
+sudo freshclam
+# escaneo manualmente el sistema
+# clamscan -[parámetros] [ruta de carpeta]
+# sudo clamscan -r /
+sudo clamscan -r /home
+
+# 👹 formas de uso con clamav:
+# guardo un registro de archivos infectados
+sudo clamscan -l /ruta/al/archivo.txt -r /ruta/al/directorio
+
+# mandar archivo a cuarentena (para no causar daño al servidor):
+# sudo clamscan --move=/path/to/quarantine -r /ruta/al/directorio
+sudo clamscan --move=/path/to/quarantine -r /ruta/al/directorio -l /ruta/al/archivo.txt
+
+# borrar archivos maliciosos:
+# sudo clamscan --remove -r /ruta/al/directorio
+sudo clamscan --remove -r /ruta/al/directorio -l /ruta/al/archivo.txt
+
+# actualizar base de datos 
+sudo freshclam
+
+# lo que puedo hacer es un cron y un alias para que automatice el análisis de virus. 
+# 🆗
+
+
+
+
+## 📶 Kismet::
+# kismet es una herramienta de detección de redes inalámbricas que se utiliza principalmente para la detección de redes Wi-Fi y la captura de paquetes, pero se pueden encontrar principalmente estos tipos de redes:
+  # Wi-Fi (802.11 a/b/g/n/ac/ax):              Redes Wi-Fi estándar, tanto en modo monitor como administración.
+  # Bluetooth:                                 Soporta captura de tráfico Bluetooth clásico y BLE (Bluetooth Low Energy).
+  # Zigbee:                                    Redes de IoT basadas en Zigbee.
+  # NRF24:                                     Redes basadas en chips Nordic NRF24 (como MouseJack).
+  # SDR (Software Defined Radio):              Usando dispositivos como RTL-SDR para capturar señales de radiofrecuencia, ADS-B, etc.
+  # Ubertooth:                                 Para capturar tráfico Bluetooth con hardware Ubertooth (si está instalado).
+  # KillerBee:                                 Redes Zigbee y otras redes de RF compatibles con KillerBee.
+  # Radiacode USB:                             Soporte para ciertas radios usadas en drones.
+  # ANTSDR DroneID:                            Captura señales de identificación de drones que usan protocolos específicos (como DJI).
+
+# paquetes necesarios para la instalación:
+sudo apt update
+sudo apt install git build-essential pkg-config cmake
+
+sudo apt install \
+libmicrohttpd-dev libnl-3-dev libnl-genl-3-dev libcap-dev libpcap-dev \
+libsqlite3-dev libpcre2-dev libprotobuf-c-dev protobuf-c-compiler protobuf-compiler \
+libssl-dev libwebsockets-dev libusb-1.0-0-dev librtlsdr-dev libmosquitto-dev libsensors4-dev lm-sensors
+
+# instalación del servicio desde el paquete original:
+# https://github.com/kismetwireless/kismet
+git clone https://www.kismetwireless.net/git/kismet.git
+cd kismet
+./configure
+# en el caso de que sea una máquina virtual
+# ./configure --disable-lmsensors
+make -j$(nproc) <------------------------------------------------------ me quedado aquí
+sudo make install
+
+# crear grupo kismet y añadir tu usuario
+sudo groupadd kismet
+sudo usermod -aG kismet $USER
+
+# cerrar sesión o reiniciar el shell
+newgrp kismet
+
+# dar permisos a interfaces para captura
+sudo setcap cap_net_raw,cap_net_admin=eip /usr/local/bin/kismet
+
+# (Opcional) Parar NetworkManager para evitar interferencias
+# sudo systemctl stop NetworkManager
+vim /etc/NetworkManager/NetworkManager.conf
+--------------------------------------------------------------------------
+  [keyfile]
+  unmanaged-devices=interface-name:wlan0;interface-name:wlan1
+--------------------------------------------------------------------------
+sudo systemctl restart NetworkManager
+
+# ejecuto Kismet
+kismet
+
+# abro el navegador
+http://localhost:2501
+
+
+
+
+## 📶 SDR++
+# recibir y visualizar señales de radio en tiempo real desde dispositivos SDR (RTL-SDR, HackRF, Airspy, etc.).
+# instalar dependencias básicas
+sudo apt update
+sudo apt install build-essential cmake git qtbase5-dev libfftw3-dev libusb-1.0-0-dev libzstd-dev libglfw3-dev libvolk2-dev libairspy-dev librtaudio-dev libhackrf-dev libiio-dev libad9361-dev 
+
+# clonar el repositorio oficial
+git clone https://github.com/AlexandreRouma/SDRPlusPlus.git
+cd SDRPlusPlus
+
+# crear carpeta de compilación y compilar
+mkdir build
+cd build
+cmake ..
+make -j$(nproc)
+
+# ejecutar el ejecutable de SDR++
+./sdrpp
+
+# 
+
+
+
+
+## 🛩️ Hackrf: 
+# es necesario un hardwware:
++-------------------+---------------+----------------------+----------------------------------------------+
+| Dispositivo       | Precio aprox  | Frecuencia           | Uso principal                                |
++-------------------+---------------+----------------------+----------------------------------------------+
+| RTL-SDR v3        | 30-40 €       | ~24 MHz – 1.7 GHz    | Detección RF, Kismet, ADS-B, análisis básico |
+| Nooelec NESDR     | 30-50 €       | Igual al RTL-SDR     | Alternativa con mejor blindaje               |
+| Airspy R2         | 150 €         | ~24 MHz – 1.8 GHz    | Mayor ancho de banda, más sensibilidad       |
++-------------------+---------------+----------------------+----------------------------------------------+
+
+# Instalar GNU Radio
+sudo apt update
+sudo apt install gnuradio gnuradio-dev gr-osmosdr
+
+# Instalar HackRF tools
+sudo apt install hackrf
+hackrf_info
+
+# Dar permisos de acceso
+sudo tee /etc/udev/rules.d/53-hackrf.rules <<EOF
+SUBSYSTEM=="usb", ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="6089", GROUP="plugdev", MODE="0666"
+EOF
+
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+
+# Probar captura rápida
+hackrf_transfer -r test.iq -f 433920000 -s 2000000 -n 2000000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-
+# escáner de vulnerabilidades web en CLI. Básico para identificar problemas comunes en servidores HTTP.
+## 📶 Nikpto::
+sudo apt install nikto
+# nikto -h http://objetivo.com           # no es stealth
+nikto -h http://objetivo.com \
+  -Tuning 2 \                                                        # escaneo limitado a vulnerabilidades de configuración/archivos.
+  -useragent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" \           # simula navegador real (evita bloqueos por bot).
+  -delay 5 \                                                         # 5 segundos entre peticiones.
+  -timeout 10 \                                                      # espera máxima por respuesta.
+  -evasion 1 \                                                       # codifica con %20 (espacios URL), prueba otros -evasion 1–9.
+  -no404 \                                                           # evita falsos positivos con detección de páginas 404 personalizadas.
+  -Format txt -output nikto_stealth.txt                              # salida en texto plano.
