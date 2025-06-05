@@ -1,7 +1,7 @@
 # 🧠 Ollama se utiliza para modelos LLM localmente (como chat conversacional con IA).
 # 🐧 Lo voy a utilizar para resolver dudas que me aparezcan y en especial comprender la arquitectura de diseño de los servicios utilizados en el momento de la instalación.
 #=========================================================================================================================
-[🦙 KIRIBAKO]::
+[🦙 ce-500]::
 # Documentación oficial   : https://ollama.com/
 
 #=========================================================================================================================
@@ -11,7 +11,7 @@ apt update
 apt upgrade -y
 
 # creo una carpeta en el contenedor e instalo el script
-mkdir /KIRIBAKO && cd /KIRIBAKO
+mkdir /ce-500 && cd /ce-500
 apt install vim -y
 vim script-00.sh
 # i - (shift + botón derecho):
