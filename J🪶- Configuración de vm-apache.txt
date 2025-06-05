@@ -19,7 +19,7 @@ apt update
 apt upgrade -y
 
 # creo una carpeta en el contenedor e instalo el script
-mkdir /KIRIBAKO && cd /KIRIBAKO
+mkdir /ce-500 && cd /ce-500
 apt install vim -y
 vim script-00.sh
 # i - (shift + botón derecho):
@@ -289,11 +289,11 @@ GIT_WORK_TREE=$DEPLOY_DIR git checkout -f master
 #=========================================================================================================================
 [⛩️HONEYPOT]::
 # 🔔 agrego trampas en el espacio web (por si intentan atacar por peticiones web)
-mkdir /KIRIBAKO/log
-touch /KIRIBAKO/log/honeypot_activity.log
-touch /KIRIBAKO/log/honeypot_login.log
-chmod 666 /KIRIBAKO/log/honeypot_login.log
-chmod 666 /KIRIBAKO/log/honeypot_activity.log
+mkdir /ce-500/log
+touch /ce-500/log/honeypot_activity.log
+touch /ce-500/log/honeypot_login.log
+chmod 666 /ce-500/log/honeypot_login.log
+chmod 666 /ce-500/log/honeypot_activity.log
 
 # creo nuevas rutas conntrolados por logs
 cd /var/www/php
@@ -310,7 +310,7 @@ $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'N/A';
 $log = "[" . date("Y-m-d H:i:s") . "] IP: $ip | URI: $uri | Agente: $userAgent\n";
 
 // Guardamos el intento en un archivo de log
-file_put_contents("/KIRIBAKO/log/honeypot_activity.log", $log, FILE_APPEND);
+file_put_contents("/ce-500/log/honeypot_activity.log", $log, FILE_APPEND);
 
 // Configuración de la conexión
 $host = '127.0.0.1'; // o localhost
@@ -363,7 +363,7 @@ $uri = $_SERVER['REQUEST_URI'];
 $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'N/A';
 $log = "[" . date("Y-m-d H:i:s") . "] IP: $ip | URI: $uri | Agente: $userAgent\n";
 
-file_put_contents("/KIRIBAKO/log/honeypot_activity.log", $log, FILE_APPEND);
+file_put_contents("/ce-500/log/honeypot_activity.log", $log, FILE_APPEND);
 
 // falso
 http_response_code(404);
@@ -381,7 +381,7 @@ $uri = $_SERVER['REQUEST_URI'];
 $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'N/A';
 $log = "[" . date("Y-m-d H:i:s") . "] IP: $ip | URI: $uri | Agente: $userAgent\n";
 
-file_put_contents("/KIRIBAKO/log/honeypot_activity.log", $log, FILE_APPEND);
+file_put_contents("/ce-500/log/honeypot_activity.log", $log, FILE_APPEND);
 
 // falso
 http_response_code(404);
@@ -399,7 +399,7 @@ $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'N/A';
 $log = "[" . date("Y-m-d H:i:s") . "] IP: $ip | Agente: $userAgent\n";
 
 // archivo de log
-file_put_contents("/KIRIBAKO/log/honeypot_login.log", $log, FILE_APPEND);
+file_put_contents("/ce-500/log/honeypot_login.log", $log, FILE_APPEND);
 
 // simulo fallo de login
 $mensaje = "Usuario o contraseña incorrecta.";
@@ -434,7 +434,7 @@ $mensaje = "Usuario o contraseña incorrecta.";
 systemctl reload apache2
 
 # 🔔 hago lo mismo con .git, agrego un honeypot en el git anteriormente creado
-touch /KIRIBAKO/log/git-honeypot.log
+touch /ce-500/log/git-honeypot.log
 cd /etc/git/hooks
 
 # 🍯 honeypot
@@ -460,18 +460,18 @@ IP=$(who | grep pts | awk '{print $5}' | tr -d '()')
 USER=$(whoami)
 TIME=$(date "+%Y-%m-%d %H:%M:%S")
 
-echo "[$TIME] Acceso Git al honeypot desde IP: $IP | Usuario: $USER" >> /KIRIBAKO/log/git-honeypot.log
+echo "[$TIME] Acceso Git al honeypot desde IP: $IP | Usuario: $USER" >> /ce-500/log/git-honeypot.log
 --------------------------------------------------------------------------------------
 
 ## 🐝 honeypot acceso mysql
 # 🔔 agrego prácticas de honeypot en mysql
 # habilito el archivo de logs
 systemctl restart mariadb
-touch /KIRIBAKO/log/honeypot-alertas.log
-chmod +x /KIRIBAKO/log/honeypot-alertas.log
+touch /ce-500/log/honeypot-alertas.log
+chmod +x /ce-500/log/honeypot-alertas.log
 
 # creo un script para escuchar si alguien accede a la base de datos
-cd /KIRIBAKO
+cd /ce-500
 vim mysql-honeypot-alerta.sh
 --------------------------------------------------------------------------------------
 #!/bin/bash
@@ -479,7 +479,7 @@ vim mysql-honeypot-alerta.sh
 # Ruta al log de MySQL
 LOG="/var/log/mysql/mysql.log"
 # Ruta del log interno de alertas
-ALERTA_LOG="/KIRIBAKO/log/honeypot-alertas.log"
+ALERTA_LOG="/ce-500/log/honeypot-alertas.log"
 
 # Filtrar conexiones nuevas y evitar duplicados
 tail -F "$LOG" | grep --line-buffered "Connect" | while read linea; do
@@ -500,7 +500,7 @@ Description=Honeypot para detectar accesos MySQL
 After=network.target mysql.service
 
 [Service]
-ExecStart=/KIRIBAKO/mysql-honeypot-alerta.sh
+ExecStart=/ce-500/mysql-honeypot-alerta.sh
 Restart=always
 User=root
 
