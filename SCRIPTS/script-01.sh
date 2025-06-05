@@ -277,7 +277,7 @@ systemctl enable snmpd
 timedatectl
 ntpdate hora.roa.es
 timedatectl set-timezone Europe/Madrid
-echo -e "## Actualizacion de hora - Patricio\n00 6 * * * /usr/sbin/ntpdate -s hora.roa.es" >> /var/spool/cron/crontabs/root
+echo -e "## Actualizacion de hora: \n00 6 * * * /usr/sbin/ntpdate -s hora.roa.es" >> /var/spool/cron/crontabs/root
 
 # SAR Habilitamos monitorizacion
 # **************************************
