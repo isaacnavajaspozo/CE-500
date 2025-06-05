@@ -22,7 +22,7 @@ apt update
 apt upgrade -y
 
 # creo una carpeta en el contenedor e instalo el script
-mkdir /KIRIBAKO && cd /KIRIBAKO
+mkdir /ce-500 && cd /ce-500
 apt install vim -y
 vim script-00.sh
 # i - (shift + botón derecho):
@@ -532,7 +532,7 @@ const port = 3000;
 const mongoURI = 'mongodb://localhost:27017/tu_base_de_datos';
 
 // ruta del log
-const logPath = '/KIRIBAKO/log/express_access.log';
+const logPath = '/ce-500/log/express_access.log';
 
 // registro de accesos
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -629,8 +629,8 @@ echo "Mongodb falso" > /var/www/express/mongodb. && truncate -s 987M /var/www/ex
 sudo apt install inotify-tools
 
 # creo script para evaluar con inotify
-mkdir /KIRIBAKO/log/
-touch /KIRIBAKO/log/honypot-monitor.txt
+mkdir /ce-500/log/
+touch /ce-500/log/honypot-monitor.txt
 vim honypot-monitor.sh
 -----------------------------------------------------------------------
 #!/bin/bash
@@ -642,7 +642,7 @@ archivos_a_monitorear=(
   "/var/www/express/mongodb."
 )
 
-log="/KIRIBAKO/log/honypot-monitor.txt"
+log="/ce-500/log/honypot-monitor.txt"
 
 # Verifica que todos los archivos existan
 for archivo in "${archivos_a_monitorear[@]}"; do
@@ -661,7 +661,7 @@ chmod +x honypot-monitor.sh
 
 # para que no se vea como un systemctl y dejarlo ejecutado en segundo plano 
 # lo malo de este método es que cada vez que se reinicia el servidor hay que pasar este comando
-sudo /KIRIBAKO/honypot-monitor.sh &
+sudo /ce-500/honypot-monitor.sh &
 
 # para comprobar que se esta ejecutando
 ps aux | grep monitor.sh
@@ -675,7 +675,7 @@ vim /etc/mongod.conf
 ...
 systemLog:
   destination: file
-  path: /KIRIBAKO/log/mongod.log
+  path: /ce-500/log/mongod.log
   logAppend: true
   verbosity: 1 					# Nivel 1 para registrar conexiones y operaciones básicas
 
