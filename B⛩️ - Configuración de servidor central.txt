@@ -306,6 +306,7 @@ vim /etc/iptables/rules.v4
 # mongo
 -A INPUT -p tcp --dport 27017 -j ACCEPT
 
+# ...
 COMMIT
 ----------------------------------------------------------------------------
 
