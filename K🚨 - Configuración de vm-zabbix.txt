@@ -1,7 +1,7 @@
 # 🧠 Zabbix es una herramienta de monitoreo integral y escalable para infraestructuras de TI, que ofrece visualización, alertas y gestión centralizada de servidores, redes y aplicaciones.
 # 🐧 Voy a utilizar zabbix para monitorizar equipos y servidores a través de agentes o SNMP, generar alertas y generar gráficos de disponivilidad o recursos.
 #=========================================================================================================================
-[🚨KIRIBAKO]::
+[🚨ce-500]::
 Documentación ofical zabbix                 : https://www.zabbix.com/download?os_distribution=debian
                                             : https://www.zabbix.com/download
                                             : https://www.zabbix.com/download?zabbix=7.2&os_distribution=debian&os_version=12&components=server_frontend_agent&db=mysql&ws=apache
@@ -13,7 +13,7 @@ apt update
 apt upgrade -y
 
 # creo una carpeta en el contenedor e instalo el script
-mkdir /KIRIBAKO && cd /KIRIBAKO
+mkdir /ce-500 && cd /ce-500
 apt install vim -y
 vim script-00.sh
 # i - (shift + botón derecho):
@@ -208,7 +208,7 @@ agentaddress 0.0.0.0
 rocommunity MaltLiquor_13 localhost
 rocommunity MaltLiquor_13 192.168.1.0/24
 
-syslocation "KIRIBAKO"
+syslocation "ce-500"
 syscontact  "La caja: <******@gmail.com>"
 
 # Ramas personalizadas
