@@ -2,7 +2,7 @@
 # 🐧 Utilizo esta máquina como servidor de archivos compartidos por usuarios, para compartir manuales IT. 
 # 🐧 Además también hace de honeypot para registrar los accesos de la carpeta principal
 #=========================================================================================================================
-[💃KIRIBAKO]::
+[💃ce-500]::
 Documentación ofical samba                 : https://wiki.samba.org/index.php/Setting_up_Samba_as_a_Standalone_Server
 Documentación oficial de usuarios samba    : https://wiki.samba.org/index.php/User_and_Group_management
 Documentación oficial de restic            : https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html#local
@@ -15,7 +15,7 @@ apt update
 apt upgrade -y
 
 # creo una carpeta en el contenedor e instalo el script
-mkdir /KIRIBAKO && cd /KIRIBAKO
+mkdir /ce-500 && cd /ce-500
 apt install vim -y
 vim script-00.sh
 # i - (shift + botón derecho):
@@ -35,7 +35,7 @@ sudo apt install -y samba
 
 # samba-common samba-common-bin
 # creo carpetas para archivos
-mkdir /KIRIBAKO/samba/ && mkdir /KIRIBAKO/samba/datos
+mkdir /ce-500/samba/ && mkdir /ce-500/samba/datos
 
 # hago una copia del archivo principal
 mv /etc/samba/smb.conf /etc/samba/_smb.conf
@@ -51,11 +51,11 @@ vim /etc/samba/smb.conf
     server string = Samba Server
     netbios name = samba
     security = user
-    passdb backend = tdbsam:/KIRIBAKO/samba/samba_passdb.tdb
+    passdb backend = tdbsam:/ce-500/samba/samba_passdb.tdb
     map to guest = Bad User
 
 [public]
-    path = /KIRIBAKO/samba/datos
+    path = /ce-500/samba/datos
     browsable = yes
     writable = yes
     guest ok = no
@@ -74,9 +74,9 @@ vim /etc/samba/smb.conf
 #    server string = Samba Server                                :: Descripción
 #    netbios name = samba                                        :: Nombre en la red
 #    security = user                                             :: Modo de seguridad basado en usuarios
-#    passdb backend = tdbsam:/KIRIBAKO/samba/samba_passdb.tdb    :: Declaro la ubicación de la db de usuarios
+#    passdb backend = tdbsam:/ce-500/samba/samba_passdb.tdb    :: Declaro la ubicación de la db de usuarios
 #    map to guest = Bad User                                     :: Usuario invitados no validos
-#    path = /KIRIBAKO/samba/datos                                :: Ruta de la carpeta
+#    path = /ce-500/samba/datos                                :: Ruta de la carpeta
 #    browsable = yes                                             :: Carpeta visible en red
 #    writable = yes                                              :: Permite la escritura en la carpeta
 #    guest ok = no                                               :: No permite usuarios invitados
@@ -101,13 +101,13 @@ groupadd smbIlerna
 usermod -aG smbIlerna Ilerna
 
 # crear archivo de contraseñas de usuarios
-touch /KIRIBAKO/samba/samba_passdb.tdb
-chown nobody:smbIlerna /KIRIBAKO/samba/samba_passdb.tdb
-chmod 0660 /KIRIBAKO/samba/samba_passdb.tdb
+touch /ce-500/samba/samba_passdb.tdb
+chown nobody:smbIlerna /ce-500/samba/samba_passdb.tdb
+chmod 0660 /ce-500/samba/samba_passdb.tdb
 
 # doy permisos a las carpetas
-sudo chmod -R 0775 /KIRIBAKO/samba/datos
-sudo chown -R nobody:smbIlerna /KIRIBAKO/samba/datos
+sudo chmod -R 0775 /ce-500/samba/datos
+sudo chown -R nobody:smbIlerna /ce-500/samba/datos
 
 # desactivo el active directory
 # systemctl disable samba-ad-dc
@@ -132,23 +132,23 @@ systemctl status smbd
 apt install restic -y
 
 # creo la carpeta de backups
-mkdir /KIRIBAKO/backups
+mkdir /ce-500/backups
 
 # reinicio el servicio
 systemctl restart smbd
 
 # Inicializa un nuevo repositorio de Restic
-export RESTIC_REPOSITORY=/KIRIBAKO/backups
+export RESTIC_REPOSITORY=/ce-500/backups
 export RESTIC_PASSWORD=**********
 restic init
 
 # respaldo inicial de los archivos
-restic backup /KIRIBAKO/backups
+restic backup /ce-500/backups
 
 # creo un alias
 vim ~/.bashrc
 --------------------------------------------------------------------------------------
-    alias _crear_backup='restic backup /KIRIBAKO/backups'
+    alias _crear_backup='restic backup /ce-500/backups'
 --------------------------------------------------------------------------------------
 source ~/.bashrc
 
@@ -180,7 +180,7 @@ vim /etc/cron.daily/restic-backup
 # | |      .------------- Identificador de trabajo (utilizado para registros y seguimiento de estado)
 # | |      |        .---- comando a ejecutar
 # | |      |        |
-1 5 restic.daily nice /KIRIBAKO/backups
+1 5 restic.daily nice /ce-500/backups
 # cada día trás cinco minutos de arrancar la máquina con bajo rendimiento de CPU 
 -----------------------------------------------------------------------------
 sudo chmod +x /etc/cron.daily/restic-backup
@@ -211,7 +211,7 @@ vim /etc/samba/smb.conf
 [global]
     # auditoría
     log level = 2
-    log file = /KIRIBAKO/log/log.txt
+    log file = /ce-500/log/log.txt
     max log size = 1000
 
     # acceso a archivos
@@ -227,11 +227,11 @@ vim /etc/samba/smb.conf
     server string = Samba Server
     netbios name = samba
     security = user
-    passdb backend = tdbsam:/KIRIBAKO/samba/samba_passdb.tdb
+    passdb backend = tdbsam:/ce-500/samba/samba_passdb.tdb
     map to guest = Bad User
 
 [public]
-    path = /KIRIBAKO/samba/datos
+    path = /ce-500/samba/datos
     browsable = yes
     writable = yes
     guest ok = no
@@ -246,23 +246,23 @@ vim /etc/samba/smb.conf
     vfs objects = audit
     audit:facility = LOCAL7
     audit:priority = NOTICE
-    audit:log = /KIRIBAKO/log/log-audit.txt
+    audit:log = /ce-500/log/log-audit.txt
 --------------------------------------------------------------------------------------
 # ***********************************************************************************************************
 # 🧑‍🎓 Que hace cada opción que he elegido::
 #    log level = 2                                              :: nivel de detalle de los registros, eventos de acceso
-#    log file = /KIRIBAKO/log/log.txt                           :: archivo para almacenar logs de registros
+#    log file = /ce-500/log/log.txt                           :: archivo para almacenar logs de registros
 #    max log size = 1000                                        :: tamaño de los archivos de registro a 1 MB
 #    vfs objects = audit                                        :: auditoría de archivos compartidos (VFS)
 #    audit:facility = LOCAL7                                    :: tipo de registro, registra auditorías de seguridad
 #    audit:priority = NOTICE                                    :: prioridad de los eventos que se registran o superiores
-#    audit:log = /KIRIBAKO/log/log-audit.txt                    :: Ruta de la carpeta de la auditoria de archivos
+#    audit:log = /ce-500/log/log-audit.txt                    :: Ruta de la carpeta de la auditoria de archivos
 #    directory mask = 0775                                      :: Permisos para directorios creados
 # ***********************************************************************************************************
 
 # dar permisos y crear archivo de log
-mkdir /KIRIBAKO/log 
-touch /KIRIBAKO/log/log.txt
-sudo chown root:root /KIRIBAKO/log/log.txt
-sudo chmod 644 /KIRIBAKO/log/log.txt
+mkdir /ce-500/log 
+touch /ce-500/log/log.txt
+sudo chown root:root /ce-500/log/log.txt
+sudo chmod 644 /ce-500/log/log.txt
 
