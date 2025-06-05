@@ -11,7 +11,7 @@ read -p "¿Deseas instalar paquetes de ciberseguridad como nmap john hydra...? (
 if [[ "$respuestaCyber" == "s" || "$respuestaCyber" == "S" ]]; then
     apt install -y nmap john hydra sqlmap whatweb tshark exiftool
     echo "Paquetes de ciberseguridad instalados:"
-    echo "nmap, john, hydra, sqlmap, whatweb, tshark, exiftool."
+    echo "nmap, john, hydra, sqlmap, whatweb, tshark y exiftool."
 else
     echo "Continuando con la instalación sin paquetes de instalación."
 fi
@@ -234,8 +234,8 @@ rocommunity MaltLiquor_25 192.168.1.0/24
 
 # =====[ESCRITURA-VALORES]==========================================================================================
 # sobreescribo o fuerzo valores
-syslocation "🤖 CPD"
-syscontact "🤖 Informatica <informatica@aptelliot.es>"
+syslocation "CPD"
+syscontact "IT <informatica@isaacnavajas.es>"
 
 # =====[HABILITO-OIDS]==============================================================================================
 # OIDs importantes:
