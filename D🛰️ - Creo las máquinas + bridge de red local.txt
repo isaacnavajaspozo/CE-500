@@ -1,5 +1,5 @@
 #=========================================================================================================================
-[🛰️KIRIBAKO]::
+[🛰️ce-500]::
 # 📄🚫 He decidido utilizar LXC en vez de Docker por que crea contenedores de S.O persistentes y es justo lo que quiero y en el caso de Docker son para aplicación, (aún creando volumenes no es lo mismo...)
 
 #=========================================================================================================================
@@ -80,7 +80,7 @@ sudo reboot now
 
 #=========================================================================================================================
 [🛰️CREO LAS MÁQUINAS]::
-# 🧑‍🎓 Llegados a este punto lo único que tengo que hacer es ejecutar el script : _kiribako || /KIRIBAKO/lxc-manager.sh
+# 🧑‍🎓 Llegados a este punto lo único que tengo que hacer es ejecutar el script : _ce-500 || /ce-500/lxc-manager.sh
 #       1º Crear las máquinas con los mismos nombres anteriormente mencionados
 #       2º Inicializar las máquinas en segundo plano (para poder acceder a ellas)
 #       3º Acceder a ellas para configurarlas 
@@ -88,21 +88,21 @@ sudo reboot now
 #=========================================================================================================================
 [🛰️CREAR ALIAS EN SERVIDOR PRINCIPAL]::
 # 🧑‍🎓 Compruebo que tengo el alias creado para ejecutar el script directamente
-# el script estaba en la ruta /KIRIBAKO/lxc-manager.sh
-ls /KIRIBAKO | grep lxc-manager.sh
+# el script estaba en la ruta /ce-500/lxc-manager.sh
+ls /ce-500 | grep lxc-manager.sh
 
 # Entro a bashrc
 vim ~/.bashrc
 --------------------------------------------------------------------------------------------------------------------------
 ## alias para ejecutar el script principal de las máquinas
-alias _kiribako="/KIRIBAKO/lxc-manager.sh"
+alias _ce-500="/ce-500/lxc-manager.sh"
 --------------------------------------------------------------------------------------------------------------------------
 
 # actualizo los cambios 
 source ~/.bashrc
 
 # ejecuto script
-_kiribako
+_ce-500
 
 
 
