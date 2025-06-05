@@ -14,7 +14,7 @@ apt update
 apt upgrade -y
 
 # creo una carpeta en el contenedor e instalo el script
-mkdir /KIRIBAKO && cd /KIRIBAKO
+mkdir /ce-500 && cd /ce-500
 apt install vim -y
 vim script-00.sh
 # i - (shift + botón derecho):
@@ -71,7 +71,7 @@ Description=Velociraptor Server
 After=network.target
 
 [Service]
-ExecStart=/usr/local/bin/velociraptor --config /KIRIBAKO/server.config.yaml frontend
+ExecStart=/usr/local/bin/velociraptor --config /ce-500/server.config.yaml frontend
 Restart=always
 User=root
 
@@ -80,7 +80,7 @@ WantedBy=multi-user.target
 -------------------------------------------------------------------
 
 # modifico el archivo 
-vim /KIRIBAKO/server.config.yaml
+vim /ce-500/server.config.yaml
 -------------------------------------------------------------------
 # dentro de larchivo busco los 127.0.0.1 y los cambio por 0.0.0.0
 # esto hace que se pueda escucha fuera de la máquina (dentro del mismo host)
@@ -102,8 +102,8 @@ https://<IP_SERVIDOR_LINUX>:8889
 
 # velociraptor necesita crear un agente para conectar con el dispositivo cliente
 # como anteriormente ya he creado la configuración del cliente compruebo que tengo el archivo 
-find /KIRIBAKO/client.config.yaml
-    # /KIRIBAKO/client.config.yaml
+find /ce-500/client.config.yaml
+    # /ce-500/client.config.yaml
 
 # genero el binario que me va a generar el archivo de instalación según la distribución de linux o el s.o
 # en mi caso lo voy hacer para un servicor debian
@@ -112,10 +112,10 @@ velociraptor --config client.config.yaml debian client
 
 # migro el archivo desde la máquina principal 
 exit
-cp /var/lib/lxc/vm-velociraptor/rootfs/KIRIBAKO/velociraptor_client_0.74.1_amd64.deb /var/lib/lxc/vm-apache/rootfs/KIRIBAKO/
+cp /var/lib/lxc/vm-velociraptor/rootfs/ce-500/velociraptor_client_0.74.1_amd64.deb /var/lib/lxc/vm-apache/rootfs/ce-500/
 
 # entro en la máquina del agente (que en este caso es vm-apache) e instalo el paquete
-cd /KIRIBAKO
+cd /ce-500
 sudo dpkg -i velociraptor_client_0.74.1_amd64.deb
 
 # cambio la configuración
