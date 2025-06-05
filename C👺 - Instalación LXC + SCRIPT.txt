@@ -49,13 +49,13 @@ cd / && mkdir ce-500
 cd /ce-500
 
 # creo script
-vim lxc-manager.sh
+vim KIRIBAKO.sh
 ---------------------------------------------------------------------------------
-    # agrego el sceript de /SCRIPTS/lxc-manager.sh
+    # agrego el sceript de /SCRIPTS/KIRIBAKO.sh
 ---------------------------------------------------------------------------------
 
 # doy permisos 
-chmod +x lxc-manager.sh
+chmod +x KIRIBAKO.sh
 
 # ejecuto el script
-./lxc-manager.sh
+./KIRIBAKO.sh
