@@ -12,7 +12,7 @@ apt update
 apt upgrade -y
 
 # creo una carpeta en el contenedor e instalo el script
-mkdir /KIRIBAKO && cd /KIRIBAKO
+mkdir /ce-500 && cd /ce-500
 apt install vim -y
 vim script-00.sh
 # i - (shift + botón derecho):
