@@ -1,5 +1,5 @@
 #=========================================================================================================================
-[👺KIRIBAKO]::
+[👺ce-500]::
 # Guia de oficial instalación LXC      : https://linuxcontainers.org/#navigation
 # Guia no oficial                      : https://www.josedomingo.org/pledin/2021/12/introduccion-lxc/
 
@@ -45,8 +45,8 @@ sudo apt install lxc
 #=========================================================================================================================
 [👺INSTALACIÓN DE SCRIPT]:
 # creo carpeta en servidor principal
-cd / && mkdir KIRIBAKO
-cd /KIRIBAKO
+cd / && mkdir ce-500
+cd /ce-500
 
 # creo script
 vim lxc-manager.sh
