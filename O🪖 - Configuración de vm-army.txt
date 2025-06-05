@@ -1,7 +1,7 @@
 # 🧠 Este servidor se utiliza como 
 # 🐧
 #=========================================================================================================================
-[🪖📩 KIRIBAKO]::
+[🪖📩 ce-500]::
 # Documentación oficial kismet :             https://www.kismetwireless.net/docs/readme/installing/linux/
 # documentación oficial clamav :             https://docs.clamav.net/
 
@@ -10,7 +10,6 @@
 # paquetes de Linux de utilización rápida y práctica (escaneres):
 # 💯 otras instalaciones:
 apt install iftop nmap tshark 
-
 
 
 
@@ -42,7 +41,6 @@ sudo freshclam
 
 # lo que puedo hacer es un cron y un alias para que automatice el análisis de virus. 
 # 🆗
-
 
 
 
