@@ -1,5 +1,5 @@
 #=========================================================================================================================
-[⛩️KIRIBAKO]::
+[⛩️ce-500]::
 # Documentación oficial SSH            : https://www.openssh.com/
 # Documentación no-oficial             : https://synay.net/es/support/kb/disabling-automatic-workstation-sleep-debian-12
 # Documentación oficial de iptables:   : https://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html
@@ -24,15 +24,15 @@ sudo update-grub
 # Configuro el host
 nano /etc/hostname
 ----------------------------------------------------------------------------
-    kiribako.com
+    ce-500.com
 ----------------------------------------------------------------------------
 
 # Configuración archivo host
-# host -> kiribako.com | alias -> kiribako
+# host -> ce-500.com | alias -> ce-500
 sudo nano /etc/hosts
 ----------------------------------------------------------------------------
     127.0.0.1               localhost
-    127.0.0.1               kiribako.com    kiribako
+    127.0.0.1               ce-500.com    ce-500
     
     # The following lines are desirable for IPv6 capable hosts
     ::1     localhost ip6.localhost ip6.loopback localhost.localdomain 
@@ -98,8 +98,8 @@ systemctl enable sshd
 [⛩️CREO USUARIOS NECESARIOS]::
 # creo script para generar contraseña
 
-cd / && mkdir KIRIBAKO
-cd /KIRIBAKO
+cd / && mkdir ce-500
+cd /ce-500
 vim bcrypt_hash.sh
 ----------------------------------------------------------------------------
 #!/bin/bash
@@ -150,7 +150,7 @@ nano ~/.bashrc
     alias ls='ls --color=auto'
     alias la='ls $LS_OPTIONS -lhai'
     alias _liberarespacioram='sudo sync; echo 1 | sudo tee /proc/sys/vm/drop_caches | echo "petición realizada correctamente." && echo "" && free -h'
-    alias _kiribako='/KIRIBAKO/lxc-manager.sh'
+    alias _ce-500='/ce-500/lxc-manager.sh'
 
     
     ## Cambiar diseño del prompt
