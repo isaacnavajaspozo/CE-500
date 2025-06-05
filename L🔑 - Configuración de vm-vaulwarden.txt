@@ -1,7 +1,7 @@
 # 🧠 Vaultwarden se utiliza para gestionar contraseñas y datos sensibles de forma segura.
 # 🐧 Lo voy a utilizar para gestión de contraseñas, como alternativa de control a bitwarden.
 #=========================================================================================================================
-[🔑 KIRIBAKO]::
+[🔑 ce-500]::
 # Documentación no-oficial               : https://serverspace.io/es/support/help/install-bitwarden-debian-11/
 # Documentación oficial                  : https://bitwarden.com/help/install-on-premise-linux/
 # Documentación no-oficial               : https://community.hetzner.com/tutorials/how-to-install-vaultwarden
@@ -14,7 +14,7 @@ apt update
 apt upgrade -y
 
 # creo una carpeta en el contenedor e instalo el script
-mkdir /KIRIBAKO && cd /KIRIBAKO
+mkdir /ce-500 && cd /ce-500
 apt install vim -y
 vim script-00.sh
 # i - (shift + botón derecho):
