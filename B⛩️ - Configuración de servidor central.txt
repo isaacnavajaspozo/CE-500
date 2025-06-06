@@ -150,8 +150,6 @@ nano ~/.bashrc
     alias ls='ls --color=auto'
     alias la='ls $LS_OPTIONS -lhai'
     alias _liberarespacioram='sudo sync; echo 1 | sudo tee /proc/sys/vm/drop_caches | echo "petición realizada correctamente." && echo "" && free -h'
-    alias _ce-500='/ce-500/KIRIBAKO.sh'
-
     
     ## Cambiar diseño del prompt
     PS1='${debian_chroot:+($debian_chroot)}\[\e[0;90m\]r00t箱\[\e[1;36m\][\H]\e[1;36m\]\e[1;32m \w\e[0;37m $: '
@@ -166,6 +164,21 @@ nano ~/.bashrc
     export LS_COLORS="di=1;32:fi=0;37:ln=1;35:so=0;38;5;208:pi=0;34:bd=0;33:cd=0;33:or=0;31:mi=0;31:ex=1;31"
 ----------------------------------------------------------------------------
 source ~/.bashrc
+
+#=========================================================================================================================
+[⛩️AGREGAR COMANDO KIRIBAKO]::
+# agrego el script de KIRIBAKO como 
+echo $PATH
+    > ../usr/bin/..
+cd /usr/bin/
+vim kiribako
+----------------------------------------------------------------------------
+#!/bin/bash
+# agregar script KIRIBAKO.sh dentro de la carpeta /SCRIPTS
+----------------------------------------------------------------------------
+
+# compruebo que puedo acceder al comando de manera global
+command -v kiribako
 
 #=========================================================================================================================
 [⛩️CONFIGURACIÓN DE VIM]::
