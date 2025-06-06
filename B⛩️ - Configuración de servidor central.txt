@@ -171,6 +171,8 @@ source ~/.bashrc
 echo $PATH
     > ../usr/bin/..
 cd /usr/bin/
+
+# agrego el script con nombre sin extension
 vim kiribako
 ----------------------------------------------------------------------------
 #!/bin/bash
