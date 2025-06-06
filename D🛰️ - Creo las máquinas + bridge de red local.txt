@@ -86,23 +86,25 @@ sudo reboot now
 #       3º Acceder a ellas para configurarlas 
 
 #=========================================================================================================================
-[🛰️CREAR ALIAS EN SERVIDOR PRINCIPAL]::
-# 🧑‍🎓 Compruebo que tengo el alias creado para ejecutar el script directamente
+[🛰️KIRIBAKO]::
+# 🧑‍🎓 creo el script como comando global
 # el script estaba en la ruta /ce-500/KIRIBAKO.sh
-ls /ce-500 | grep KIRIBAKO.sh
+# agrego el script de KIRIBAKO como 
+echo $PATH
+    > ../usr/bin/..
+cd /usr/bin/
 
-# Entro a bashrc
-vim ~/.bashrc
---------------------------------------------------------------------------------------------------------------------------
-## alias para ejecutar el script principal de las máquinas
-alias _ce-500="/ce-500/KIRIBAKO.sh"
---------------------------------------------------------------------------------------------------------------------------
+# agrego el script con nombre sin extension
+vim kiribako
+----------------------------------------------------------------------------
+#!/bin/bash
+# agregar script KIRIBAKO.sh dentro de la carpeta /SCRIPTS
+----------------------------------------------------------------------------
 
-# actualizo los cambios 
-source ~/.bashrc
+chmod +x KIRIBAKO.sh
 
-# ejecuto script
-_ce-500
+# compruebo que puedo acceder al comando de manera global
+command -v kiribako
 
 
 
