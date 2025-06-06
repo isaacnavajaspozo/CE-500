@@ -42,20 +42,3 @@ sudo lxc-attach -n vm-samba
 sudo apt update
 sudo apt install lxc
 
-#=========================================================================================================================
-[👺INSTALACIÓN DE SCRIPT]:
-# creo carpeta en servidor principal
-cd / && mkdir ce-500
-cd /ce-500
-
-# creo script
-vim KIRIBAKO.sh
----------------------------------------------------------------------------------
-    # agrego el sceript de /SCRIPTS/KIRIBAKO.sh
----------------------------------------------------------------------------------
-
-# doy permisos 
-chmod +x KIRIBAKO.sh
-
-# ejecuto el script
-./KIRIBAKO.sh
