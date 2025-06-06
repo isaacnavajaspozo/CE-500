@@ -93,7 +93,7 @@ if ! command -v nmap &>/dev/null; then
   fi
 fi
 
-echo "[*] Esta función realiza un escaneo de vulnerabilidades sobre la IP especificada."
+echo "[*] Este comando realiza un escaneo de vulnerabilidades sobre la IP especificada."
 read -rp "Introduce la IP a escanear: " ip
 
 if [[ -z "$ip" ]]; then
