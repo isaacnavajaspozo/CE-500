@@ -8,10 +8,7 @@
 #=========================================================================================================================
 [🪖📩 INSTALAR ANTIVIRUS]::
 # paquetes de Linux de utilización rápida y práctica (escaneres):
-# 💯 otras instalaciones:
-apt install iftop nmap tshark 
-
-
+# 💯 realizo la instalación de un antivirus para automatizar el escaner de archivos corruptos en el servidor
 
 # instalación antivirus Linux:
 ## 👹 clamav::
@@ -99,6 +96,11 @@ kismet
 
 # abro el navegador
 http://localhost:2501
+
+
+
+## detector de pequeños satelites con LORA
+
 
 
 
