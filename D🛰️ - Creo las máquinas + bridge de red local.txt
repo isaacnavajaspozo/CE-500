@@ -80,32 +80,9 @@ sudo reboot now
 
 #=========================================================================================================================
 [🛰️CREO LAS MÁQUINAS]::
-# 🧑‍🎓 Llegados a este punto lo único que tengo que hacer es ejecutar el script : _ce-500 || /ce-500/KIRIBAKO.sh
+# 🧑‍🎓 Llegados a este punto lo único que tengo que hacer es ejecutar el comando : kiribako
 #       1º Crear las máquinas con los mismos nombres anteriormente mencionados
 #       2º Inicializar las máquinas en segundo plano (para poder acceder a ellas)
 #       3º Acceder a ellas para configurarlas 
-
-#=========================================================================================================================
-[🛰️KIRIBAKO]::
-# 🧑‍🎓 creo el script como comando global
-# el script estaba en la ruta /ce-500/KIRIBAKO.sh
-# agrego el script de KIRIBAKO como 
-echo $PATH
-    > ../usr/bin/..
-cd /usr/bin/
-
-# agrego el script con nombre sin extension
-vim kiribako
-----------------------------------------------------------------------------
-#!/bin/bash
-# agregar script KIRIBAKO.sh dentro de la carpeta /SCRIPTS
-----------------------------------------------------------------------------
-
-chmod +x KIRIBAKO.sh
-
-# compruebo que puedo acceder al comando de manera global
-command -v kiribako
-
-
 
 
