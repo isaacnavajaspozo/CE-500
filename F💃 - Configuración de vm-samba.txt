@@ -74,9 +74,9 @@ vim /etc/samba/smb.conf
 #    server string = Samba Server                                :: Descripción
 #    netbios name = samba                                        :: Nombre en la red
 #    security = user                                             :: Modo de seguridad basado en usuarios
-#    passdb backend = tdbsam:/ce-500/samba/samba_passdb.tdb    :: Declaro la ubicación de la db de usuarios
+#    passdb backend = tdbsam:/ce-500/samba/samba_passdb.tdb      :: Declaro la ubicación de la db de usuarios
 #    map to guest = Bad User                                     :: Usuario invitados no validos
-#    path = /ce-500/samba/datos                                :: Ruta de la carpeta
+#    path = /ce-500/samba/datos                                  :: Ruta de la carpeta
 #    browsable = yes                                             :: Carpeta visible en red
 #    writable = yes                                              :: Permite la escritura en la carpeta
 #    guest ok = no                                               :: No permite usuarios invitados
