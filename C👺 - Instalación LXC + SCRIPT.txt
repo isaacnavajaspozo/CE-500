@@ -42,14 +42,15 @@ sudo lxc-attach -n vm-samba
 sudo apt update
 sudo apt install lxc
 
-# 🧑‍🎓 creo el script como comando global
+# 🧑‍🎓 creo el script como comando global para ejecutar/crear/borrar las máquinas de manera directa
+# 📦 su nombre "kiribako", es una palabra japonesa que significa "guardar algo de valor dentro de una caja"
 # el script estaba en la ruta /ce-500/KIRIBAKO.sh
-# agrego el script de KIRIBAKO como 
+# agrego el script de KIRIBAKO como:: 
 echo $PATH
     > ../usr/bin/..
 cd /usr/bin/
 
-# agrego el script con nombre sin extension
+# agrego el script, con el nombre sin extension
 vim kiribako
 ----------------------------------------------------------------------------
 #!/bin/bash
