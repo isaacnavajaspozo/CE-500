@@ -251,12 +251,12 @@ vim /etc/samba/smb.conf
 # ***********************************************************************************************************
 # 🧑‍🎓 Que hace cada opción que he elegido::
 #    log level = 2                                              :: nivel de detalle de los registros, eventos de acceso
-#    log file = /ce-500/log/log.txt                           :: archivo para almacenar logs de registros
+#    log file = /ce-500/log/log.txt                             :: archivo para almacenar logs de registros
 #    max log size = 1000                                        :: tamaño de los archivos de registro a 1 MB
 #    vfs objects = audit                                        :: auditoría de archivos compartidos (VFS)
 #    audit:facility = LOCAL7                                    :: tipo de registro, registra auditorías de seguridad
 #    audit:priority = NOTICE                                    :: prioridad de los eventos que se registran o superiores
-#    audit:log = /ce-500/log/log-audit.txt                    :: Ruta de la carpeta de la auditoria de archivos
+#    audit:log = /ce-500/log/log-audit.txt                      :: Ruta de la carpeta de la auditoria de archivos
 #    directory mask = 0775                                      :: Permisos para directorios creados
 # ***********************************************************************************************************
 
