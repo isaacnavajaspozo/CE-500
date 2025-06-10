@@ -42,3 +42,21 @@ sudo lxc-attach -n vm-samba
 sudo apt update
 sudo apt install lxc
 
+# 🧑‍🎓 creo el script como comando global
+# el script estaba en la ruta /ce-500/KIRIBAKO.sh
+# agrego el script de KIRIBAKO como 
+echo $PATH
+    > ../usr/bin/..
+cd /usr/bin/
+
+# agrego el script con nombre sin extension
+vim kiribako
+----------------------------------------------------------------------------
+#!/bin/bash
+# agregar script KIRIBAKO.sh dentro de la carpeta /SCRIPTS
+----------------------------------------------------------------------------
+
+chmod +x KIRIBAKO.sh
+
+# compruebo que puedo acceder al comando de manera global
+command -v kiribako
