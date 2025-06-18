@@ -1,6 +1,7 @@
-# 🧠 Vaultwarden se utiliza para gestionar contraseñas y datos sensibles de forma segura.
+# 🧠 Keepassxc se utiliza para gestionar contraseñas y datos sensibles de forma segura.
 # 🐧 Lo voy a utilizar para gestión de contraseñas, como alternativa de control a bitwarden.
 
+# dentro del samba creo una carpeta por usuario y le agrego una base de datos de keepassxc por usuario
 # instalo
 sudo apt install keepassxc
 
