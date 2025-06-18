@@ -67,7 +67,7 @@ sudo reboot now
 [🛰️NOMBRES DE LAS MÁQUINAS]::
 # Los nombres de las máquinas
 1 - vm-samba
-2 - vm-pentesting (la ejecuto sin script por que quiero que sea un kali)
+2 - vm-pentesting
 3 - vm-bitwarden
 4 - vm-greenbone
 5 - vm-velociraptor
@@ -75,8 +75,9 @@ sudo reboot now
 7 - vm-apache
 8 - vm-nagios
 9 - vm-ollama
-10 - vm-elasticsearch
+10 - vm-pwnagotchi
 11 - vm-army
+12 - vm-suricata
 
 #=========================================================================================================================
 [🛰️CREO LAS MÁQUINAS]::
