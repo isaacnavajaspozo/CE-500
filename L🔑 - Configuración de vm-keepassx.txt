@@ -31,6 +31,8 @@ usuario-db.kdbx> add prueba
 usuario-db.kdbx> show prueba
 usuario-db.kdbx> search prueba
 
+quit
+
 #=========================================================================================================================
 [🔑 CONFIGURACIÓN SCRIPT POWERSHELL::
 
