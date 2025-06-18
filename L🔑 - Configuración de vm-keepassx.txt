@@ -72,3 +72,4 @@ if (Test-Path $localFilePath) {
 --------------------------------------------------------------------------------------
 
 # guardo el script en la misma carpeta que la base de datos en el PC Windows y pulso doble click cada vez que quiero actualizar la copia al servidor
+# es una opción de gestionar las contraseñas segura, simple y sin mantenimiento.
