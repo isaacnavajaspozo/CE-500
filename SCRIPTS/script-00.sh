@@ -5,7 +5,7 @@ apt-get update && apt-get upgrade -y
 ## Paquetes de ciberseguridad:
 # Preguntar al usuario si quiere instalar paquetes de ciberseguridad
 # -------------------------------------------------------------------
-read -p "¿Deseas instalar paquetes de ciberseguridad como nmap john hydra...? (s/n): " respuestaCyber
+read -p "¿Deseas instalar paquetes de ciberseguridad como sqlmap john hydra...? (s/n): " respuestaCyber
 
 if [[ "$respuestaCyber" == "s" || "$respuestaCyber" == "S" ]]; then
     apt install -y nmap john hydra sqlmap whatweb tshark exiftool
@@ -35,19 +35,26 @@ systemctl restart lm-sensors
 read -p "¿Deseas agregar un nuevo hostname? (s/n): " respuestaHost
 
 if [[ "$respuestaHost" == "s" || "$respuestaHost" == "S" ]]; then
-    # Solicitar el nuevo hostname
     read -p "Introduce el nuevo hostname (isaac.laboratory-00): " new_hostname
 
-    # Modificar hostname
     sudo hostname "$new_hostname"
 
-    # Hacer una copia de seguridad del archivo /etc/hostname
     sudo mv /etc/hostname /etc/hostname.old
-    touch /etc/hostname
-
-    # Escribir el nuevo hostname en /etc/hostname
     echo "$new_hostname" | sudo tee /etc/hostname > /dev/null
     echo "El hostname se ha cambiado a: $new_hostname"
+
+    sudo mv /etc/hosts /etc/hosts.old
+
+    sudo tee /etc/hosts > /dev/null <<EOF
+127.0.0.1   localhost
+127.0.1.1   $new_hostname
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+EOF
+
 else
     echo "Continuando con la instalación sin cambiar el hostname."
 fi
@@ -67,19 +74,24 @@ alias df='df --exclude-type=tmpfs'
 
 ## Cambiar diseño del prompt (estilo cyberpunk)
 # **************************************
-PS1='\[\e[0;90m\]r00t箱\e[38;5;213m[\H]\e[38;5;213m\e[1;32m \w\e[0;37m $: '
+# color 1
+PS1='\[\e[0;90m\]r00t箱\e[38;5;196m[\H]\e[38;5;196m\e[1;32m \w\e[0;37m $: '
+# color 2
+# PS1='\[\e[1;31m\]r00t箱[\H] \w $: \[\e[0m\]'
 
 ## cambiar colores para ls (estilo cyberpunk)
 # **************************************
 export LS_COLORS="di=1;32:fi=0;37:ln=1;35:so=0;38;5;208:pi=0;34:bd=0;33:cd=0;33:or=0;31:mi=0;31:ex=1;31"
 EOF
 
-# creo comando para escanear vulnerabilidades red
+# agrego mis propios comandos:
+# comando : scanvuln
+# escanea rapidamente las vulnerabilidades de la IP asignada
 # -------------------------------------------------------------------
 cat <<EOF > /usr/bin/scanvuln
 #!/bin/bash
 if ! command -v nmap &>/dev/null; then
-  read -rp "[!] Nmap no está instalado. ¿Quieres instalarlo? (s/n): " respuesta
+  read -rp "[!] Nmap no esta instalado. ¿Quieres instalarlo? (s/n): " respuesta
   if [[ "$respuesta" =~ ^[Ss]$ ]]; then
     echo "[*] Instalando nmap..."
     sudo apt-get update && sudo apt-get install -y nmap
@@ -93,11 +105,11 @@ if ! command -v nmap &>/dev/null; then
   fi
 fi
 
-echo "[*] Este comando realiza un escaneo de vulnerabilidades sobre la IP especificada."
+echo "[*] Este comando realiza un escaneo de vulnerabilidades sobre la IP específica."
 read -rp "Introduce la IP a escanear: " ip
 
 if [[ -z "$ip" ]]; then
-  echo "[!] No se ha introducido una IP válida."
+  echo "[!] No se ha introducido una IP valida."
   exit 1
 fi
 
@@ -107,16 +119,81 @@ EOF
 
 chmod 777 /usr/bin/scanvuln
 
+# comando : pingtime
+# hace un ping registrando la fecha y tiempo exacto y de manera opcional guarda cada peticion en la ruta /var/log/ping/
+# -------------------------------------------------------------------
+cat <<EOF > /usr/bin/pingtime
+#!/bin/bash
+if [[ -z "$1" ]]; then
+  echo "Uso: pingtime <IP|host>"
+  exit 1
+fi
+
+read -rp "¿Quieres guardar el registro? (s/n): " respuesta
+
+log_dir="/var/log/ping"
+mkdir -p "$log_dir"
+
+timestamp=$(date '+%Y%m%d_%H%M%S')
+log_file="$log_dir/ping_${1}_${timestamp}.log"
+
+if [[ "$respuesta" =~ ^[Ss]$ ]]; then
+  # Añado informacion con nmap del host
+  ip neigh show "$1" >> "$log_file"
+  nslookup "$1" >> "$log_file"
+  echo -e "================================================================================\n" >> "$log_file"
+
+  read -rp "¿Registrar todos los logs (a) o solo cambios de estado (c)? [a/c]: " modo
+
+  last_state=""
+
+  ping "$1" | while IFS= read -r line; do
+    date_str="[$(date '+%Y-%m-%d %H:%M:%S')]"
+    echo_line="$date_str $line"
+
+    if [[ "$modo" =~ ^[Aa]$ ]]; then
+      # Guardar todo
+      echo "$echo_line" | tee -a "$log_file"
+    else
+      # Solo cambios de estado
+      # Detectar si hay respuesta (linea con "bytes from") o timeout/error (no respuesta)
+      if echo "$line" | grep -q "bytes from"; then
+        current_state="up"
+      else
+        current_state="down"
+      fi
+
+      if [[ "$current_state" != "$last_state" ]]; then
+        echo "$echo_line" | tee -a "$log_file"
+        last_state="$current_state"
+      fi
+    fi
+  done
+
+  echo "Registro guardado en $log_file"
+
+else
+  ping "$1" | while IFS= read -r line; do
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $line"
+  done
+fi
+EOF
+
+chmod 777 /usr/bin/pingtime
+
 ## Configuración mínima de logs
 # **************************************
 # Logrotate estandar para cualquier servidor (configuracion minima):
-# Configura la rotación semanal, mantiene 54 semanas rotadas, agrega fechas a los nombres, comprime los logs antiguos y permite configuraciones adicionales desde /etc/logrotate.d.
+# Configura la rotación mensual, mantiene 12 meses rotados, agrega fechas a los nombres, comprime los logs antiguos, elimina archivos de dos años y permite configuraciones adicionales desde /etc/logrotate.d.
 cat  <<EOF > /etc/logrotate.conf
-# logrotate.conf
-weekly
-rotate 54
+# logrotate.conf - Patricio 01.2024
+monthly
+rotate 12
 dateext
 compress
+notifempty
+maxage 730
+create 640 root adm
 include /etc/logrotate.d
 EOF
 systemctl enable rsyslog
@@ -125,8 +202,8 @@ systemctl restart rsyslog
 # Idioma
 # **************************************
 #localectl
-#localectl set-locale LANG=en_US.UTF-8
-#localectl
+localectl set-locale LANG=en_US.UTF-8
+localectl
 
 # Configuro vimrc (estilo cyberpunk)
 # **************************************
@@ -271,7 +348,7 @@ syscontact "🤖 Informatica <informatica@aptelliot.es>"
 #exec 1.3.6.1.4.1.2021.8 /bin/echo "Hello world"
 
 # =====[ACCESOS-RESTRICTIVOS]=======================================================================================
-# Solo exponer árbol de OID seguro
+# Solo exponer arbol de OID seguro
 view systemonly included .1.3.6.1.2.1.1.1
 view systemonly included .1.3.6.1.2.1.1.2
 view systemonly included .1.3.6.1.2.1.1.6
@@ -290,7 +367,7 @@ EOF
 systemctl start snmpd
 systemctl enable snmpd
 
-# HORA
+# Hora
 # **************************************
 timedatectl
 ntpdate hora.roa.es
@@ -333,10 +410,21 @@ allow-hotplug eth0
 iface eth0  inet dhcp
 EOF
 
+# editor de texto por defecto
+# **************************************
+# modifico el editor por defecto del sistema para muchas aplicaciones (como crontab)
+# Para el usuario actual
+echo "export VISUAL=vim" >> ~/.bashrc
+echo "export EDITOR=vim" >> ~/.bashrc
+# Para root (si usas sudo crontab -e)
+sudo bash -c 'echo "export VISUAL=vim" >> /root/.bashrc'
+sudo bash -c 'echo "export EDITOR=vim" >> /root/.bashrc'
+. "$HOME/.cargo/env"
+
 # Deshabilitar IPv6
 # **************************************
 echo -e "# Deshabilitamos IPv6\nnet.ipv6.conf.all.disable_ipv6 = 1\nnet.ipv6.conf.default.disable_ipv6 = 1\nnet.ipv6.conf.lo.disable_ipv6 = 1" >> /etc/sysctl.conf
 sysctl -p
 
-echo -e "\e[31m ⚠ Recuerda cambiar el host en /etc/hosts por el mismo que acabas de agregar en /etc/hostname\e[0m"
-echo "¡Listo! Los paquetes se instalaron y la configuración está completa."
+echo -e "\e[31m⚠️ ¡Listo! Los paquetes se instalaron y la configuración esta completa.\e[0m"
+echo -e "\e[31m⚠️ Abre una nueva sesión para trabajar sobre los cambios.\e[0m"
