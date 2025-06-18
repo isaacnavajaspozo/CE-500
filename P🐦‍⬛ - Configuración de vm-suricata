@@ -11,6 +11,9 @@ sudo suricata-update
 # Define la interfaz que quieres monitorizar (ejemplo eth0)
 vim /etc/suricata/suricata.yaml
 ---------------------------------------------------
+# red interna para las reglas de suricata
+address-groups:
+  HOME_NET: "[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]"
 ...
 af-packet:
   - interface: eth0
@@ -56,10 +59,16 @@ tail -f /var/log/suricata/eve.json | jq .
 
 -
 
-# ✅ Resumen rápido:
+# ✅ Resumen general:
 # FQUEUE actúa como puente entre iptables y Suricata para el bloqueo en tiempo real.
 # El rendimiento puede verse afectado si se analiza mucho tráfico.
 # Debes mantener actualizadas las reglas para cubrir nuevas amenazas.
 # Suricata puede integrarse con Elastic/Kibana para análisis y visualización avanzada.
+
+# ✅ Resumen suricata-update:
+# Descarga automáticamente reglas actualizadas de fuentes oficiales (Emerging Threats, Snort, etc.).
+# Filtra, combina y prepara las reglas para que Suricata las use sin conflictos.
+# Gestiona reglas personalizadas junto con las oficiales sin sobrescribirlas.
+# Facilita mantener el IDS/IPS actualizado con las últimas firmas de ataques y vulnerabilidades.
 
 -
