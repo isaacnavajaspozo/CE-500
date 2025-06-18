@@ -68,7 +68,7 @@ sudo reboot now
 # Los nombres de las máquinas
 1 - vm-samba
 2 - vm-pentesting
-3 - vm-bitwarden
+3 - vm-keepassx
 4 - vm-greenbone
 5 - vm-velociraptor
 6 - vm-nginx
