@@ -1,0 +1,74 @@
+# 🧠 Keepassxc se utiliza para gestionar contraseñas y datos sensibles de forma segura, incluyendo 2FA.
+# 🐧 Lo voy a utilizar para gestión de contraseñas, como alternativa de control a gestores de contraseñas online.
+
+#=========================================================================================================================
+[🔑 ce-500]::
+# Documentación oficial               : https://keepassxc.org/docs/KeePassXC_UserGuide#_openssh_agent_on_linux
+
+#=========================================================================================================================
+[🔑 INSTALACIÓN]::
+# creo una máquina que sirva de servidor independiente desde el que puedo compartir cada base de datos de distintas maneras 
+# las que aconsejo son las siguientes::
+# 💃 dentro de un servidor samba
+# 🐱 con un repositorio git minimalista como he hecho en vm-nginx 
+# 🤖 a través de un script en PowerShell
+
+# instalo keepassxc
+sudo apt install keepassxc
+
+mkdir /KIRIBAKO/keepassxc && cd /KIRIBAKO/keepassxc 
+
+# creo la base de datos por usuario y le agrego la contraseña
+keepassxc-cli db-create usuario-db.kdbx --set-password
+> **********
+
+# compruebo la base de datos
+keepassxc-cli open usuario-db.kdbx
+> **********
+
+# útiles
+usuario-db.kdbx> add prueba
+usuario-db.kdbx> show prueba
+usuario-db.kdbx> search prueba
+
+#=========================================================================================================================
+[🔑 CONFIGURACIÓN SCRIPT POWERSHELL::
+
+# creo un usuario solo con privilegios de keepassxc
+sudo adduser keepassxc
+sudo mkdir /KIRIBAKO/keepassxc
+sudo chown keepassxc:keepassxc /KIRIBAKO/keepassxc
+# bloqueo que no pueda lanzar comandos
+sudo usermod -s /usr/sbin/nologin keepassxc
+
+# muevo la base de datos y le doy permisos
+sudo chown keepassxc:keepassxc /KIRIBAKO/keepassxc/usuario-1/usuario-db.kdbx
+
+# desde el pc Windows del usuario con el que modifico las password por
+ActualizarKeePassXc.ps1
+--------------------------------------------------------------------------------------
+# Variables
+$localFilePath = ".\keepassxc.kdbx"  # Ruta del archivo de keepassxc en la carpeta actual
+$remoteServer = "keepassxc@ip-servidor-vm-keepassx"
+$remoteFilePath = "/KIRIBAKO/keepassxc/usuario-1/keepassxc.kdbx"  # Ruta donde se guardará en el servidor
+
+# Comprobar si el archivo local existe
+if (Test-Path $localFilePath) {
+    # Copiar el archivo al servidor
+    # Usando SCP (asegúrate de tener OpenSSH instalado en Windows)
+    $scpCommand = "scp $localFilePath $remoteServer:$remoteFilePath"
+    
+    # Ejecutar el comando SCP
+    Invoke-Expression $scpCommand
+
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "La base de datos de keepassxc se ha actualizado en el servidor."
+    } else {
+        Write-Host "Error al copiar el archivo al servidor."
+    }
+} else {
+    Write-Host "El archivo de keepassxc no se encuentra en la carpeta actual."
+}
+--------------------------------------------------------------------------------------
+
+
