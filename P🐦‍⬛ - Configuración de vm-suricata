@@ -1,8 +1,29 @@
-# SURIKATA ::
 # Detectar tráfico malicioso (exploits, malware, escaneos, ataques).
 # Bloquear ese tráfico en tiempo real.
 
++--------------------+--------------------------------------------+----------------------------------------------------+
+| Aspecto            | Firewall                                   | IPS (Intrusion Prevention System), (surikata)      |
++--------------------+--------------------------------------------+----------------------------------------------------+
+| Función principal  | Controlar y filtrar tráfico según IP,      | Detectar y bloquear ataques basados en patrones    |
+|                    | puerto, protocolo                          | y comportamiento                                   |
++--------------------+--------------------------------------------+----------------------------------------------------+
+| Inspección         | Básica, en capa 3 y 4 (IP y transporte)    | Profunda, inspecciona capa 7 (aplicación) y        |
+|                    |                                            | patrones complejos                                 |
++--------------------+--------------------------------------------+----------------------------------------------------+
+| Bloqueo            | Sí, según reglas estáticas                 | Sí, basado en firmas y análisis en tiempo real     |
++--------------------+--------------------------------------------+----------------------------------------------------+
+| Análisis           | Limitado a atributos de red                | Análisis profundo del contenido y contexto         |
++--------------------+--------------------------------------------+----------------------------------------------------+
+| Protección         | General, contra accesos no autorizados     | Avanzada, contra exploits, malware, ataques        |
+|                    |                                            | específicos                                        |
++--------------------+--------------------------------------------+----------------------------------------------------+
+| Ubicación típica   | Perímetro o segmentos de red               | Integrado en red o en puntos críticos para         |
+|                    |                                            | detección activa                                   |
++--------------------+--------------------------------------------+----------------------------------------------------+
 
+
+#=========================================================================================================================
+[🐦‍⬛ INSTALACIÓN Y CONFIGURACIÓN DE SURIKATA]::
 # Instalación básica 
 sudo apt install suricata suricata-update
 sudo suricata-update
