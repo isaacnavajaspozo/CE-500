@@ -1,0 +1,57 @@
+# SURIKATA ::
+# Detectar tráfico malicioso (exploits, malware, escaneos, ataques).
+# Bloquear ese tráfico en tiempo real.
+
+
+sudo apt install suricata-update
+sudo suricata-update
+
+vim /etc/suricata/suricata.yaml
+---------------------------------------------------
+af-packet:
+  - interface: eth0
+---------------------------------------------------
+
+# surikata genera logs en 
+tail -100 /var/log/suricata/eve.json
+
+# modo IPS (opcional) bloquear tráfico → integrar con iptables
+sudo iptables -I FORWARD -j NFQUEUE --queue-num 0
+sudo suricata -c /etc/suricata/suricata.yaml -q 0 -D
+
+# como interface web se puede instalar (Scirius Community Editio)
+
+# ver alertas en vivo
+sudo tail -f /var/log/suricata/fast.log
+
+-
+
+# 1️⃣ Crear regla para bloquear algo (por ejemplo, ping ICMP):
+drop icmp any any -> any any (msg:"Ping bloqueado"; sid:1000001; rev:1;)
+
+# 2️⃣ Configuración de interfaz en suricata.yaml (modo NFQUEUE):
+---------------------------------------------------
+af-packet:
+  - interface: eth0
+    cluster-type: cluster_flow
+    cluster-id: 99
+    defrag: yes
+---------------------------------------------------
+
+# 3️⃣ Configurar iptables:
+---------------------------------------------------
+sudo iptables -I INPUT -j NFQUEUE --queue-num 0
+---------------------------------------------------
+
+# 4️⃣ Ejecutar Suricata en modo IPS:
+---------------------------------------------------
+sudo suricata -c /etc/suricata/suricata.yaml -q 0 -D
+---------------------------------------------------
+
+# → Ahora Suricata intercepta tráfico, compara con las reglas y bloquea lo que coincida.
+
+# ✅ Resumen rápido:
+# Modo IDS → Solo detecta.
+# Modo IPS → Detecta y bloquea.
+# NFQUEUE → Intermediario entre el tráfico y Suricata.
+# Reglas → Deciden qué bloquear (puedes crear o descargar).
