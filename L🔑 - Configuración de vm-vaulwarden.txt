@@ -7,18 +7,23 @@
 
 #=========================================================================================================================
 [🔑 INSTALACIÓN]::
-# 💃 dentro del samba creo una carpeta por usuario y le agrego una base de datos de keepassxc por usuario
-# instalo
+# creo una máquina que sirva de servidor independiente desde el que puedo compartir cada base de datos de distintas maneras 
+# las que aconsejo son las siguientes::
+# 💃 dentro de un servidor samba
+# 🐱 con un repositorio git minimalista como he hecho en vm-nginx 
+
+# instalo keepassxc
 sudo apt install keepassxc
 
-# creo la base de datos
-keepassxc-cli db-create mydatabase.kdbx --set-password
+# creo la base de datos por usuario y le agrego la contraseña
+keepassxc-cli db-create usuario-db.kdbx --set-password
 > **********
 
-# abro la base d edatos
-keepassxc-cli open mydatabase.kdbx
+# compruebo la base de datos
+keepassxc-cli open usuario-db.kdbx
 > **********
 
-mydatabase.kdbx> add prueba
-mydatabase.kdbx> show prueba
-mydatabase.kdbx> search prueba
+# útiles
+usuario-db.kdbx> add prueba
+usuario-db.kdbx> show prueba
+usuario-db.kdbx> search prueba
