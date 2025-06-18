@@ -59,8 +59,10 @@ sudo suricata-update
 sudo systemctl restart suricata
 
 # configura actualizaciones periódicas (cron job)
+sudo crontab -e
+---------------------------------------------------
 echo "0 3 * * * root /usr/bin/suricata-update && systemctl restart suricata" | sudo tee /etc/cron.d/suricata-update
-
+---------------------------------------------------
 
 ## Crear reglas para bloquear tráfico
 # esta forma de agregar reglas solo las voy a utilizar para reglas personalizadas (bloqueos muy específicos)
