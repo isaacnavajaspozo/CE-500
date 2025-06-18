@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Instalación de paquetes iniciales
 echo "Instalando paquetes..."
 apt-get update && apt-get upgrade -y
