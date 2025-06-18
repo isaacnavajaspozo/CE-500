@@ -4,11 +4,7 @@
 
 
 # Instalación básica 
-sudo apt install suricata-update
-sudo suricata-update
-
-# Actualizar reglas (muy importante)
-sudo apt install suricata-update
+sudo apt install suricata suricata-update
 sudo suricata-update
 
 # Configurar interfaz de red y modo IPS
@@ -33,7 +29,17 @@ nfqueue:
 # Si quieres proteger el tráfico local, cambia FORWARD por INPUT o OUTPUT según sea necesario
 sudo iptables -I FORWARD -j NFQUEUE --queue-num 0
 
-# Crear reglas para bloquear tráfico (modo IPS)
+# como es inviable gestionar de manera manual cada regla, se usan feeds de reglas actualizadas para automatizarlo
+sudo apt install suricata-update
+sudo suricata-update 
+sudo systemctl restart suricata
+
+# configura actualizaciones periódicas (cron job)
+echo "0 3 * * * root /usr/bin/suricata-update && systemctl restart suricata" | sudo tee /etc/cron.d/suricata-update
+
+
+## Crear reglas para bloquear tráfico
+# esta forma de agregar reglas solo las voy a utilizar para reglas personalizadas (bloqueos muy específicos)
 # Ejemplo: Bloquear pings ICMP
 vim /etc/suricata/rules/local.rules
 ---------------------------------------------------
@@ -42,10 +48,11 @@ drop icmp any any -> any any (msg:"Ping bloqueado"; sid:1000001; rev:1;)
     # -c especifica el archivo de configuración
     # -q 0 indica la cola NFQUEUE a usar
     # -D corre en modo demonio
-
+    
 # Monitorizar logs y alertas
 tail -f /var/log/suricata/fast.log
 tail -f /var/log/suricata/eve.json | jq .
+
 
 -
 
@@ -54,3 +61,5 @@ tail -f /var/log/suricata/eve.json | jq .
 # El rendimiento puede verse afectado si se analiza mucho tráfico.
 # Debes mantener actualizadas las reglas para cubrir nuevas amenazas.
 # Suricata puede integrarse con Elastic/Kibana para análisis y visualización avanzada.
+
+-
