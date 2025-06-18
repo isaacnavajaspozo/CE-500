@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Instalación de paquetes iniciales
 echo "Instalando paquetes..."
 apt-get update && apt-get upgrade -y
@@ -131,34 +129,35 @@ if [[ -z "$1" ]]; then
   exit 1
 fi
 
+host="$1"
 read -rp "¿Quieres guardar el registro? (s/n): " respuesta
 
+timestamp=$(date +"%Y%m%d_%H%M%S")
 log_dir="/var/log/ping"
-mkdir -p "$log_dir"
-
-timestamp=$(date '+%Y%m%d_%H%M%S')
-log_file="$log_dir/ping_${1}_${timestamp}.log"
+log_file="$log_dir/ping_${host}_$timestamp.log"
 
 if [[ "$respuesta" =~ ^[Ss]$ ]]; then
-  # Añado informacion con nmap del host
-  ip neigh show "$1" >> "$log_file"
-  nslookup "$1" >> "$log_file"
-  echo -e "================================================================================\n" >> "$log_file"
+  mkdir -p "$log_dir"
+
+  # Información inicial del host
+  {
+    echo -e "================================================================================\n"
+    echo "Información inicial para $host"
+    echo "Fecha: $(date)"
+    ip neigh show "$host"
+    nslookup "$host"
+    echo -e "================================================================================\n"
+  } >> "$log_file"
 
   read -rp "¿Registrar todos los logs (a) o solo cambios de estado (c)? [a/c]: " modo
 
   last_state=""
-
-  ping "$1" | while IFS= read -r line; do
+  ping "$host" | while IFS= read -r line; do
     date_str="[$(date '+%Y-%m-%d %H:%M:%S')]"
-    echo_line="$date_str $line"
 
     if [[ "$modo" =~ ^[Aa]$ ]]; then
-      # Guardar todo
-      echo "$echo_line" | tee -a "$log_file"
+      echo "$date_str $line" | tee -a "$log_file"
     else
-      # Solo cambios de estado
-      # Detectar si hay respuesta (linea con "bytes from") o timeout/error (no respuesta)
       if echo "$line" | grep -q "bytes from"; then
         current_state="up"
       else
@@ -166,7 +165,7 @@ if [[ "$respuesta" =~ ^[Ss]$ ]]; then
       fi
 
       if [[ "$current_state" != "$last_state" ]]; then
-        echo "$echo_line" | tee -a "$log_file"
+        echo "$date_str $line" | tee -a "$log_file"
         last_state="$current_state"
       fi
     fi
@@ -175,7 +174,7 @@ if [[ "$respuesta" =~ ^[Ss]$ ]]; then
   echo "Registro guardado en $log_file"
 
 else
-  ping "$1" | while IFS= read -r line; do
+  ping "$host" | while IFS= read -r line; do
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $line"
   done
 fi
