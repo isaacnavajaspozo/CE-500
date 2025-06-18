@@ -1,7 +1,13 @@
-# 🧠 Keepassxc se utiliza para gestionar contraseñas y datos sensibles de forma segura.
-# 🐧 Lo voy a utilizar para gestión de contraseñas, como alternativa de control a bitwarden.
+# 🧠 Keepassxc se utiliza para gestionar contraseñas y datos sensibles de forma segura, incluyendo 2FA.
+# 🐧 Lo voy a utilizar para gestión de contraseñas, como alternativa de control a gestores de contraseñas online.
 
-# dentro del samba creo una carpeta por usuario y le agrego una base de datos de keepassxc por usuario
+#=========================================================================================================================
+[🔑 ce-500]::
+# Documentación oficial               : https://keepassxc.org/docs/KeePassXC_UserGuide#_openssh_agent_on_linux
+
+#=========================================================================================================================
+[🔑 INSTALACIÓN]::
+# 💃 dentro del samba creo una carpeta por usuario y le agrego una base de datos de keepassxc por usuario
 # instalo
 sudo apt install keepassxc
 
@@ -16,149 +22,3 @@ keepassxc-cli open mydatabase.kdbx
 mydatabase.kdbx> add prueba
 mydatabase.kdbx> show prueba
 mydatabase.kdbx> search prueba
-mydatabase.kdbx> add prueba
-
-
-
-
-
-
-
-
-
-
-
-#=========================================================================================================================
-[🔑 ce-500]::
-# Documentación no-oficial               : https://serverspace.io/es/support/help/install-bitwarden-debian-11/
-# Documentación oficial                  : https://bitwarden.com/help/install-on-premise-linux/
-# Documentación no-oficial               : https://community.hetzner.com/tutorials/how-to-install-vaultwarden
-# Documentación oficial de vaultwarden   : https://github.com/dani-garcia/vaultwarden/wiki/Building-binary#install-the-web-vault
-
-#=========================================================================================================================
-[🔑 INSTALACIONES]::
-# instalaciones 
-apt update
-apt upgrade -y
-
-# creo una carpeta en el contenedor e instalo el script
-mkdir /ce-500 && cd /ce-500
-apt install vim -y
-vim script-00.sh
-# i - (shift + botón derecho):
---------------------------------------------------------------------------------------
-    # código de /SCRIPTS/script-00.sh de este github
---------------------------------------------------------------------------------------
-
-# doy permisos y hago la instalación
-chmod +x script-00.sh
-./script-00.sh
-source ~/.bashrc
-
-#=========================================================================================================================
-[🔑 INSTALACIÓN VAULTWARDEN]::
-# actualizar el sistema
-sudo apt update && sudo apt upgrade -y
-
-# instalar dependencias
-sudo apt install -y git build-essential curl pkg-config libssl-dev libsqlite3-dev
-
-# crear un usuario dedicado para Vaultwarden
-sudo useradd -r -m -U -d /opt/vaultwarden vaultwarden
-
-# descargar Vaultwarden
-cd /opt/vaultwarden
-git clone https://github.com/dani-garcia/vaultwarden.git /opt/vaultwarden
-tar -xzvf vaultwarden.tar.gz
-rm vaultwarden.tar.gz
-mv /opt/vaultwarden/vaultwarden-1.33.2/* /opt/vaultwarden/
-mv /opt/vaultwarden/vaultwarden-1.33.2/.* /opt/vaultwarden/
-rmdir /opt/vaultwarden/vaultwarden-1.33.2
-
-# configurar Vaultwarden
-# sudo -u vaultwarden cp .env.template .env
-cp .env.template .env
-vim /opt/vaultwarden/.env
-    > DOMAIN=https://<IP_SERVIDOR>
-    > SIGNUPS_ALLOWED=false                                # en false no permite registros a la db
-    > DATABASE_URL=data/db.sqlite3
-
-# instalo 
-# sudo apt install build-essential curl git libssl-dev pkg-config
-sudo apt install -y sqlite3 curl unzip build-essential pkg-config libssl-dev
-
-# instalo Rust
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-    > 1
-source $HOME/.cargo/env
-
-# agrego ram de 2G a través de una wsap
-sudo fallocate -l 2G /swapfile
-sudo chmod 600 /swapfile
-sudo mkswap /swapfile
-sudo swapon /swapfile
-
-# creo el binario vaultwarden en el directorio target/release
-cd /opt/vaultwarden
-cargo build --release
-cargo build --release --features sqlite
-ls target/release/
-
-# pruebo el binario
-./target/debug/vaultwarden
-
-# copio el archivo .env
-cp /opt/vaultwarden/.env.template /opt/vaultwarden/.env
-
-# crear un servicio systemd
-vim /etc/systemd/system/vaultwarden.service
------------------------------------------------------------------------
-[Unit]
-Description=Vaultwarden Server (Rust Bitwarden)
-After=network.target
-
-[Service]
-User=root
-Group=root
-WorkingDirectory=/opt/vaultwarden
-ExecStart=/opt/vaultwarden/target/debug/vaultwarden
-EnvironmentFile=/opt/vaultwarden/.env
-Restart=always
-RestartSec=5s
-Environment="WEB_VAULT_ENABLED=false"
-
-[Install]
-WantedBy=multi-user.target
------------------------------------------------------------------------
-# habilitar y ejecutar Vaultwarden
-sudo systemctl daemon-reload
-sudo systemctl enable vaultwarden
-sudo systemctl start vaultwarden
-sudo systemctl status vaultwarden
-
-
-#=========================================================================================================================
-[🔑 WEB-VAULT]::
-# activo el servicio
-sudo systemctl daemon-reload
-sudo systemctl start vaultwarden
-sudo systemctl enable vaultwarden
-sudo systemctl status vaultwarden
-
-# pruebo el binario, comprovar error de web-vault/
-/opt/vaultwarden/target/debug/vaultwarden
-
-cd /opt/vaultwarden
-curl -L -o bw_web_builds.zip "https://github.com/dani-garcia/bw_web_builds/archive/refs/heads/master.zip"
-unzip bw_web_builds.zip -d web-vault
-
-# descomprimo el .zip
-unzip bw_web_builds.zip -d web-vault
-    > A
-
-# borro carpeta
-mv web-vault/bw_web_builds-master/* web-vault/
-rm -rf web-vault/bw_web_builds-master
-
-# compruebo los cambios 
-ls -la /opt/vaultwarden/web-vault
