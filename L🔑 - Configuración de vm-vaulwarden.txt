@@ -1,5 +1,32 @@
 # 🧠 Vaultwarden se utiliza para gestionar contraseñas y datos sensibles de forma segura.
 # 🐧 Lo voy a utilizar para gestión de contraseñas, como alternativa de control a bitwarden.
+
+# instalo
+sudo apt install keepassxc
+
+# creo la base de datos
+keepassxc-cli db-create mydatabase.kdbx --set-password
+> **********
+
+# abro la base d edatos
+keepassxc-cli open mydatabase.kdbx
+> **********
+
+mydatabase.kdbx> add prueba
+mydatabase.kdbx> show prueba
+mydatabase.kdbx> search prueba
+mydatabase.kdbx> add prueba
+
+
+
+
+
+
+
+
+
+
+
 #=========================================================================================================================
 [🔑 ce-500]::
 # Documentación no-oficial               : https://serverspace.io/es/support/help/install-bitwarden-debian-11/
