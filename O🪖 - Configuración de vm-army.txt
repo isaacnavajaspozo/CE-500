@@ -52,15 +52,15 @@ sudo freshclam
 mkdir /isaac/mensajes
 
 # creo el script 
-vim enviar.mensaje.sh
+vim enviar-mensaje.sh
 --------------------------------------------------------------------------
 #!/bin/bash
 
 CARPETA="/isaac/mensajes"
-DESTINO="to@dominio.es"              # DESTINO="primero@dominio.com, segundo@dominio.com, tercero@dominio.com"
-DESTINO_OCULTO="bcc@dominio.com"     # DESTINO_OCULTO="primero@dominio.com, segundo@dominio.com, tercero@dominio.com"
+DESTINO="to@dominio.es"               # DESTINO="primero@dominio.com, segundo@dominio.com, tercero@dominio.com"
+DESTINO_OCULTO="bcc@dominio.com"      # DESTINO_OCULTO="primero@dominio.com, segundo@dominio.com, tercero@dominio.com"
 ASUNTO="Nuevo mensaje"
-REMITENTE=from@dominio.es"           # correo real
+REMITENTE="from@dominio.es"           # correo real
 DESTINO_ENVIADOS="$CARPETA/enviados"
 
 # Crear carpeta de enviados si no existe
@@ -94,6 +94,7 @@ else
     echo "No hay mensajes pendientes por enviar."
 fi
 --------------------------------------------------------------------------
+chmod 770 enviar-mensaje.sh
 
 # creo un mensaje de ejemplo
 cd /isaac/mensajes
@@ -105,9 +106,10 @@ Recuento de inventario: completado.
 --------------------------------------------------------------------------
 
 # creo un cron que envie el mensaje todos los días a las 11 de la mañana
+apt install cron
 crontab -e
 --------------------------------------------------------------------------
-0 11 * * * /ruta/al/script.sh
+0 11 * * * /isaac/enviar-mensaje.sh
 --------------------------------------------------------------------------
 
 
