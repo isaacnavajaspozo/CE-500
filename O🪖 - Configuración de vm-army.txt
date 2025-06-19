@@ -1,9 +1,11 @@
 # 🧠 Este servidor se utiliza como 
 # 🐧
+
 #=========================================================================================================================
 [🪖📩 ce-500]::
 # Documentación oficial kismet :             https://www.kismetwireless.net/docs/readme/installing/linux/
 # documentación oficial clamav :             https://docs.clamav.net/
+
 
 #=========================================================================================================================
 [🪖📩 INSTALAR ANTIVIRUS]::
@@ -40,6 +42,68 @@ sudo freshclam
 # 🆗
 
 
+#=========================================================================================================================
+[🪖📩 MENSAJERÍA INSTANTANEA]::
+# 🧠 enviará cad día un mensaje programado a la misma hora (siempre que lo haya), ordenando los archivos a enviar por orden.
+# 🧠 una vez enviado, se clasifica el mensaje como "🆗 enviado" y aunque permanezca en el servidor no se volverá a mandar dicho mensaje.
+
+# creo una carpeta con los mensajes
+mkdir /isaac/mensajes
+
+# creo el script 
+vim enviar.mensaje.sh
+--------------------------------------------------------------------------
+#!/bin/bash
+
+CARPETA="/isaac/mensajes"
+DESTINO="to@grafometal.es"      # DESTINO="primero@dominio.com, segundo@dominio.com, tercero@dominio.com"
+DESTINO_OCULTO="bcc@gmail.com"    # DESTINO_OCULTO="primero@dominio.com, segundo@dominio.com, tercero@dominio.com"
+ASUNTO="Nuevo mensaje"
+REMITENTE=from@grafometal.es"         # correo real
+
+archivo=$(grep -L "^🆗 enviado" "$CARPETA"/* | sort | head -n 1)
+
+if [ -n "$archivo" ]; then
+    echo "Enviando: $archivo a $DESTINO (BCC: $DESTINO_OCULTO)"
+
+    (
+        echo "Subject: $ASUNTO"
+        echo "From: $REMITENTE"
+        echo "To: $DESTINO"
+        echo "Bcc: $DESTINO_OCULTO"
+        echo "Content-Type: text/plain; charset=utf-8"
+        echo
+        cat "$archivo"
+    ) | sendmail -f "$REMITENTE" -t
+
+    if [ $? -eq 0 ]; then
+        echo "Correo enviado exitosamente."
+        sed -i '1i 🆗 enviado' "$archivo"
+    else
+        echo "Error al enviar el correo."
+    fi
+else
+    echo "No hay mensajes pendientes por enviar."
+fi
+--------------------------------------------------------------------------
+
+# creo un mensaje de ejemplo
+cd /isaac/mensajes
+vim 1.txt
+--------------------------------------------------------------------------
+Unidad 77:
+Avance de tropas.
+--------------------------------------------------------------------------
+
+# creo un cron que envie el mensaje todos los días a las 11 de la mañana
+crontab -e
+--------------------------------------------------------------------------
+0 11 * * * /ruta/al/script.sh
+--------------------------------------------------------------------------
+
+
+#=========================================================================================================================
+[🪖📩 PROYECTOS DE RADIOFRECUENCIA]::
 
 ## 📶 Kismet::
 # kismet es una herramienta de detección de redes inalámbricas que se utiliza principalmente para la detección de redes Wi-Fi y la captura de paquetes, pero se pueden encontrar principalmente estos tipos de redes:
