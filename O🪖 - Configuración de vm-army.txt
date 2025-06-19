@@ -51,7 +51,11 @@ sudo freshclam
 # creo una carpeta con los mensajes
 mkdir /isaac/mensajes
 
-# creo el script 
+# instalo postfix
+apt install postfix
+    - web
+
+# 👍 creo el script en el caso que el correo remitente sea de dominio
 vim enviar-mensaje.sh
 --------------------------------------------------------------------------
 #!/bin/bash
@@ -94,6 +98,89 @@ else
     echo "No hay mensajes pendientes por enviar."
 fi
 --------------------------------------------------------------------------
+
+# 👍 creo el script en el caso de que mi correo remitente sea un gmail
+--------------------------------------------------------------------------
+#!/bin/bash
+### === CONFIGURACIÓN DEL CORREO === ###
+GMAIL_USER="from@gmail.com"
+APP_PASSWORD="contraseña_de_aplicación_de_google"
+CARPETA="/isaac/mensajes"
+DESTINO="to@gmail.com"
+DESTINO_OCULTO="bcc@gmail.com"
+ASUNTO="Nuevo mensaje"
+REMITENTE="$GMAIL_USER"
+DESTINO_ENVIADOS="$CARPETA/enviados"
+
+### === FUNCIONES === ###
+
+configurar_postfix() {
+    echo "🔧 Configurando Postfix para usar Gmail como relay..."
+
+    # Configurar main.cf
+    postconf -e "relayhost = [smtp.gmail.com]:587"
+    postconf -e "smtp_use_tls = yes"
+    postconf -e "smtp_sasl_auth_enable = yes"
+    postconf -e "smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd"
+    postconf -e "smtp_sasl_security_options = noanonymous"
+    postconf -e "smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt"
+
+    # Credenciales de Gmail
+    echo "[smtp.gmail.com]:587 $GMAIL_USER:$APP_PASSWORD" > /etc/postfix/sasl_passwd
+    chmod 600 /etc/postfix/sasl_passwd
+    postmap /etc/postfix/sasl_passwd
+
+    # Reiniciar Postfix
+    systemctl restart postfix
+}
+
+verificar_postfix_configurado() {
+    grep -q "smtp.gmail.com" /etc/postfix/main.cf
+    return $?
+}
+
+### === INICIO DEL SCRIPT === ###
+
+# Verificar configuración de Postfix
+if verificar_postfix_configurado; then
+    echo "✅ Postfix ya está configurado con Gmail."
+else
+    configurar_postfix
+fi
+
+# Crear carpeta de enviados si no existe
+mkdir -p "$DESTINO_ENVIADOS"
+
+# Buscar el primer archivo por orden
+archivo=$(ls "$CARPETA"/*.txt 2>/dev/null | sort | head -n 1)
+
+if [ -n "$archivo" ]; then
+    echo "📤 Enviando: $archivo a $DESTINO (BCC: $DESTINO_OCULTO)"
+
+    (
+        echo "Subject: $ASUNTO"
+        echo "From: $REMITENTE"
+        echo "To: $DESTINO"
+        echo "Bcc: $DESTINO_OCULTO"
+        echo "Content-Type: text/plain; charset=utf-8"
+        echo
+        cat "$archivo"
+    ) | sendmail -f "$REMITENTE" -t
+
+    if [ $? -eq 0 ]; then
+        echo "✅ Correo enviado exitosamente."
+        nombre=$(basename "$archivo")
+        timestamp=$(date +%Y%m%d_%H%M%S)
+        mv "$archivo" "$DESTINO_ENVIADOS/${timestamp}_$nombre"
+    else
+        echo "❌ El mensaje NO se pudo enviar."
+    fi
+else
+    echo "📭 No hay mensajes pendientes por enviar."
+fi
+--------------------------------------------------------------------------
+
+# doy permisos al script
 chmod 770 enviar-mensaje.sh
 
 # creo un mensaje de ejemplo
@@ -111,6 +198,11 @@ crontab -e
 --------------------------------------------------------------------------
 0 11 * * * /isaac/enviar-mensaje.sh
 --------------------------------------------------------------------------
+
+# pruebo script
+cd /isaac
+./enviar-mensaje.sh
+tail -50 /var/log/mail.log
 
 
 #=========================================================================================================================
