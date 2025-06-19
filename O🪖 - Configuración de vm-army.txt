@@ -46,6 +46,7 @@ sudo freshclam
 [🪖📩 MENSAJERÍA INSTANTANEA]::
 # 🧠 enviará cad día un mensaje programado a la misma hora (siempre que lo haya), ordenando los archivos a enviar por orden.
 # 🧠 una vez enviado, se clasifica el mensaje dentro de la carpeta /enviados de la misma ruta y aunque permanezca en el servidor no se volverá a mandar dicho mensaje.
+# 🧠 al mover el mensaje a la carpeta enviados le cambia el nombre por la fecha y luego su nombree original para que no sobreescriban. Ej: 20250619_082815_nombre.txt
 
 # creo una carpeta con los mensajes
 mkdir /isaac/mensajes
@@ -62,8 +63,10 @@ ASUNTO="Nuevo mensaje"
 REMITENTE=from@dominio.es"           # correo real
 DESTINO_ENVIADOS="$CARPETA/enviados"
 
-mkdir -p "$DESTINO_ENVIADOS"         # Crea la carpeta si no existe
+# Crear carpeta de enviados si no existe
+mkdir -p "$DESTINO_ENVIADOS"
 
+# Buscar el primer archivo por orden
 archivo=$(ls "$CARPETA"/*.txt 2>/dev/null | sort | head -n 1)
 
 if [ -n "$archivo" ]; then
@@ -81,7 +84,9 @@ if [ -n "$archivo" ]; then
 
     if [ $? -eq 0 ]; then
         echo "Correo enviado exitosamente."
-        mv "$archivo" "$DESTINO_ENVIADOS/"
+        nombre=$(basename "$archivo")
+        timestamp=$(date +%Y%m%d_%H%M%S)
+        mv "$archivo" "$DESTINO_ENVIADOS/${timestamp}_$nombre"
     else
         echo "Error al enviar el correo."
     fi
