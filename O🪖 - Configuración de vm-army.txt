@@ -45,7 +45,7 @@ sudo freshclam
 #=========================================================================================================================
 [🪖📩 MENSAJERÍA INSTANTANEA]::
 # 🧠 enviará cad día un mensaje programado a la misma hora (siempre que lo haya), ordenando los archivos a enviar por orden.
-# 🧠 una vez enviado, se clasifica el mensaje como "🆗 enviado" y aunque permanezca en el servidor no se volverá a mandar dicho mensaje.
+# 🧠 una vez enviado, se clasifica el mensaje dentro de la carpeta /enviados de la misma ruta y aunque permanezca en el servidor no se volverá a mandar dicho mensaje.
 
 # creo una carpeta con los mensajes
 mkdir /isaac/mensajes
@@ -60,8 +60,11 @@ DESTINO="to@dominio.es"              # DESTINO="primero@dominio.com, segundo@dom
 DESTINO_OCULTO="bcc@dominio.com"     # DESTINO_OCULTO="primero@dominio.com, segundo@dominio.com, tercero@dominio.com"
 ASUNTO="Nuevo mensaje"
 REMITENTE=from@dominio.es"           # correo real
+DESTINO_ENVIADOS="$CARPETA/enviados"
 
-archivo=$(grep -L "^🆗 enviado" "$CARPETA"/* | sort | head -n 1)
+mkdir -p "$DESTINO_ENVIADOS"         # Crea la carpeta si no existe
+
+archivo=$(ls "$CARPETA"/*.txt 2>/dev/null | sort | head -n 1)
 
 if [ -n "$archivo" ]; then
     echo "Enviando: $archivo a $DESTINO (BCC: $DESTINO_OCULTO)"
@@ -78,7 +81,7 @@ if [ -n "$archivo" ]; then
 
     if [ $? -eq 0 ]; then
         echo "Correo enviado exitosamente."
-        sed -i '1i 🆗 enviado' "$archivo"
+        mv "$archivo" "$DESTINO_ENVIADOS/"
     else
         echo "Error al enviar el correo."
     fi
