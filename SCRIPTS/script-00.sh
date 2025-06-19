@@ -187,13 +187,13 @@ chmod 777 /usr/bin/pingtime
 # Logrotate estandar para cualquier servidor (configuracion minima):
 # Configura la rotación mensual, mantiene 12 meses rotados, agrega fechas a los nombres, comprime los logs antiguos, elimina archivos de dos años y permite configuraciones adicionales desde /etc/logrotate.d.
 cat  <<EOF > /etc/logrotate.conf
-# logrotate.conf - Patricio 01.2024
-monthly
-rotate 12
+# logrotate.conf - Elliot 2025
+weekly
+rotate 52          # 52 semanas = 1 año
 dateext
 compress
 notifempty
-maxage 730
+maxage 730         # elimina logs > 730 días (2 años)
 create 640 root adm
 include /etc/logrotate.d
 EOF
@@ -373,7 +373,8 @@ systemctl enable snmpd
 timedatectl
 ntpdate hora.roa.es
 timedatectl set-timezone Europe/Madrid
-echo -e "## Actualizacion de hora - Patricio\n00 6 * * * /usr/sbin/ntpdate -s hora.roa.es" >> /var/spool/cron/crontabs/root
+# sincroniza la hora del servidor con el servidor horario oficial de España
+echo -e "## actualizacion de hora \n00 6 * * * /usr/sbin/ntpdate -s hora.roa.es" >> /var/spool/cron/crontabs/root
 
 # SAR Habilitamos monitorizacion
 # **************************************
