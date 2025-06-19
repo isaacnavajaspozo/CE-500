@@ -56,10 +56,10 @@ vim enviar.mensaje.sh
 #!/bin/bash
 
 CARPETA="/isaac/mensajes"
-DESTINO="to@grafometal.es"      # DESTINO="primero@dominio.com, segundo@dominio.com, tercero@dominio.com"
-DESTINO_OCULTO="bcc@gmail.com"    # DESTINO_OCULTO="primero@dominio.com, segundo@dominio.com, tercero@dominio.com"
+DESTINO="to@dominio.es"              # DESTINO="primero@dominio.com, segundo@dominio.com, tercero@dominio.com"
+DESTINO_OCULTO="bcc@dominio.com"     # DESTINO_OCULTO="primero@dominio.com, segundo@dominio.com, tercero@dominio.com"
 ASUNTO="Nuevo mensaje"
-REMITENTE=from@grafometal.es"         # correo real
+REMITENTE=from@dominio.es"           # correo real
 
 archivo=$(grep -L "^🆗 enviado" "$CARPETA"/* | sort | head -n 1)
 
