@@ -93,6 +93,7 @@ vim 1.txt
 --------------------------------------------------------------------------
 Unidad 77:
 Avance de tropas.
+Recuento de inventario: completado.
 --------------------------------------------------------------------------
 
 # creo un cron que envie el mensaje todos los días a las 11 de la mañana
