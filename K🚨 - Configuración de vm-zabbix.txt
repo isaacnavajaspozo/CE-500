@@ -1,3 +1,4 @@
+# 🧠 vm-zabbix → Monitorización infra
 # 🧠 Zabbix es una herramienta de monitoreo integral y escalable para infraestructuras de TI, que ofrece visualización, alertas y gestión centralizada de servidores, redes y aplicaciones.
 # 🐧 Voy a utilizar zabbix para monitorizar equipos y servidores a través de agentes o SNMP, generar alertas y generar gráficos de disponivilidad o recursos.
 #=========================================================================================================================
