@@ -1,3 +1,4 @@
+# 🧠 vm-keepassx → Gestor contraseñas
 # 🧠 Keepassxc se utiliza para gestionar contraseñas y datos sensibles de forma segura, incluyendo 2FA.
 # 🐧 Lo voy a utilizar para gestión de contraseñas, como alternativa de control a gestores de contraseñas online.
 
