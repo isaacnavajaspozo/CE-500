@@ -1,3 +1,4 @@
+# 🧠 vm-samba → Archivos compartidos / SMB
 # 🧠 Samba permite compartir archivos e impresoras con sistemas Windows a través de los protocolos SMB/CIFS.
 # 🐧 Utilizo esta máquina como servidor de archivos compartidos por usuarios, para compartir manuales IT. 
 # 🐧 Además también hace de honeypot para registrar los accesos de la carpeta principal
