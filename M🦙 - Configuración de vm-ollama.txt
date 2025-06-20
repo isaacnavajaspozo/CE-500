@@ -1,3 +1,4 @@
+# 🧠 vm-ollama → IA / modelos locales
 # 🧠 Ollama se utiliza para modelos LLM localmente (como chat conversacional con IA).
 # 🐧 Lo voy a utilizar para resolver dudas que me aparezcan y en especial comprender la arquitectura de diseño de los servicios utilizados en el momento de la instalación.
 #=========================================================================================================================
