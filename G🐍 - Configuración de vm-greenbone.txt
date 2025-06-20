@@ -1,3 +1,4 @@
+# 🧠 vm-greenbone → Vulnerabilidades (GVM/OpenVAS)
 # 🧠 Greenbone es una plataforma de gestión de vulnerabilidades que ofrece herramientas para realizar escaneos de seguridad.
 # 🐧 Utilizo greenbone para escanear toda mi red en busca de vulnerabilidades que corregir.
 #===========================================================================================================================
