@@ -1,3 +1,4 @@
+# vm-suricata → NIDS / Detección amenazas
 # Detectar tráfico malicioso (exploits, malware, escaneos, ataques).
 # Bloquear ese tráfico en tiempo real.
 
