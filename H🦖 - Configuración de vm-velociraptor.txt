@@ -1,3 +1,4 @@
+# 🧠 vm-velociraptor → DFIR / EDR / Análisis forense
 # 🧠 Velociraptor es una herramienta de DFIR de respuesta a incidentes que ayuda a investigar incidencias en tiempo real.
 # 🐧 Lo voy a dejar configurado y lo voy a utilizar exclusivamente cuando pase algo sospechoso o grave.
 #===========================================================================================================================
