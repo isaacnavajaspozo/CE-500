@@ -1,4 +1,3 @@
-# 🧠 vm-zabbix → Monitorización infra
 # 🧠 Nginx es un servidor web y proxy reverso eficiente y ligero, optimizado para manejar altas cargas y tráfico concurrente.
 # 🐧 Esta máquina la voy a utilizar como honeypot y me va a registrar decoys, simulación de rutas y gestión con mongodb (sin paquetes externos).
 #=========================================================================================================================
