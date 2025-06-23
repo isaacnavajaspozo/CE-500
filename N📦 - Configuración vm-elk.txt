@@ -1,4 +1,55 @@
-https://www.elastic.co/guide/en/elasticsearch/reference/8.18/deb.html
+# 🧠 ELK (Elasticsearch, Logstash, Kibana) sirve para centralizar, procesar, almacenar y visualizar logs y datos en tiempo real, facilitando monitoreo, análisis y detección de problemas en infraestructuras IT.
+# 🐧 Esta máquina la voy a utilizar como servidor centralizado de ingesta, almacenamiento y visualización de logs y métricas usando ELK para monitoreo y análisis de sistemas.
+#=========================================================================================================================
+[🪶WHITE WHALE]::
+# documentación oficial         		: https://www.elastic.co/guide/en/elasticsearch/reference/8.18/deb.html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 vm-pwnagotchi
