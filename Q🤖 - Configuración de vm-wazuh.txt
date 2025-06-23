@@ -1,2 +1,0 @@
-# HIDS / SIEM completo
-# Wazuh + Email alerts (SMTP)
