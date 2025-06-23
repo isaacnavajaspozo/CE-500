@@ -55,7 +55,7 @@ mkdir /isaac/mensajes
 apt install postfix
     - web
 
-# 👍 creo el script en el caso que el correo remitente sea de dominio
+# 👍📮 creo el script en el caso que el correo remitente sea de dominio
 vim enviar-mensaje.sh
 --------------------------------------------------------------------------
 #!/bin/bash
@@ -99,7 +99,8 @@ else
 fi
 --------------------------------------------------------------------------
 
-# 👍 creo el script en el caso de que mi correo remitente sea un gmail
+# 👍📮 creo el script en el caso de que mi correo remitente sea un cliente como gmail (servidor intermedio - relay) 
+vim enviar-mensaje.sh
 --------------------------------------------------------------------------
 #!/bin/bash
 ### === CONFIGURACIÓN DEL CORREO === ###
@@ -115,9 +116,9 @@ DESTINO_ENVIADOS="$CARPETA/enviados"
 ### === FUNCIONES === ###
 
 configurar_postfix() {
-    echo "🔧 Configurando Postfix para usar Gmail como relay..."
+    echo "📬 Configurando Postfix para usar Gmail como relay..."
 
-    # Configurar main.cf
+    # Configurar main.cf con Gmail
     postconf -e "relayhost = [smtp.gmail.com]:587"
     postconf -e "smtp_use_tls = yes"
     postconf -e "smtp_sasl_auth_enable = yes"
@@ -166,6 +167,8 @@ if [ -n "$archivo" ]; then
         echo
         cat "$archivo"
     ) | sendmail -f "$REMITENTE" -t
+
+    echo "📬 Cargando mensaje mendiente..."
 
     if [ $? -eq 0 ]; then
         echo "✅ Correo enviado exitosamente."
