@@ -4,6 +4,7 @@
 #===========================================================================================================================
 [🐍INSTALACIÓN GREENBONE]:
 # Documentación oficial : https://greenbone.github.io/docs/latest/22.4/source-build/index.html
+# Documentación oficial : https://greenbone.github.io/ > Building from Source > (compruebo la última versión...)
 
 #=========================================================================================================================
 [🐍INSTALACIONES]::
@@ -25,17 +26,18 @@ vim script-00.sh
 chmod +x script-00.sh
 ./script-00.sh
 source ~/.bashrc
+# 🧠 Greenbone es una plataforma de gestión de vulnerabilidades que ofrece herramientas para realizar escaneos de seguridad.
+# 🐧 Utilizo greenbone para escanear toda mi red en busca de vulnerabilidades que corregir.
+
 
 #=========================================================================================================================
 [🐍INSTALACIONES]::
-# La instalación oficial está en esta web:
-https://greenbone.github.io/docs/latest/22.4/source-build/index.html
-
 ## ⚠️ Esta instalación la he hecho ordenada corrigiendo los problemas con la documentación oficial en debian
 ## ⚠️ antes de nada acosejo investigar si dispongo de los recursos necesarios porque aunque se inicie la interface no va poder analizar nada
 ## 🚨 el error típico ante falta de recursos es que cuando creas un Task se queda en : ❌ Interrupted at 0 %
-## ⚠️ si no dispones de estos recursos minimos ni te molestes en intentarlo (lo digo por experiencia...) 
+## ⚠️ si no dispones de estos recursos minimos darán errores y no permitirá su funcionamiento...
 ## ⚠️ estos son los recursos minimos que tiene que dar después de la instalación::
+
 df -h
 lscpu | grep "^CPU(s)"
 
@@ -45,7 +47,7 @@ lscpu | grep "^CPU(s)"
 
 ## ⚠️ recursos con los que he realizado la máquina::
 
-	> CPU Cores: 2
+	> CPU Cores: 4
 	> Random-Access Memory: 4GB
 	> Hard Disk: 40GB
 
@@ -57,25 +59,25 @@ lscpu | grep "^CPU(s)"
 # en el caso de cambiar las versiones, solo hay que modificar todas las variables del punto 04.
 
 ##.🧑‍🎓 Explicación de componentes OpenVass:
-	gvm-libs:		Biblioteca C utilizadas en openvas-scanner , gvmd , gsad y pg-gvm.
-	gvmd:			Servicio principal, utiliza PostgreSQL y realiza autenticación, gestión de escaneos, la información sobre vulnerabilidades y mucho más
-	pg-gvm:			Extensión de PostgreSQL que agrega varias funciones utilizadas por gvmd, (iCalendar y evaluación de rango de host)
-	GSA:			La aplicación web en JavaScript, React y NodeJS
-	gsad:			En C. Se comunica con gvmd mediante GMP. Servidor web con contenido estático y proporciona una API para la web
-	openvas-smb:		Módulo auxiliar para openvas-scanner, para interactuar con sistemas Microsoft Windows a través de la API
-	openvas-scanner:	Motor de escaneo con todas las funciones que ejecuta un flujo de pruebas de vulnerabilidad (VT) continuamente actualizado y ampliado
-	ospd-openvas:		Motor de escaneo con todas las funciones que ejecuta un flujo de pruebas de vulnerabilidad (VT) continuamente actualizado y ampliado
-	openvasd:		Utiliza para detectar productos vulnerables, actualmente solo notus está integrado en gvmd
-	greenbone-feed-sync:	script basado en Python para descargar todos los datos de la fuente de la comunidad Greenbone a su máquina local
-	gvm-tools:		Colección de herramientas que ayudan a controlar instalaciones 
-	servidor Redis:		Utilizado por el escáner (openvas-scanner y ospd-openvas) para manejar la información de VT 
+	gvm-libs:		            	Biblioteca C utilizadas en openvas-scanner , gvmd , gsad y pg-gvm.
+	gvmd:			              	Servicio principal, utiliza PostgreSQL y realiza autenticación, gestión de escaneos, la información sobre vulnerabilidades y mucho más
+	pg-gvm:			            	Extensión de PostgreSQL que agrega varias funciones utilizadas por gvmd, (iCalendar y evaluación de rango de host)
+	GSA:			              	La aplicación web en JavaScript, React y NodeJS
+	gsad:			              	En C. Se comunica con gvmd mediante GMP. Servidor web con contenido estático y proporciona una API para la web
+	openvas-smb:		        	Módulo auxiliar para openvas-scanner, para interactuar con sistemas Microsoft Windows a través de la API
+	openvas-scanner:	      		Motor de escaneo con todas las funciones que ejecuta un flujo de pruebas de vulnerabilidad (VT) continuamente actualizado y ampliado
+	ospd-openvas:		        	Motor de escaneo con todas las funciones que ejecuta un flujo de pruebas de vulnerabilidad (VT) continuamente actualizado y ampliado
+	openvasd:		            	Utiliza para detectar productos vulnerables, actualmente solo notus está integrado en gvmd
+	greenbone-feed-sync:	  		script basado en Python para descargar todos los datos de la fuente de la comunidad Greenbone a su máquina local
+	gvm-tools:		          	Colección de herramientas que ayudan a controlar instalaciones 
+	servidor Redis:		      		Utilizado por el escáner (openvas-scanner y ospd-openvas) para manejar la información de VT 
 	Estándares relacionados:
-		[NVT]:		Es el conjunto de pruebas de vulnerabilidades de la comunidad Greenbone
-		[CERT]:	 	Incluye avisos de seguridad de organizaciones como CERT-Bund o DFN-CERT
-		[GVMD_DATA]: 	Contiene configuraciones necesarias para que OpenVAS funcione correctamente, como Policies, Port Lists, Report Formats, Scan Configs.
-		[SCAP]:		Están dividido en:
-				+ [[CVEs]]: (Common Vulnerabilities and Exposures): Base de datos de vulnerabilidades conocidas.
-				+ [[CPEs]]: (Common Platform Enumeration): Identificadores únicos para sistemas operativos y software.
+		[NVT]:		            	Es el conjunto de pruebas de vulnerabilidades de la comunidad Greenbone
+		[CERT]:	 	            	Incluye avisos de seguridad de organizaciones como CERT-Bund o DFN-CERT
+		[GVMD_DATA]: 	        	Contiene configuraciones necesarias para que OpenVAS funcione correctamente, como Policies, Port Lists, Report Formats, Scan Configs.
+		[SCAP]:	Están dividido en:
+				+ [[CVEs]]:     (Common Vulnerabilities and Exposures): Base de datos de vulnerabilidades conocidas.
+				+ [[CPEs]]:     (Common Platform Enumeration): Identificadores únicos para sistemas operativos y software.
 
 ##.🧑‍🎓 Índice de la instalación:
 	01.📌 Actualizar el sistema
@@ -108,7 +110,8 @@ lscpu | grep "^CPU(s)"
 	
 	# permitir que el usuario actual ejecute gvmd
 	sudo usermod -aG gvm root
-	su root
+	# no necesito cambiar de usuario si mi usuario pertenece a root
+	# su root
 # *********************************************************************
 
 # 03.📌 Instalaciones
@@ -148,24 +151,52 @@ lscpu | grep "^CPU(s)"
 #**********************************************************************
 
 # 04.📌 Exporto las varables para la instalación
+# 🧠 Compruebo la última versión desde la siguiente dirección, y desde ahí cambio las variables de entorno por las de la última versión
+# 🧠 Las variables conservan el mismo nombre, por lo que solo tengo que buscarlas en la página oficial y modificar su valor
+# 🧠 Última fecha comprobada de está versión: 25/06/2025
+"https://greenbone.github.io/ > (click) Building from Source"
 # *********************************************************************
 	export INSTALL_PREFIX=/usr/local
 	export PATH=$PATH:$INSTALL_PREFIX/sbin
 	export SOURCE_DIR=$HOME/source
 	export BUILD_DIR=$HOME/build
 	export INSTALL_DIR=$HOME/install
-	export GVM_LIBS_VERSION=22.18.0
-	export GVMD_VERSION=25.1.1
-	export PG_GVM_VERSION=22.6.7
-	export GSA_VERSION=24.3.0
-	export GSAD_VERSION=24.2.2
+	export GVM_LIBS_VERSION=22.22.0
+	export GVMD_VERSION=26.0.0
+	export PG_GVM_VERSION=22.6.9
+	export GSA_VERSION=25.0.0
+	export GSAD_VERSION=24.3.0
 	export OPENVAS_SMB_VERSION=22.5.3
-	export OPENVAS_SCANNER_VERSION=23.15.3
-	export OSPD_OPENVAS_VERSION=22.7.1
-	export OPENVAS_DAEMON=23.15.3
+	export OPENVAS_SCANNER_VERSION=23.20.1
+	export OSPD_OPENVAS_VERSION=22.9.0
+	export OPENVAS_DAEMON=23.20.0
 	export GNUPGHOME=/tmp/openvas-gnupg
 	export OPENVAS_GNUPG_HOME=/etc/openvas/gnupg
 # *********************************************************************
+
+/*
+*	# variables de entorno con la versión de la primera presentación inicial
+*	
+*	# 04.📌 Exporto las varables para la instalación
+*	# *********************************************************************
+*	# export INSTALL_PREFIX=/usr/local
+*	# export PATH=$PATH:$INSTALL_PREFIX/sbin
+*	# export SOURCE_DIR=$HOME/source
+*	# export BUILD_DIR=$HOME/build
+*	# export INSTALL_DIR=$HOME/install
+*	# export GVM_LIBS_VERSION=22.18.0
+*	# export GVMD_VERSION=25.1.1
+*	# export PG_GVM_VERSION=22.6.7
+*	# export GSA_VERSION=24.3.0
+*	# export GSAD_VERSION=24.2.2
+*	# export OPENVAS_SMB_VERSION=22.5.3
+*	# export OPENVAS_SCANNER_VERSION=23.15.3
+*	# export OSPD_OPENVAS_VERSION=22.7.1
+*	# export OPENVAS_DAEMON=23.15.3
+*	# export GNUPGHOME=/tmp/openvas-gnupg
+*	# export OPENVAS_GNUPG_HOME=/etc/openvas/gnupg
+*	# *********************************************************************
+**/
 
 # 05.📌 Directorios de origen
 # *********************************************************************
@@ -418,9 +449,10 @@ curl -f -L https://github.com/greenbone/gvm-libs/releases/download/v$GVM_LIBS_VE
 
 	sudo cp -rv $INSTALL_DIR/openvas-scanner/* /
 
+	# ⚠️⚠️⚠️⚠️ Aquí hay que modificar la ip por la del equipo actual (cambiar 192.168.1.13 por la ip del equipo: ip a)
 	# A partir de la versión 23.0, la openvasd_serverconfiguración debe establecerse en una OpenVASDinstancia en ejecución
 	printf "table_driven_lsc = yes\n" | sudo tee /etc/openvas/openvas.conf
-	printf "openvasd_server = http://10.1.10.2:3000\n" | sudo tee -a /etc/openvas/openvas.conf
+	printf "openvasd_server = http://192.168.1.13:3000\n" | sudo tee -a /etc/openvas/openvas.conf
 
 # *********************************************************************
 
@@ -745,6 +777,51 @@ admin:admin
 sudo ss -tulnp | grep 9392
 # tcp        0      0 0.0.0.0:9392           0.0.0.0:*               LISTEN      <pid>/gsad
 
+# 14.📌 Configuración de iptables
+# *********************************************************************
+
+# 🚫🧱🧱🧱 Configuración de iptables 
+## iptables:
+# instalación de iptables
+apt install iptables iptables-persistent
+	- yes
+	- yes
+systemctl enable netfilter-persistent
+systemctl start iptables
+# si es necesario activo iptables de ip6
+# systemctl start ip6tables 
+ip6tables -L -n
+
+vim /etc/iptables/rules.v4
+-------------------------------------------------------
+#
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+-A INPUT -p icmp -j ACCEPT
+-A INPUT -i lo -j ACCEPT
+# SSH
+-A INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j ACCEPT
+# Greenbone
+-A INPUT -p tcp --dport 9392 -j ACCEPT
+# Cerramos resto
+-A INPUT -j REJECT --reject-with icmp-host-prohibited
+-A FORWARD -j REJECT --reject-with icmp-host-prohibited
+COMMIT
+-------------------------------------------------------
+
+# recargo iptables
+iptables-restore < /etc/iptables/rules.v4
+# Actualizar proyecto
+systemctl restart iptables
+# Comprobar IPtables
+iptables -L -n -v -t filter
+
+# 🔑 cambiar contraseña por defecto "admin" del usuario "admin" para la interface web
+gvmd --user=admin --new-password=Rengereg%768
+
 #=========================================================================================================================
 [🐍ENTORNO WEB]::
 
@@ -759,7 +836,7 @@ Administration > Feed Status
 		[NVT]:			10-30 minutos	
 		[CERT]:	 		30 min - 24 horas		
 		[GVMD_DATA]: 		30 min y 2 horas			
-		[SCAP]:			2-6 horas
+		[ESCAP]:		30 min - 72 horas
 
 	# Error:
 	+-----------------------------------------------------------------------------------------------------------------------------------------------+
@@ -770,10 +847,18 @@ Administration > Feed Status
 # La web es reactiva y el mensaje de error tiene un timeout por lo que no vuelve a aparecer pero eso no significa que haya terminado de volcar los datos...
 # para comprobar que vuelve a aparecer hay que recargar la web : CNTRL + F5	
 
+# 📌 para comprobar desde el servidor que los feeds están trabajando correctamente lanzo este comando y espero 0:30 minutos a que cambien el tamaño de los archivos, si el tamaño no cambia es que el bucle de los feeds está atascado:
+watch -n 5 'du -sh /var/lib/gvm/* /var/lib/openvas/plugins /var/lib/notus'
+# o por base de datos para ser más preciso como en este caso que analizo la db de SCAP:
+watch -n 5 'du -sh /var/lib/gvm/scap-data/* /var/lib/openvas/plugins /var/lib/notus'
+
+# 📌 hace el comando anterior de manera automática, suma el tamaño de las carpetasmás importantes y manda un echo cada 5 segundo si se realizan cambios
+prev=0; while true; do curr=$(du -sb /var/lib/gvm/scap-data /var/lib/gvm/cert-data /var/lib/gvm/data-objects/gvmd /var/lib/openvas/plugins /var/lib/notus 2>/dev/null | awk '{s+=$1} END {print s}'); if [ "$curr" != "$prev" ]; then echo "$(date) ⚙️ Cambio detectado → $curr bytes"; prev=$curr; fi; sleep 5; done
+
+
 
 #=========================================================================================================================
 [🐍ENTORNO WEB CON NVT CERT GVMD_DATA SCAP CARGADOS]::
-## 🚨 el error típico ante falta de recursos es que cuando creas un Task se queda en : ❌ Interrupted at 0 %
 ## 👍 si todo funciona bien, voy a  analizar la red de manera automática
 
 Configuration > Target > New Target > 192.168.1.1/24 
@@ -788,8 +873,8 @@ SCANS > Task > New Task
 
 # esto puede tardar una estimación de 10 horas 
 
+## 🚨 el error típico ante falta de recursos es que cuando creas un Task se queda en : ❌ Interrupted at 0 %
 # si has llegado hasta aquí sin fallos, 🎉🎉 ¡Enhorabuena!, ya tiene un Greenbone instalado en Debian
-
 
 #=========================================================================================================================
 [🐍PROGRAMAR ESCANER AUTOMATICO]::
@@ -797,25 +882,37 @@ SCANS > Task > New Task
 Menú > Configuration > Targets > New Target
 	> 192.168.1.0/24
 
-# configuración del Task
-Scan > Tasks > New Task
-# asocio el target creado
-selecciona el scan config (ej. Full and Fast)
-	> 👍 marco opción Schedule para activar programación
-
-# Programo el escaneo 
+# Programo el escaneo una vez a la semana
 Menú > Configuration > Schedules > New Schedule
 # define frecuencia (diaria, semanal, etc.)
 # hora de inicio
 # asocia ese Schedule a tu Task
+	> Name: [Schedule 7:00]: Weekly
+	> Start Date: 25/06/2025	Start Time: 07:00
+	> Timezone: Europe/Madrid
+	> [x] Open End
+	> Recurrence: Weekly
+
+# configuración del Task
+Scan > Tasks > New Task
+# asocio el target creado
+selecciona el scan config (ej. Full and Fast)
+	> ...
+	> Schedule: [Schedule 7:00]: Weekly	[ ] Once 	# Asegúrate de que "Once" NO esté activado, o se ignorará la recurrencia.
 
 
+
+#=========================================================================================================================
+#=========================================================================================================================
+					- S O L U C I O N A R ~ E R R O R E S -
 #=========================================================================================================================
 #=========================================================================================================================
 [🐍FALLO FEEDS]::
 ## ⚠️ Es aconsejable esperar 48 horas antes de estar seguro si fallan los feeds (que es el tiempo estimado en el que suelen tardar en descargarse completamente...)
 
 ⚠️[FALLO DE FEED]⚠️:
+***************************************
+# ⚠️ si da este problema suele ser por el problema que he definido al principio de recursos, si es problema de ram es aconsejable hacer un archivo swap, probar si así funciona y si es así ampliar esos recursos de manera física
 ## 🔴 NUNCA hay que volver a generar los feed de los greenbone si es por otro error o funciona bien
 ## 🔴 En el caso de que deje de funcionar los feeds tengo que hacer lo siguiente: 
 
@@ -834,6 +931,7 @@ sudo systemctl stop openvasd
 
 # 🔴 Si se borran los archivos .lock con feed-sync se vuelven a crear 
 # 🔴 Si se bloquea al hacer un feed-sync se puede forzar el borrado del archivo .lock y volverlos a lanzar un feed-sync
+# rm -f /var/lib/gvm/feed-update.lock
 
 sudo systemctl start ospd-openvas
 sudo systemctl start gvmd
@@ -849,3 +947,27 @@ sudo systemctl status ospd-openvas
 sudo systemctl status gvmd
 sudo systemctl status gsad
 sudo systemctl status openvasd
+
+
+⚠️[CREAR ARCHIVO SWAP PARA RAM]⚠️:
+***************************************
+# en el caso de que necesite crear un archivo swap para simular la ram
+
+# crear archivo swap de 2GB (ajusta tamaño según necesidades)
+sudo fallocate -l 2G /swapfile
+
+# dar permisos correctos
+sudo chmod 600 /swapfile
+
+# formatear como swap
+sudo mkswap /swapfile
+
+# activar swap
+sudo swapon /swapfile
+
+# verificar que está activo
+swapon --show
+free -h
+
+# para que el swapfile se active en cada arranque, añade esta línea a /etc/fstab
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
