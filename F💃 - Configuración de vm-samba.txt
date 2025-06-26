@@ -1,7 +1,7 @@
 # 🧠 vm-samba → Archivos compartidos / SMB
 # 🧠 Samba permite compartir archivos e impresoras con sistemas Windows a través de los protocolos SMB/CIFS.
 # 🐧 Utilizo esta máquina como servidor de archivos compartidos por usuarios, para compartir manuales IT. 
-# 🐧 Además también hace de honeypot para registrar los accesos de la carpeta principal
+# 🐧 Además también hace de monitorización para registrar los accesos de la carpeta principal
 #=========================================================================================================================
 [💃ce-500]::
 Documentación ofical samba                 : https://wiki.samba.org/index.php/Setting_up_Samba_as_a_Standalone_Server
@@ -204,7 +204,7 @@ vim /etc/anacrontab
 journalctl -u anacron
 
 #=========================================================================================================================
-[💃CONFIGURACIÓN HONEYPOT]::
+[💃CONFIGURACIÓN MONITORIZACIÓN]::
 # aunque este samba lo voy a utilizar para compartir manuales de IT, lo voy a configurar como un sistema de alertas 
 
 vim /etc/samba/smb.conf
