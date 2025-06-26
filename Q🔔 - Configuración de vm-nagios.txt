@@ -1,1 +1,3 @@
-
+# 🧠 vm-nagios → Monitorización
+# 🧠 Nagios sirve para monitorizar en tiempo real la disponibilidad, estado y rendimiento de sistemas, redes y servicios IT.
+# 🐧 Nagios me sirve como alternativa a zabbix. Nagios es más ligero, modular y simple, solo es necesario un sistema de monitorización por lo que si se elige utilizar Zabbix hay que apagar Nagios e igualmente al reves.
