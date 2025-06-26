@@ -35,7 +35,7 @@ usuario-db.kdbx> search prueba
 quit
 
 #=========================================================================================================================
-[🔑 CONFIGURACIÓN SCRIPT POWERSHELL::
+[🔑 CONFIGURACIÓN SCRIPT POWERSHELL]::
 
 # creo un usuario solo con privilegios de keepassxc
 sudo adduser keepassxc
@@ -76,3 +76,9 @@ if (Test-Path $localFilePath) {
 
 # guardo el script en la misma carpeta que la base de datos en el PC Windows y pulso doble click cada vez que quiero actualizar la copia al servidor
 # es una opción de gestionar las contraseñas segura, simple y sin mantenimiento, es una forma fácil de gestionar todas las cuentas de usuarios para volcar una recuperación de datos o crear una copia de seguridad.
+
+#=========================================================================================================================
+[🔑 CONFIGURACIÓN PROGRAMA]::
+# Como en keepass copiar el dato al hacer doble clic
+Ajustes > Gestión de apunte: Copiar datos al hacer doble clic en un campo de la vista de entrada
+
