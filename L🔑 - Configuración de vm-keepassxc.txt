@@ -82,3 +82,6 @@ if (Test-Path $localFilePath) {
 # Como en keepass copiar el dato al hacer doble clic
 Ajustes > Gestión de apunte: Copiar datos al hacer doble clic en un campo de la vista de entrada
 
+# agregar un 2FA
+- crear la cuenta normal con contraseña etc > guardar
+- botón derecho > TOTP > Confgiruar TOTP > (si no hay más datos, agrego el TOTP como me lo dá la aplicación cliente) 
