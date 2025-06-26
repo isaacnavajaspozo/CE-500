@@ -43,7 +43,7 @@ sudo freshclam
 
 
 #=========================================================================================================================
-[🪖📩 MENSAJERÍA INSTANTANEA]::
+[🪖📩 MENSAJES PROGRAMADOS]::
 # 🧠 enviará cad día un mensaje programado a la misma hora (siempre que lo haya), ordenando los archivos a enviar por orden.
 # 🧠 una vez enviado, se clasifica el mensaje dentro de la carpeta /enviados de la misma ruta y aunque permanezca en el servidor no se volverá a mandar dicho mensaje.
 # 🧠 al mover el mensaje a la carpeta enviados le cambia el nombre por la fecha y luego su nombree original para que no sobreescriban. Ej: 20250619_082815_nombre.txt
