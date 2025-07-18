@@ -99,6 +99,82 @@ else
 fi
 --------------------------------------------------------------------------
 
+
+
+
+
+
+
+# esta  es otra forma mejorada de crear el mismo script de arriba
+# no hay que crear los dos es una alternativa al de arriba
+# además de algunos cambios, agrego una variable ENVIO_ACTIVADO que si esta en true finaliza el envio pero si no esta en true no se va  realizar envio
+vim enviar-mensaje.sh
+-----------------------------------------------------------------
+#!/bin/bash
+set -euo pipefail
+
+CARPETA="/isaac/mensajes"
+DESTINO="to@dominio.es"
+DESTINO_OCULTO="bcc@dominio.com"
+ASUNTO="Nuevo mensaje"
+REMITENTE="from@dominio.es"
+DESTINO_ENVIADOS="$CARPETA/enviados"
+ENVIO_ACTIVADO="true"
+# ENVIO_ACTIVADO= "false" :: ocurre lo siguiente:
+#    - No crea la carpeta de enviados (mkdir -p "$DESTINO_ENVIADOS").
+#    - No busca el archivo .txt" pendiente.
+#    - No lo mueve, ni lo marca como leído, ni lo envía.
+
+Sale inmediatamente con exit 0.
+
+if [[ "$ENVIO_ACTIVADO" != "true" ]]; then
+    echo "Envío desactivado. No se enviarán mensajes."
+    exit 0
+fi
+
+mkdir -p "$DESTINO_ENVIADOS"
+
+archivo=$(find "$CARPETA" -maxdepth 1 -type f -name '*.txt' | sort | head -n 1 || true)
+
+if [[ -n "$archivo" ]]; then
+    echo "Enviando: $archivo a $DESTINO (BCC: $DESTINO_OCULTO)"
+
+    {
+        echo "Subject: $ASUNTO"
+        echo "From: $REMITENTE"
+        echo "To: $DESTINO"
+        echo "Bcc: $DESTINO_OCULTO"
+        echo "Content-Type: text/plain; charset=utf-8"
+        echo
+        cat "$archivo"
+    } | sendmail -f "$REMITENTE" -t
+
+    echo "Correo enviado exitosamente."
+
+    nombre=$(basename "$archivo")
+    timestamp=$(date +%Y%m%d_%H%M%S)
+    mv "$archivo" "$DESTINO_ENVIADOS/${timestamp}_$nombre"
+else
+    echo "No hay mensajes pendientes por enviar."
+fi
+-----------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # 👍📮 creo el script en el caso de que mi correo remitente sea un cliente como gmail (servidor intermedio - relay) 
 vim enviar-mensaje.sh
 --------------------------------------------------------------------------
