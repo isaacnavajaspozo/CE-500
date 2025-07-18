@@ -259,6 +259,98 @@ else
 fi
 --------------------------------------------------------------------------
 
+
+# el mismo cambio que antes pero adaptado a gmail
+vim enviar-mensaje.sh
+-----------------------------------------------------------------
+#!/bin/bash
+set -euo pipefail
+
+### === CONFIGURACIÓN DEL CORREO === ###
+GMAIL_USER="from@gmail.com"
+APP_PASSWORD="contraseña_app_google"
+CARPETA="/isaac/mensajes"
+DESTINO="to@gmail.com"
+DESTINO_OCULTO="bcc@gmail.com"
+ASUNTO="Nuevo mensaje"
+REMITENTE="$GMAIL_USER"
+DESTINO_ENVIADOS="$CARPETA/enviados"
+ENVIO_ACTIVADO="true"
+
+### === FUNCIONES === ###
+configurar_postfix() {
+    echo "📬 Configurando Postfix para usar Gmail como relay..."
+
+    cat <<EOF > /etc/postfix/main.cf
+relayhost = [smtp.gmail.com]:587
+smtp_use_tls = yes
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+smtp_sasl_security_options = noanonymous
+smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt
+EOF
+
+    echo "[smtp.gmail.com]:587 $GMAIL_USER:$APP_PASSWORD" > /etc/postfix/sasl_passwd
+    chmod 600 /etc/postfix/sasl_passwd
+    postmap /etc/postfix/sasl_passwd
+
+    systemctl restart postfix
+}
+
+verificar_postfix_configurado() {
+    grep -q "\[smtp.gmail.com\]:587" /etc/postfix/main.cf
+}
+
+### === INICIO === ###
+if [[ "$ENVIO_ACTIVADO" != "true" ]]; then
+    echo "🚫 Envío desactivado. No se enviarán mensajes."
+    exit 0
+fi
+
+if ! verificar_postfix_configurado; then
+    configurar_postfix
+else
+    echo "✅ Postfix ya está configurado con Gmail."
+fi
+
+mkdir -p "$DESTINO_ENVIADOS"
+
+archivo=$(find "$CARPETA" -maxdepth 1 -type f -name '*.txt' | sort | head -n 1 || true)
+
+if [[ -n "$archivo" ]]; then
+    echo "📤 Enviando: $(basename "$archivo") a $DESTINO (BCC: $DESTINO_OCULTO)"
+
+    {
+        echo "Subject: $ASUNTO"
+        echo "From: $REMITENTE"
+        echo "To: $DESTINO"
+        echo "Bcc: $DESTINO_OCULTO"
+        echo "Content-Type: text/plain; charset=utf-8"
+        echo
+        cat "$archivo"
+    } | sendmail -f "$REMITENTE" -t
+
+    if [[ $? -eq 0 ]]; then
+        echo "✅ Correo enviado correctamente."
+        nombre=$(basename "$archivo")
+        timestamp=$(date +%Y%m%d_%H%M%S)
+        mv "$archivo" "$DESTINO_ENVIADOS/${timestamp}_$nombre"
+    else
+        echo "❌ Error al enviar el correo."
+    fi
+else
+    echo "📭 No hay mensajes pendientes por enviar."
+fi
+-----------------------------------------------------------------
+
+
+
+
+
+
+
+
+
 # doy permisos al script
 chmod 770 enviar-mensaje.sh
 
