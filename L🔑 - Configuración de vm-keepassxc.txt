@@ -51,8 +51,8 @@ sudo chown keepassxc:keepassxc /KIRIBAKO/keepassxc/usuario-1/usuario-db.kdbx
 copiardb.bat
 --------------------------------------------------------------------------------------
 @echo off
-set "ORIGEN=C:\Users\i.navajas\Documents\KeePass\Database_grafo.kdbx"
-set "DESTINO=X:\Usuarios\isaac.navajas"
+set "ORIGEN=C:\carpeta\Database_grafo.kdbx"
+set "DESTINO=X:\destino"
 
 copy /Y "%ORIGEN%" "%DESTINO%"
 --------------------------------------------------------------------------------------
