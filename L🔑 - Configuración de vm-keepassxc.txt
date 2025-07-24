@@ -48,30 +48,13 @@ sudo usermod -s /usr/sbin/nologin keepassxc
 sudo chown keepassxc:keepassxc /KIRIBAKO/keepassxc/usuario-1/usuario-db.kdbx
 
 # desde el pc Windows del usuario con el que modifico las password por
-ActualizarKeePassXc.ps1
+copiardb.bat
 --------------------------------------------------------------------------------------
-# Variables
-$localFilePath = ".\keepassxc.kdbx"  # Ruta del archivo del keepassxc de Windows
-$remoteServer = "keepassxc@ip-servidor-vm-keepassx"
-$remoteFilePath = "/KIRIBAKO/keepassxc/usuario-1/keepassxc.kdbx"  # Ruta donde se guardará en el servidor por usuario
+@echo off
+set "ORIGEN=C:\Users\i.navajas\Documents\KeePass\Database_grafo.kdbx"
+set "DESTINO=X:\Usuarios\isaac.navajas"
 
-# Comprobar si el archivo local existe
-if (Test-Path $localFilePath) {
-    # Copiar el archivo al servidor
-    # Usando SCP (asegúrate de tener OpenSSH instalado en Windows)
-    $scpCommand = "scp $localFilePath $remoteServer:$remoteFilePath"
-    
-    # Ejecutar el comando SCP
-    Invoke-Expression $scpCommand
-
-    if ($LASTEXITCODE -eq 0) {
-        Write-Host "La base de datos de keepassxc se ha actualizado en el servidor."
-    } else {
-        Write-Host "Error al copiar el archivo al servidor."
-    }
-} else {
-    Write-Host "El archivo de keepassxc no se encuentra en la carpeta actual."
-}
+copy /Y "%ORIGEN%" "%DESTINO%"
 --------------------------------------------------------------------------------------
 
 # guardo el script en la misma carpeta que la base de datos en el PC Windows y pulso doble click cada vez que quiero actualizar la copia al servidor
