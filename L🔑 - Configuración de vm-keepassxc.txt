@@ -51,7 +51,7 @@ sudo chown keepassxc:keepassxc /KIRIBAKO/keepassxc/usuario-1/usuario-db.kdbx
 copiardb.bat
 --------------------------------------------------------------------------------------
 @echo off
-set "ORIGEN=C:\carpeta\Database_grafo.kdbx"
+set "ORIGEN=C:\carpeta\usuario-db.kdbx"
 set "DESTINO=X:\destino"
 
 copy /Y "%ORIGEN%" "%DESTINO%"
@@ -66,5 +66,5 @@ copy /Y "%ORIGEN%" "%DESTINO%"
 Ajustes > Gestión de apunte: Copiar datos al hacer doble clic en un campo de la vista de entrada
 
 # agregar un 2FA
-- crear la cuenta normal con contraseña etc > guardar
+- crear la cuenta cliente normal con contraseña etc > guardar
 - botón derecho > TOTP > Confgiruar TOTP > (si no hay más datos, agrego el TOTP como me lo dá la aplicación cliente) 
