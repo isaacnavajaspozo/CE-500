@@ -209,52 +209,52 @@ localectl
 # Configuro vimrc (estilo cyberpunk)
 # **************************************
 cat <<EOF > ~/.vimrc
-" configuración archivo .vimrc
-set number
-set cursorline
-set scrolloff=8
-set incsearch
-set hlsearch
-set ignorecase
-set smartcase
-set expandtab
-set tabstop=4
-set shiftwidth=4
-set wildmenu
-set foldmethod=indent
-set foldlevel=99
-syntax on
-set background=dark
-colorscheme industry
-highlight Comment ctermfg=Green guifg=#00FF00
-highlight LineNr ctermfg=Magenta
-highlight CursorLineNr ctermfg=DarkMagenta
-highlight Normal ctermfg=White ctermbg=DarkGray
-highlight Keyword ctermfg=LightGray
-highlight Function ctermfg=Yellow
-highlight Type ctermfg=Magenta
-highlight Constant ctermfg=Magenta
-highlight Identifier ctermfg=White
-highlight Statement ctermfg=Yellow
-highlight Error ctermfg=White ctermbg=Red
-highlight Search ctermfg=Black ctermbg=Yellow
-highlight Visual ctermbg=Grey
-highlight StatusLine ctermfg=Blue ctermbg=White
-highlight StatusLineNC ctermfg=Blue ctermbg=DarkGray
-highlight Special ctermfg=Blue
-highlight PreProc ctermfg=Grey
-highlight Todo ctermfg=Black ctermbg=Yellow
-highlight Underlined ctermfg=White
-highlight Pmenu ctermbg=DarkGray
-highlight PmenuSel ctermbg=Blue ctermfg=White
-highlight DiffAdd ctermbg=Green
-highlight DiffChange ctermbg=Yellow
-highlight DiffDelete ctermbg=Red
-highlight Folded ctermfg=White ctermbg=DarkBlue
-set laststatus=2
-set noerrorbells
-set history=1000
-set clipboard=unnamedplus
+" Configuración del archivo .vimrc
+set number                                              " Muestra los números de línea en el margen izquierdo.
+set cursorline                                          " Resalta la línea donde se encuentra el cursor.
+set scrolloff=8                                         " Mantiene 8 líneas visibles por encima y por debajo del cursor al desplazarse.
+set incsearch                                           " Realiza la búsqueda de manera incremental, mostrando resultados a medida que se escribe.
+set hlsearch                                            " Resalta todas las coincidencias de la búsqueda.
+set ignorecase                                          " Ignora mayúsculas y minúsculas en las búsquedas.
+set smartcase                                           " Si se usa una mayúscula en la búsqueda, se activa la distinción entre mayúsculas y minúsculas.
+set expandtab                                           " Convierte las tabulaciones en espacios.
+set tabstop=4                                           " Establece el ancho de una tabulación a 4 espacios.
+set shiftwidth=4                                        " Establece el ancho de sangría a 4 espacios.
+set wildmenu                                            " Mejora la interfaz de autocompletado en la línea de comandos.
+set foldmethod=indent                                   " Usa la indentación para determinar los pliegues de código.
+set foldlevel=99                                        " Establece el nivel de pliegue inicial a 99, mostrando todo el código.
+syntax on                                               " Activa el resaltado de sintaxis.
+set background=dark                                     " Establece el fondo oscuro para el resaltado de sintaxis.
+colorscheme industry                                    " Aplica el esquema de colores 'industry'.
+highlight Comment ctermfg=Green guifg=#00FF00           " Resalta los comentarios en verde.
+highlight LineNr ctermfg=Magenta                        " Resalta los números de línea en magenta.
+highlight CursorLineNr ctermfg=DarkMagenta              " Resalta el número de línea del cursor en magenta oscuro.
+highlight Normal ctermfg=White ctermbg=DarkGray         " Establece el color normal del texto a blanco sobre fondo gris oscuro.
+highlight Keyword ctermfg=LightGray                     " Resalta las palabras clave en gris claro.
+highlight Function ctermfg=Yellow                       " Resalta las funciones en amarillo.
+highlight Type ctermfg=Magenta                          " Resalta los tipos de datos en magenta.
+highlight Constant ctermfg=Magenta                      " Resalta las constantes en magenta.
+highlight Identifier ctermfg=White                      " Resalta los identificadores en blanco.
+highlight Statement ctermfg=Yellow                      " Resalta las declaraciones en amarillo.
+highlight Error ctermfg=White ctermbg=Red               " Resalta los errores en blanco sobre fondo rojo.
+highlight Search ctermfg=Black ctermbg=Yellow           " Resalta la búsqueda en negro sobre fondo amarillo.
+highlight Visual ctermbg=Grey                           " Resalta la selección visual en gris.
+highlight StatusLine ctermfg=Blue ctermbg=White         " Establece el color de la línea de estado en azul sobre fondo blanco.
+highlight StatusLineNC ctermfg=Blue ctermbg=DarkGray    " Establece el color de la línea de estado no activa en azul sobre fondo gris oscuro.
+highlight Special ctermfg=Blue                          " Resalta los elementos especiales en azul.
+highlight PreProc ctermfg=Grey                          " Resalta las preprocesadores en gris.
+highlight Todo ctermfg=Black ctermbg=Yellow             " Resalta las tareas pendientes en negro sobre fondo amarillo.
+highlight Underlined ctermfg=White                      " Resalta el texto subrayado en blanco.
+highlight Pmenu ctermbg=DarkGray                        " Establece el fondo del menú de completado en gris oscuro.
+highlight PmenuSel ctermbg=Blue ctermfg=White           " Establece el fondo del menú de selección en azul y el texto en blanco.
+highlight DiffAdd ctermbg=Green                         " Resalta las adiciones en el diff en verde.
+highlight DiffChange ctermbg=Yellow                     " Resalta los cambios en el diff en amarillo.
+highlight DiffDelete ctermbg=Red                        " Resalta las eliminaciones en el diff en rojo.
+highlight Folded ctermfg=White ctermbg=DarkBlue         " Resalta los pliegues en blanco sobre fondo azul oscuro.
+set laststatus=2                                        " Siempre muestra la línea de estado.
+set noerrorbells                                        " Desactiva los sonidos de error.
+set history=1000                                        " Establece el tamaño del historial de comandos a 1000 entradas.
+set clipboard=unnamedplus                               " Usa el portapapeles del sistema para copiar y pegar.
 EOF
 
 # Información en inicio de sesión
