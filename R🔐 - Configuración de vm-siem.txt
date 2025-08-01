@@ -1,0 +1,29 @@
+# 🧠 Este servidor se utiliza para monitorizar, analizar y correlacionar eventos de seguridad en tiempo real, permitiendo la detección de amenazas, gestión de alertas y cumplimiento normativo en infraestructuras IT
+# 🐧 Esta máquina la voy a utilizar como SIEM y va tener los servicios de Wazuh, ELK stack (Elasticsearch, Logstash, Kibana)
+
+#=========================================================================================================================
+[🔐📩 ce-500]::
+
+
+#=========================================================================================================================
+[🔐INSTALACIONES]::
+# instalaciones 
+apt update
+apt upgrade -y
+
+# creo una carpeta en el contenedor e instalo el script
+mkdir /ce-500 && cd /ce-500
+apt install vim -y
+vim script-00.sh
+# i - (shift + botón derecho):
+--------------------------------------------------------------------------------------
+    # código de /SCRIPTS/script-00.sh de este github
+--------------------------------------------------------------------------------------
+
+# doy permisos y hago la instalación
+chmod +x script-00.sh
+./script-00.sh
+source ~/.bashrc
+
+#=========================================================================================================================
+[🔐CONFIGURACIÓN]::
