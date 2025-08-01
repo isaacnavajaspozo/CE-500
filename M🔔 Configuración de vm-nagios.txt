@@ -1,0 +1,29 @@
+# 🧠 Este servidor se utiliza para la monitorización en tiempo real a través de scripts y SNMP
+# 🐧 Esta máquina la voy a utilizar para instalar Nagios y monitorizar en tiempo real mis dispositivos
+
+#=========================================================================================================================
+[🔔📩 ce-500]::
+
+
+#=========================================================================================================================
+[🔔INSTALACIONES]::
+# instalaciones 
+apt update
+apt upgrade -y
+
+# creo una carpeta en el contenedor e instalo el script
+mkdir /ce-500 && cd /ce-500
+apt install vim -y
+vim script-00.sh
+# i - (shift + botón derecho):
+--------------------------------------------------------------------------------------
+    # código de /SCRIPTS/script-00.sh de este github
+--------------------------------------------------------------------------------------
+
+# doy permisos y hago la instalación
+chmod +x script-00.sh
+./script-00.sh
+source ~/.bashrc
+
+#=========================================================================================================================
+[🔔CONFIGURACIÓN]::
