@@ -1,0 +1,60 @@
+# 🧠 Este servidor se utiliza como antivirus escaner
+# 🐧
+
+#=========================================================================================================================
+[👹📩 ce-500]::
+# documentación oficial clamav :             https://docs.clamav.net/
+
+#=========================================================================================================================
+[👹INSTALACIONES]::
+# instalaciones 
+apt update
+apt upgrade -y
+
+# creo una carpeta en el contenedor e instalo el script
+mkdir /ce-500 && cd /ce-500
+apt install vim -y
+vim script-00.sh
+# i - (shift + botón derecho):
+--------------------------------------------------------------------------------------
+    # código de /SCRIPTS/script-00.sh de este github
+--------------------------------------------------------------------------------------
+
+# doy permisos y hago la instalación
+chmod +x script-00.sh
+./script-00.sh
+source ~/.bashrc
+
+#=========================================================================================================================
+[👹 INSTALAR ANTIVIRUS]::
+# paquetes de Linux de utilización rápida y práctica (escaneres):
+# 💯 realizo la instalación de un antivirus para automatizar el escaner de archivos corruptos en el servidor
+
+# instalación antivirus Linux:
+## 👹 clamav::
+apt install clamav
+apt install clamav-freshclam
+# busco actualizaciones en la base de datos
+sudo freshclam
+# escaneo manualmente el sistema
+# clamscan -[parámetros] [ruta de carpeta]
+# sudo clamscan -r /
+sudo clamscan -r /home
+
+# 👹 formas de uso con clamav:
+# guardo un registro de archivos infectados
+sudo clamscan -l /ruta/al/archivo.txt -r /ruta/al/directorio
+
+# mandar archivo a cuarentena (para no causar daño al servidor):
+# sudo clamscan --move=/path/to/quarantine -r /ruta/al/directorio
+sudo clamscan --move=/path/to/quarantine -r /ruta/al/directorio -l /ruta/al/archivo.txt
+
+# borrar archivos maliciosos:
+# sudo clamscan --remove -r /ruta/al/directorio
+sudo clamscan --remove -r /ruta/al/directorio -l /ruta/al/archivo.txt
+
+# actualizar base de datos 
+sudo freshclam
+
+# lo que puedo hacer es un cron y un alias para que automatice el análisis de virus. 
+# 🆗
