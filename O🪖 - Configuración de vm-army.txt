@@ -407,7 +407,7 @@ cd kismet
 ./configure
 # en el caso de que sea una máquina virtual
 # ./configure --disable-lmsensors
-make -j$(nproc) <------------------------------------------------------ me quedado aquí
+make -j$(nproc)
 sudo make install
 
 # crear grupo kismet y añadir tu usuario
