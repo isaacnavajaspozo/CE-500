@@ -1,5 +1,5 @@
 # 🧠 Este servidor se utiliza para monitorizar, analizar y correlacionar eventos de seguridad en tiempo real, permitiendo la detección de amenazas, gestión de alertas y cumplimiento normativo en infraestructuras IT
-# 🐧 Esta máquina la voy a utilizar como SIEM y va tener los servicios de Wazuh, ELK stack (Elasticsearch, Logstash, Kibana)
+# 🐧 Esta máquina la voy a utilizar como SIEM y va tener el servicio de Wazuh que va a trabajar con el contenedor de ELK
 
 #=========================================================================================================================
 [🔐📩 ce-500]::
