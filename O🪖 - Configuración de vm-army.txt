@@ -6,6 +6,46 @@
 # Documentación oficial kismet :             https://www.kismetwireless.net/docs/readme/installing/linux/
 # documentación oficial clamav :             https://docs.clamav.net/
 
+#=========================================================================================================================
+[🪖📩INSTALACIONES]::
+# instalaciones 
+apt update
+apt upgrade -y
+
+## ssh
+## desde la consola del contenedor a través de proxmox
+# Amplio tiempo de ssh y deshabilitar la suspensión
+systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
+
+# Realizo unos cambios en el archivo de configuración
+nano /etc/ssh/sshd_config
+----------------------------------------------------------------------------
+    Port 22
+    PasswordAuthentication yes
+    PermitRootLogin yes
+----------------------------------------------------------------------------
+
+# Inicializo el servicio y lo habilito para inicio de la sesión
+systemctl start sshd
+systemctl enable sshd
+systemctl status sshd
+
+# reinicio
+reboot now
+
+# creo una carpeta en el contenedor e instalo el script
+mkdir /ce-500 && cd /ce-500
+apt install vim -y
+vim script-00.sh
+# i - (shift + botón derecho):
+--------------------------------------------------------------------------------------
+    # código de /SCRIPTS/script-00.sh de este github
+--------------------------------------------------------------------------------------
+
+# doy permisos y hago la instalación
+chmod +x script-00.sh
+./script-00.sh
+source ~/.bashrc
 
 #=========================================================================================================================
 [🪖📩 INSTALAR ANTIVIRUS]::
